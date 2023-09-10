@@ -9,3 +9,6 @@
 
 Those who know, they know. (Wobbly windows, btw)
 <img src=just_a_bunch_of_memes/4.png>
+
+Why must you do this to me, mf learned markdown just to make a wobblywindows reference
+jk mf probs already knew markdown tbh
