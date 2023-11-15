@@ -1,7 +1,6 @@
 # DOOM
 
 ## Outline
-
 The goal of this project is to create a 3D render in hardware based on the rendering methodes of Wolfenstein 3D and idTech1 (aka the Doom engine). <br>
 This project consists of a set of intermidiate goals that lead to the DOOM video game. The first one is to create a quadrilateral geometry pipeline with a space partitioning algorithm that will create a wireframe based on a simple map of the world.<br>
 <br>
@@ -15,11 +14,13 @@ Draw.io<br>
 Text editor<br>
 
 ## Development toolchain
-1.) VHDL description - preffered text editor (VIM, VSCode, Notepad);<br>
-2.) VHDL simulation  - Questasim, GHDL;<br>
-3.) VHDL synthesis   - Xilinx ISE for testing; Quartus for deployment;<br>
-4.) Timing analysis  - Arjan's PHD thing;<br>
-5.) Routing and implementation - GoWithTheFLow;<br>
+<ol>
+<li> VHDL description - preffered text editor (VIM, VSCode, Notepad); </li>
+<li> VHDL simulation  - Questasim, GHDL; </li>
+<li> VHDL synthesis   - Xilinx ISE for testing; Quartus for deployment; </li>
+<li> Timing analysis  - Arjan's PHD thing; </li>
+<li> Routing and implementation - GoWithTheFLow; </li>
+</ol>
 
 ## Guidlines for pushing the code
 <ul>
