@@ -1,0 +1,83 @@
+<mxfile host="app.diagrams.net" modified="2023-11-12T12:24:05.446Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/15.6.1 Safari/605.1.15" etag="fvQAwF1MBTQGbBdChLEj" version="22.1.0" type="device">
+  <diagram name="Page-1" id="rGLXnTO2eBaZ7wXOmR7s">
+    <mxGraphModel dx="1622" dy="606" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="g81_yuVmTDfevOXg7JKK-1" value="dev_off" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="1060" y="380" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-3" value="int_rst" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="10" y="240" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-6" value="The machine should transition to &lt;font style=&quot;font-style: normal;&quot; face=&quot;Courier New&quot;&gt;int_rst&lt;/font&gt; when the initialisation process has started" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2" parent="1" vertex="1">
+          <mxGeometry x="-120" y="265" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-7" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" target="g81_yuVmTDfevOXg7JKK-9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="90" y="280" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-9" value="r_sd_0" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="254" y="240" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-10" value="It is from within this state that all variables are reset to their default value" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2" parent="1" vertex="1">
+          <mxGeometry x="-15" y="190" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-18" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="g81_yuVmTDfevOXg7JKK-12" target="g81_yuVmTDfevOXg7JKK-9" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="814" y="480" />
+              <mxPoint x="294" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-20" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="g81_yuVmTDfevOXg7JKK-12" target="g81_yuVmTDfevOXg7JKK-1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-21" value="addr &amp;gt;= max_addr" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="g81_yuVmTDfevOXg7JKK-20" vertex="1" connectable="0">
+          <mxGeometry x="-0.4078" y="2" relative="1" as="geometry">
+            <mxPoint x="15" y="12" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-12" value="w_ram" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="774" y="380" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-13" value="Write the proper address to the SD card, then wait until the SD card signals that data is available at its output" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2" parent="1" vertex="1">
+          <mxGeometry x="229" y="180" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-15" value="Write signal value to ram&lt;br&gt;&lt;br&gt;also increment address counter" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2" parent="1" vertex="1">
+          <mxGeometry x="760" y="320" width="130" height="30" as="geometry" />
+        </mxCell>
+        <mxCell id="g81_yuVmTDfevOXg7JKK-19" value="addr &amp;lt; max_addr" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="1" vertex="1" connectable="0">
+          <mxGeometry x="396" y="490" as="geometry" />
+        </mxCell>
+        <mxCell id="ZnCc-rP31vHbhyMThSNE-3" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" source="ZnCc-rP31vHbhyMThSNE-1" target="g81_yuVmTDfevOXg7JKK-12" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="670" y="280" />
+              <mxPoint x="670" y="420" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZnCc-rP31vHbhyMThSNE-1" value="r_sd_1" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;" parent="1" vertex="1">
+          <mxGeometry x="500" y="240" width="80" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="ZnCc-rP31vHbhyMThSNE-2" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="334" y="279.5" as="sourcePoint" />
+            <mxPoint x="498" y="279.5" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="ZnCc-rP31vHbhyMThSNE-5" value="sd_data_ready = &#39;1&#39;" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="ZnCc-rP31vHbhyMThSNE-2" vertex="1" connectable="0">
+          <mxGeometry x="0.0244" y="-2" relative="1" as="geometry">
+            <mxPoint x="-4" y="-11" as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="yXALNB1gMBjdQz5maBHl-4" value="Read byte from SD card and store it as internal signal" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontStyle=2" vertex="1" parent="1">
+          <mxGeometry x="490" y="190" width="130" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
