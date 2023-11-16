@@ -34,5 +34,7 @@ Text editor<br>
 <li> Subscribe to LinusTechTips </li>
 <li> At the end everything in your branch should be connected with one top entity, you can have other top-entity-like-things in between, but at the end those are also connected to the top entity. </li>
 <li> Eventually every file should have a commented out header section with names of the original autors, title of the project and name of the subgroup, date, and one line of what the code is; template soon in the wiki </li>
-<li> Don't upload garbage; only files that has actuall vhdl code are allowed; </li>
+<li> Don't upload garbage; only files that has actuall vhdl code are allowed; If you are just testing something quickly thwn make a lical branch and do your mess there without pushing it to the remote. </li>
+<li> Don't forget to git pull before you do anything! </li>
+<li> Write commit message always with the following format: First line contains short aummary of what you have done; 2nd line is left blank; 3rd line and thw ones after contain detailed but short description of what you have done and changed, 1 or 2 sentences is fine; </li>
 </ul>
