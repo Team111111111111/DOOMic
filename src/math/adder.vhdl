@@ -9,6 +9,8 @@ package adder_p is
 		y : out std_logic_vector(23 downto 0);
 		c : out std_logic
 	);
+
+	function m_2c(a: in std_logic_vector(23 downto 0)) return std_logic_vector;
 end adder_p;
 
 package body adder_p is
@@ -28,4 +30,17 @@ package body adder_p is
 		end loop;
 		c := temp_carry;
 	end m_add;
+
+	function m_2c(a: in std_logic_vector(23 downto 0)) 
+	return std_logic_vector is
+        variable complement: std_logic_vector(23 downto 0);
+        variable carry: std_logic := '1';
+    begin
+        for i in a'range loop
+            complement(i) := a(i) xor '1' xor carry;
+            carry := (a(i) and carry) or (a(i) and '1') or (carry and '1');
+        end loop;
+
+        return (complement);
+    end m_2c;
 end adder_p;
