@@ -11,6 +11,9 @@ package bitwise_ops is
 	function m_or  (a, b : std_logic_vector(23 downto 0)) 
 	return std_logic_vector;
 
+	function m_xor  (a, b : std_logic_vector(23 downto 0)) 
+	return std_logic_vector;
+
 	function m_not (a : std_logic_vector(23 downto 0)) 
 	return std_logic_vector;
 
@@ -31,6 +34,14 @@ package body bitwise_ops is
 		variable y : std_logic_vector(23 downto 0);
 	begin
 		y := a or b;
+		return (y);
+	end;
+
+	pure function m_xor (a, b : std_logic_vector(23 downto 0)) 
+	return std_logic_vector is
+		variable y : std_logic_vector(23 downto 0);
+	begin
+		y := a xor b;
 		return (y);
 	end;
 
