@@ -26,9 +26,9 @@ architecture behavioural of adress_to_cmd is
 	-- load state loads the adress
 	-- pump state sends the command and then the adress 
 
-	signal state, new_state : atc_state;
-	signal pointer 		: std_logic_vector (2  downto 0);
-	signal buf		: std_logic_vector (31 downto 0);
+	signal state, new_state		: atc_state;
+	signal pointer, new_pointer	: std_logic_vector (5  downto 0);
+	signal buf			: std_logic_vector (31 downto 0);
 	-- buffer buffers the adress and it's used to split 32bit adress to 4xbyte
 
 begin
@@ -37,9 +37,11 @@ begin
 		if (clk'event and clk = '1' ) then
 			if (reset = '1') then
 				state	<= reset;
+				pointer <= (others => '0');
 
 			else
 				state	<= new_state;
+				pointer <= new_pointer; 
 
 			end if;
 		end if;
@@ -52,17 +54,67 @@ begin
 				cmd	<= (others => '0');
 				tx_send	<= '0';
 				enable	<= '0';
-				pointer <= (others => '0');
+				new_pointer <= (others => '0');
 				buf	<= (others => '0');
 
 				if (transfer = '0') then 
 					new_state <= reset;
+
 				else
 					new_state <= load;
+
 				end if;
 
 			when load =>
 				cmd	<= (others => '0');
 				tx_send	<= '0';
 				enable	<= '0';
-				pointer <= (others => '0');
+				new_pointer <= (others => '0');
+
+				buf	<= input;
+				
+				new_state <= pump;
+
+			when pump =>
+				tx_send	    <= '1';
+				enable	    <= '1';
+				new_pointer <= pointer + 1;
+
+				buf <= buf;	
+
+				if (pointer <= std_logic_vector("8")) then
+					new_state <= pump;
+
+					if (sd_type = "00") then
+						cmd <= "00000000"; -- the value for the read
+								   -- block command idk yet 
+								   -- what exactly
+					elsif (sd_type = "01") then 
+						cmd <= "00000000";
+						
+					elsif (sd_type = "10") then 
+						cmd <= "00000000";
+
+					elsif (sd_type = "11") then 
+						cmd <= "00000000";
+					end if;
+
+				elsif (pointer <= std_logic_vector("16")) then
+					new_state 	<= pump;
+					cmd 		<= buf(7 downto 0); -- idk little or
+									    -- big endian
+				elsif (pointer <= std_logic_vector("24")) then
+					new_state 	<= pump;
+					cmd 		<= buf(15 downto 8);
+
+				elsif (poitner <= std_logic_vector("32")) then
+					new_state 	<= pump;
+					cmd 		<= buf(23 downto 16);
+
+				else
+					new_state 	<= reset;
+					cmd 		<= buf(31 downto 24);
+				end if;
+		end case;
+	end process;
+end architecture;

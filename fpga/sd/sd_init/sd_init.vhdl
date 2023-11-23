@@ -11,7 +11,7 @@ entity SD_init_fsm is
 		rdy			: in std_logic;
 		enable		: out std_logic;
 		CMD_out		: out std_logic_vector (7 downto 0);
-		CMD_in		: in std_logic_vector (7 downto 0)
+		data		: in std_logic_vector (7 downto 0)
 	);
 end entity SD_init_fsm;
 
