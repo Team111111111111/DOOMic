@@ -124,5 +124,4 @@ begin
   # this sets 0xFF as a do not send bit in color memory, a memory location that isnt used anyway in the buffer (but is used in the rest of the system memory)
   screen_address <= (others => '1') when count_enable = '0' else screen_address_new; 
 
-
   end architecture;
