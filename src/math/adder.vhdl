@@ -1,46 +1,45 @@
-library IEEE;
-use IEEE.STD_LOGIC_1164.ALL;
 
-package adder_p is
-	procedure m_add
-	(
-		a : in  std_logic_vector(23 downto 0);
-		b : in  std_logic_vector(23 downto 0);
-		y : out std_logic_vector(23 downto 0);
-		c : out std_logic
-	);
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-	function m_2c(a: in std_logic_vector(23 downto 0)) return std_logic_vector;
-end adder_p;
+entity adder is
+generic
+(
+    n_bits : integer := 24
+);
+port
+(
+	a : in  std_logic_vector(n_bits - 1 downto 0);
+	b : in  std_logic_vector(n_bits - 1 downto 0);
+	r : out std_logic_vector(n_bits - 1 downto 0)
+);
+end entity adder;
 
-package body adder_p is
-	procedure m_add
-	(
-		a : in  std_logic_vector(23 downto 0);
-		b : in  std_logic_vector(23 downto 0);
-		y : out std_logic_vector(23 downto 0);
-		c : out std_logic
-	) 
-	is
-		variable temp_carry : STD_LOGIC := '0';
-	begin
-		for i in 7 downto 0 loop
-			y(i) := a(i) xor b(i) xor temp_carry;
-			temp_carry := (a(i) and b(i)) or (a(i) and temp_carry) or (b(i) and temp_carry);
-		end loop;
-		c := temp_carry;
-	end m_add;
+architecture behavioral of adder is
+begin
+    r <= std_logic_vector(signed(a) + signed(b));
+end architecture behavioral;
 
-	function m_2c(a: in std_logic_vector(23 downto 0)) 
-	return std_logic_vector is
-        variable complement: std_logic_vector(23 downto 0);
-        variable carry: std_logic := '1';
-    begin
-        for i in a'range loop
-            complement(i) := a(i) xor '1' xor carry;
-            carry := (a(i) and carry) or (a(i) and '1') or (carry and '1');
-        end loop;
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
 
-        return (complement);
-    end m_2c;
-end adder_p;
+entity complement is
+generic
+(
+    n_bits : integer := 24
+);
+port
+(
+	a : in  std_logic_vector(n_bits - 1 downto 0);
+	r : out std_logic_vector(n_bits - 1 downto 0)
+);
+end entity ; -- complement
+
+architecture behavioral of complement is
+signal tmp : std_logic_vector(n_bits - 1 downto 0);
+begin
+	tmp <= not a;
+	r   <= std_logic_vector(unsigned(tmp) + 1);
+end architecture ; -- behavioral
