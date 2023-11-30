@@ -2,7 +2,7 @@ library IEEE;
 use IEEE.std_logic_1164.ALL;
 
 entity m_comparator is
-generic(n_bits	:	integer := 23);
+generic(n_bits	:	integer := 23); -- number of bits = n_bits + 1
    port(a   : in  std_logic_vector(n_bits downto 0);
         b   : in  std_logic_vector(n_bits downto 0);
         ala : out std_logic);
