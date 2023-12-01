@@ -1,30 +1,4 @@
 
-library ieee;
-use ieee.std_logic_1164.all;
-
-entity multiplier_tester is
-port 
-(
-	a : in  std_logic_vector(23 downto 0);
-	b : in  std_logic_vector(23 downto 0);
-	r : out std_logic_vector(23 downto 0)
-);
-end entity ; -- adder_tester
-
-architecture arch of multiplier_tester is
-	component multiplier is 
-	port
-	(
-		a : in  std_logic_vector(23 downto 0);
-		b : in  std_logic_vector(23 downto 0);
-		r : out std_logic_vector(23 downto 0)
-	);
-	end component;
-begin
-	
-	multiplier_c : multiplier port map(a, b, r);
-
-end architecture ; -- arch
 
 library ieee;
 use ieee.std_logic_1164.all;
@@ -34,22 +8,24 @@ end entity;
 
 architecture adder_tb_arch of multiplier_tb is
 
-	component multiplier_tester is
+	component multiplier is
 	port 
 	(
-		a : in  std_logic_vector(23 downto 0);
-		b : in  std_logic_vector(23 downto 0);
-		r : out std_logic_vector(23 downto 0)
+		a     : in  std_logic_vector(23 downto 0);
+		b     : in  std_logic_vector(23 downto 0);
+		r     : out std_logic_vector(23 downto 0);
+		inv_r : out std_logic_vector(23 downto 0)
 	);
 	end component;
 
 	signal in0    : std_logic_vector(23 downto 0);
 	signal in1    : std_logic_vector(23 downto 0);
 	signal result : std_logic_vector(23 downto 0);
+	signal inv_r  : std_logic_vector(23 downto 0);
 
 begin
 
-	bt : multiplier_tester port map (in0, in1, result);
+	bt : multiplier port map (in0, in1, result, inv_r);
 
 	in0 <= "000000000000000000000000" after 0 ns,
 	       "000000000000000100001100" after 20 ns,
