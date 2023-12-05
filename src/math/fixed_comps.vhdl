@@ -17,7 +17,7 @@ generic(n_bits : integer := 24);
 end package fixed_comparators;
 
 package body fixed_comparators is
-generic(n_bits : integer := 24)
+generic(n_bits : integer := 24);
 
 	pure function m_la_16 (a: std_logic_vector(n_bits - 1 downto 0))
 	return std_logic is
@@ -48,3 +48,4 @@ generic(n_bits : integer := 24)
 		end if;
 		return (y);
 	end function;
+end package body fixed comparators;
