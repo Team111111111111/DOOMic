@@ -35,7 +35,18 @@ architecture structural of v_line is
                     populate_y_v,
 
                     --SIN APPROX SOMEWHERE HERE (Store Sin a in Buffer 0 and Cos a in Buffer 1)
-               
+                    aprox_cos_comp,
+                    aprox_cos_32,
+                    aprox_cos_64,
+                    aprox_cos_pt1,
+                    aprox_cos_pt2,
+                    aprox_cos_out,
+
+                    aprox_sin_comp,
+                    aprox_sin_32,
+                    aprox_sin_pt1,
+                    aprox_sin_pt2,
+                    aprox_sin_out,
 
 
                     invert_x_p, -- invert_x_v + LSB
@@ -258,8 +269,11 @@ begin
 
             -- APPROXIMATOR
             when aprox_cos_comp =>
-                -- port map alpha (buffer(0)) to comparators: TODO
-                    -- comp16 comp48
+                if (buffers(1) /= "0000000000000000000000") then -- approx already done
+                    new_state <= invert_x_p;
+                else:
+                    -- port map alpha (buffer(0)) to comparators: TODO
+                        -- comp16 comp48
 
                 if (comp16 == '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
                     buffers_in(1)  <= buffers_out(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
@@ -281,7 +295,7 @@ begin
                 en(1)       <= '1';                             -- store (intermediate) output of cos(alpha) into buffer 1
                 new_state   <= aprox_cos_pt1;
             
-            when aprox_cos_60 => 
+            when aprox_cos_64 => 
                 -- subtract 60 so that alpha is in approximator's domain
                 mult_1_sig  <= buffers_out(0);                   
                 mult_2_sig  <= "00000000000001 00000000";    
@@ -379,7 +393,7 @@ begin
                     inv_sig     <= '0';
                     adder_sig   <= "00000000000000 00000000";
                 end if;
-                new_state <= populate_x_v;      -- whatever the next state should be
+                new_state <= invert_x_p;                    -- whatever the next state should be
                  
                 
                 
