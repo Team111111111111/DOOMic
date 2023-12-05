@@ -5,8 +5,6 @@ library ieee;
   use ieee.std_logic_1164.all;
   use ieee.numeric_std.all;
 
-library adder_p.all;
-
 entity v_line_multadder is
   port (
     mult_in_1                       : in std_logic_vector(21 downto 0);
@@ -31,6 +29,34 @@ architecture structural of v_line_multadder is
       output : out std_logic_vector(21 downto 0)
     );
   end component;
+
+  component multiplier is
+    generic
+    (
+      n_bits : integer := 22;
+      f_bits : integer := 8
+    );
+    port 
+    (
+      a     : in  std_logic_vector(n_bits - 1 downto 0);
+      b     : in  std_logic_vector(n_bits - 1 downto 0);
+      r     : out std_logic_vector(n_bits - 1 downto 0);
+      inv_r : out std_logic_vector(n_bits - 1 downto 0)
+    );
+  end component ; -- multiplier
+
+  component adder is
+    generic
+    (
+        n_bits : integer := 22
+    );
+    port
+    (
+      a : in  std_logic_vector(n_bits - 1 downto 0);
+      b : in  std_logic_vector(n_bits - 1 downto 0);
+      r : out std_logic_vector(n_bits - 1 downto 0)
+    );
+  end component adder;
     
     signal mult_out, mult_out_inv   : std_logic_vector(21 downto 0);
     signal mux_out                  : std_logic_vector(21 downto 0);
@@ -38,9 +64,17 @@ architecture structural of v_line_multadder is
 
 begin
 
-    MULTIPLIER (mult_in_1, mult_in_2, mult_out); -- TODO
-
-    mult_out_inv <= adder_p.m_2c(mult_out); -- TODO
+    multiplier_inst: multiplier
+    generic map (
+      n_bits => 22,
+      f_bits => 8
+    )
+    port map (
+      a     => mult_in_1,
+      b     => mult_in_2,
+      r     => mult_out,
+      inv_r => mult_out_inv
+    );
 
     mux_inst: v_line_2_vector_mux
     port map (
@@ -50,6 +84,14 @@ begin
       output  => mux_out
     );
 
-    adder_p.m_add(mux_out, adder_in, block_out, overflow); -- TODO
+    adder_inst: adder
+    generic map (
+      n_bits => 22
+    )
+    port map (
+      a => mux_out,
+      b => adder_in,
+      r => block_out
+    );
     
 end architecture structural;
