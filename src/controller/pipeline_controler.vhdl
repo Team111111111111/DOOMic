@@ -1,28 +1,25 @@
-LIBRARY ieee;
-USE ieee.std_logic_1164.all;
-USE ieee.std_logic_arith.all;
-USE ieee.std_logic_unsigned.all;
+library IEEE;
+use IEEE.std_logic_1164.ALL;
+use IEEE.std_logic_arith.ALL;
+use IEEE.std_logic_unsigned.ALL;
 
 entity pipeline_controler is
-	port (
-		clk 		: in std_logic;
-		res 		: in std_logic;
-		
-		output_bus 	: in std_logic_vector (15 downto 0);
-		input_bus	: in std_logic_vector (13 downto 0);
-		h_rdy		: in std_logic;
-		v_rdy		: in std_logic;
-		h_enable	: out std_logic;
-		v_enable	: out std_logic;
-		transmit	: out std_logic
-	);
-end pipeline_controler; 
+   port(clk        : in  std_logic;
+        res        : in  std_logic;
+        output_bus : in  std_logic_vector(15 downto 0);
+        input_bus  : in  std_logic_vector(13 downto 0);
+        h_rdy      : in  std_logic;
+	    v_rdy      : in  std_logic;
+        h_enable   : out std_logic;
+        v_enable   : out std_logic;
+        transmit   : out std_logic);
+end pipeline_controler;
 
 architecture behavioural of pipeline_controler is
 
 	type pc_state is ( reset, v_line0, v_line, h_line, txv0, txv, txh);
 
-	signal state, new_state : lov_state;
+	signal state, new_state : pc_state;
 
 begin
 	process (clk)
@@ -107,7 +104,7 @@ begin
 				v_enable <= '0';
 				transmit <= '0';
 
-				if (rdy = '1') then
+				if (h_rdy = '1') then
 					new_state <= txh;
 
 				else
