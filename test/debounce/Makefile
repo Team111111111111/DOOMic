@@ -1,5 +1,5 @@
 
-SRC=../../src/debounce
+SRC=../../fpga/debounce
 
 debouncer:
 	rm -f debounce.vcd
