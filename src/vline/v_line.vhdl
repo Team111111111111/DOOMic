@@ -28,6 +28,7 @@ architecture structural of v_line is
 
     type buffer_array is array (0 to (nr_of_buffers-1)) of std_logic_vector((size_of_vector-1) downto 0);
     signal buffers : buffer_array;
+    signal alpha_comp_buffer: std_logic; -- single bit
 
     type states is (reset_state, 
 
@@ -39,6 +40,19 @@ architecture structural of v_line is
                     populate_y_v,
 
                     --SIN APPROX SOMEWHERE HERE (Store Sin a in Buffer 0 and Cos a in Buffer 1)
+                    aprox_cos_comp,
+                    aprox_cos_32,
+                    aprox_cos_60,
+                    aprox_cos_pt1,
+                    aprox_cos_pt2,
+                    aprox_cos_out,
+
+                    aprox_sin_comp,
+                    aprox_sin_32,
+                    aprox_sin_pt1,
+                    aprox_sin_pt2,
+                    aprox_sin_out,
+
 
                     invert_x_p, -- invert_x_v + LSB
                     invert_y_p, -- invert_y_v + LSB
@@ -135,7 +149,7 @@ begin
                 if(data_in = "00000000000000") then
                     new_state <= populate_a_p;      
                 else
-                    new_state <= populate_x_v;
+                    new_state <= populate_x_v;                   -- next state to sin cos approx??
                     buffers(0)(21 downto 8) <= data_in;          -- store a_p in buffer 0
                     buffers(0)(7 downto 0) <= (others => '0');
                 end if;
@@ -158,7 +172,131 @@ begin
                     buffers(5)(7 downto 0) <= (others => '0');
                 end if;
 
-            -- SIN APPROX SOMEWHERE HERE
+            -- APPROXIMATOR
+            when aprox_cos_comp =>
+                -- port map alpha (buffer(0)) to comparators: TODO
+                    -- comp16 comp48
+
+                if (comp16 == '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
+                    buffers(1)  <= buffers(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
+                    new_state   <= aprox_cos_pt1;
+                elsif (comp48 == '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
+                    new_state   <= aprox_cos_32;
+                else                            -- 48 < alpha <= 64
+                    new_state   <= aprox_cos_60;
+                end if;
+                  
+            when aprox_cos_32 =>
+                -- subtract 32 so that alpha is in approximator's domain
+                mult_1_sig  <= buffers(0);                   -- alpha stored in buffer 0
+                mult_2_sig  <= "00000000000001 00000000";    
+                inv_sig     <= '0';                             -- do not invert
+                adder_sig   <= "11111111100000 00000000";      -- add -32 (subtract)
+                buffers(1)  <= block_out_sig;                -- store (intermediate) output of cos(alpha) into buffer 1
+                new_state   <= aprox_cos_pt1;
+            
+            when aprox_cos_60 => 
+                -- subtract 60 so that alpha is in approximator's domain
+                mult_1_sig  <= buffers(0);                   
+                mult_2_sig  <= "00000000000001 00000000";    
+                inv_sig     <= '0';                             
+                adder_sig   <= "11111111000000 00000000";      -- add -64 (subtract)
+                buffers(1)  <= block_out_sig;
+                new_state   <= aprox_cos_pt1;
+            
+            when aprox_cos_pt1 =>
+                -- square and take -ve => -(x^2)
+                mult_1_sig  <= buffers(1);
+                mult_2_sig  <= buffers(1);
+                inv_sig     <= '1';                         -- invert
+                adder_sig   <= "00000000000000 00000001";
+                buffers(1)  <= block_out_sig;
+                new_state   <= aprox_cos_pt2;
+
+            when aprox_cos_pt2 =>
+                -- divide by 256, add 1 (could shift but we have the mult anyway)
+                mult_1_sig  <= buffers(1);
+                mult_2_sig  <= "00000000000000 00000001";
+                inv_sig     <= '0';
+                adder_sig   <= "00000000000001 00000000";
+                buffers(1)  <= block_out_sig;
+                new_state   <= aprox_cos_out;
+            
+            when aprox_cos_out =>   -- could be split into two states if needed?
+                -- checks if output needs to be -ve, then converts and stores output
+                -- we dont need to buffer the comparison result here as buffers(0) is unchanged
+                if (comp16 == '1' && comp48 == '0') then    -- 16 < alpha <= 48
+                    -- times -1
+                    mult_1_sig  <= buffers(1);
+                    mult_2_sig  <= "00000000000001 00000000"; -- (x1 then invert instead of x-1 for power optimisation?)
+                    inv_sig     <= '1';
+                    adder_sig   <= "00000000000000 00000001";
+                    buffers(1)  <= block_out_sig;
+                else:
+                    -- defining signals so latches aren't synthesised
+                    mult_1_sig  <= "00000000000000 00000000";
+                    mult_2_sig  <= "00000000000000 00000000";
+                    inv_sig     <= '0';
+                    adder_sig   <= "00000000000000 00000000";
+                end if;
+                new_state   <= aprox_sin_comp;
+                    
+            when aprox_sin_comp =>
+                -- port map alpha (buffer(0)) to comparators: TODO
+                    -- comp32
+
+                if (comp32 == '0') then         -- comp32: '0' if alpha <= 32
+                    alpha_comp_buffer <= comp32;    -- need to buffer result for later as we modify buffers(0) now
+                    new_state   <= aprox_sin_pt1;
+                else                            -- 48 < alpha <= 64
+                    new_state   <= aprox_sin_32;
+                end if;
+            
+            when aprox_sin_32 =>
+                mult_1_sig  <= buffers(0);
+                mult_2_sig  <= "00000000000001 00000000";
+                inv_sig     <= '0';
+                adder_sig   <= "11111111100000 00000000";      -- add -32 (subtract)
+                buffers(0)  <= block_out_sig;                   -- store (intermediate) output of sin(alpha) into buffer 0
+                new_state   <= aprox_sin_pt1;
+
+            when aprox_cos_pt1 =>
+                -- square and take -ve => -(x^2)
+                mult_1_sig  <= buffers(0);
+                mult_2_sig  <= buffers(0);
+                inv_sig     <= '1';                         -- invert
+                adder_sig   <= "00000000000000 00000001";
+                buffers(0)  <= block_out_sig;
+                new_state   <= aprox_sin_pt2;
+
+            when aprox_sin_pt2 =>
+                -- divide by 256, add 1 (could shift but we have the mult anyway)
+                mult_1_sig  <= buffers(0);
+                mult_2_sig  <= "00000000000000 00000001";
+                inv_sig     <= '0';
+                adder_sig   <= "00000000000001 00000000";
+                buffers(0)  <= block_out_sig;
+                new_state   <= aprox_sin_out;
+
+            when aprox_sin_out =>
+                if (alpha_comp_buffer == '1') then      -- alpha > 32
+                    -- times -1
+                    mult_1_sig  <= buffers(0);
+                    mult_2_sig  <= "00000000000001 00000000"; -- (x1 then invert instead of x-1 for power optimisation?)
+                    inv_sig     <= '1';
+                    adder_sig   <= "00000000000000 00000001";
+                    buffers(0)  <= block_out_sig;  
+                else:
+                    -- defining signals so latches aren't synthesised
+                    mult_1_sig  <= "00000000000000 00000000";
+                    mult_2_sig  <= "00000000000000 00000000";
+                    inv_sig     <= '0';
+                    adder_sig   <= "00000000000000 00000000";
+                end if;
+                new_state <= populate_x_v;      -- whatever the next state should be
+                 
+                
+                
 
             when invert_x_p =>          -- invert_x_p + LSB
                 mult_1_sig <= buffers(2);                   -- X_p stored in buffer 2
