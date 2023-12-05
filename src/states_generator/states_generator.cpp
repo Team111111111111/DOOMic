@@ -2,11 +2,11 @@
 
 int main () {
 
-	int i = 0;
+	int i = -1;
 	int j = 0;
 
         std::string line        = "";
-        std::string ifilename   = "../verticies.csv";
+        std::string ifilename   = "../../verticies.csv";
 
         std::ifstream verticies (ifilename);
 
@@ -24,10 +24,11 @@ int main () {
 			i++;
 			j = 0;
 
+			std::cout << "vert" << i << "_" << j << "_a, ";
+
 		} else { 
-			std::cout << "vert" << i << "_" << j << "_a, "
-				  << "vert" << i << "_" << j << "_x, " 
-				  << "vert" << i << "_" << j << "_y, " ;
+			std::cout << "vert" << i << "_" << j << "_x, " 
+				  << "vert" << i << "_" << j << "_y, ";
 
 			std::cout << std::endl;
 
@@ -37,6 +38,7 @@ int main () {
 
         verticies.close();
 
+	std::cout << std::endl;
 
 
 	return 0; 

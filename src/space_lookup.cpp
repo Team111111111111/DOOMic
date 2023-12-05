@@ -10,13 +10,15 @@ int main () {
 	int ix		 = 0;
 	int iy		 = 0;
 	int ia		 = 0;
+	int iA		 = 0;
 
 	std::string line = "";
 	char x[100];
 	char y[100];
 	char a[100];
+	char A[100];
 
-	std::string ifilename 	= "./verticies.csv";
+	std::string ifilename 	= "../verticies.csv";
 	std::string ofilename = "./space.vhdl";
 
 
@@ -37,19 +39,62 @@ int main () {
 
 	while (getline(verticies, line)) {
 		if (line.length() <= 4) {
-			lov << "\tif (rdy = '1') then" << std::endl;
-			lov << "\t\tnew_state <= EOF;" << std::endl; 
-			lov << "\telse" << std::endl;
-			lov << "\t\tnew_state <= vert" << set << "_" << vertex - 1 << "_y;" << std::endl;
-			lov << "\tend if;" << std::endl << std::endl;
 
-                        set++;
-                        vertex = 0;
+			if (vertex != 0) {
+				/* Checking if the end of the list is supposed to point to the
+				 * new set or somwhere else */
+				lov << "\tif (rdy = '1') then" << std::endl;
+				lov << "\t\tnew_state <= EOF;" << std::endl; 
+				lov << "\telse" << std::endl;
+				lov << "\t\tnew_state <= vert" << set << "_" << vertex - 1 << "_y;" << std::endl;
+				lov << "\tend if;" << std::endl << std::endl;
+			}
 
+
+			/* Outputing the first angle for the set of vertices (the player angle) */
+			std::size_t lengthA = line.copy(A, line.length(), 0);
+			A[lengthA] = '\0';
+
+			iA = atoi(A) + 45;
+
+			if (iA >= 360) {
+				iA = iA - 360;
+			}
+
+			iA = iA * 63 / 360;
+			std::bitset<14> biA(iA); 
+		
+
+			/* Checking if the a state is there for the first time, then it's state 0_0 otherwise x_0 */
+			if ((set == 0) && (vertex == 0)) {
+				lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
+				lov << "\t-- bus output in decimal: " << iA << std::endl;
+				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
+				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+				lov << std::endl;
+				
+			} else {
+				set++;
+				vertex = 0;
+
+				lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
+				lov << "\t-- bus output in decimal: " << iA << std::endl;
+				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
+				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+				lov << std::endl;
+
+			}
                 } else {
+
+			/* If the end of the list is still pointing to a new vertex
+			 * within the set then output this */
 			if (vertex != 0) {
 				lov << "\tif (rdy = '1') then" << std::endl;
-				lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_a;" << std::endl;
+				lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
 				lov << "\telse" << std::endl;
 				lov << "\t\tnew_state <= vert" << set << "_" << vertex - 1 << "_y;" << std::endl;
 				lov << "\tend if;" << std::endl << std::endl;
@@ -96,7 +141,9 @@ int main () {
 
 
 			/******* Output the x, y, angle in the vhdl code as the signal ******/
+			
 			// This is the section for outputing the a state
+			/*
 			lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
 			lov << "\t-- bus output in decimal: " << ia << std::endl;
 			lov << "\tserial_bus <= \"" << bia << "\";" << std::endl;
@@ -107,6 +154,7 @@ int main () {
 			lov << "\telse" << std::endl;
 			lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_a;" << std::endl;
 			lov << "\tend if;" << std::endl << std::endl;
+			*/
 
 			// This is the section for outputing the x state
 			lov << "when vert" << set << "_" << vertex << "_x =>" << std::endl;
@@ -114,11 +162,8 @@ int main () {
 			lov << "\tserial_bus <= \"" << bix <<  "\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
 			lov << std::endl;
-			lov << "\tif (rdy = '1') then" << std::endl;
-			lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_y;" << std::endl;
-			lov << "\telse" << std::endl;
-			lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
-			lov << "\tend if;" << std::endl << std::endl;
+			lov << "\tnew_state <= vert" << set << "_" << vertex << "_y;" << std::endl;
+			lov << std::endl;
 
 			// This is the section for outputing the y state
 			// 	without the last part since that is done at the beggining of this 
