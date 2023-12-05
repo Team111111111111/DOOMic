@@ -36,7 +36,6 @@ architecture structural of v_line is
                     populate_x_v,
                     populate_y_v,
 
-                    --SIN APPROX SOMEWHERE HERE (Store Sin a in Buffer 0 and Cos a in Buffer 1)
                     aprox_cos_comp,
                     aprox_cos_32,
                     aprox_cos_64,
@@ -88,6 +87,7 @@ architecture structural of v_line is
 
     signal mult_1_sig, mult_2_sig, adder_sig, block_out_sig : std_logic_vector(21 downto 0);
     signal inv_sig : std_logic;
+    signal comp16_out, comp32_out, comp48_out : std_logic;
 
 
     component v_line_multadder is
@@ -122,6 +122,14 @@ architecture structural of v_line is
           input : in std_logic;
           output : out std_logic
         );
+    end component;
+
+    component m_comparator is
+        generic(n_bits	:	integer := 24);
+           port(a   : in  std_logic_vector(n_bits - 1 downto 0);
+                b   : in  std_logic_vector(n_bits - 1 downto 0);
+                ala : out std_logic
+            );
     end component;
   
 begin
@@ -197,6 +205,36 @@ begin
       en     => alpha_comp_buffer_en,
       input  => alpha_comp_buffer_in,
       output => alpha_comp_buffer_out
+    );
+
+    comp16_inst: m_comparator
+    generic map (
+      n_bits => 22
+    )
+    port map (
+      a   => buffers_out(0),
+      b   => "00000000010000 00000000",
+      ala => comp16_out
+    );
+    
+    comp32_inst: m_comparator
+    generic map (
+      n_bits => 22
+    )
+    port map (
+      a   => buffers_out(0),
+      b   => "00000000100000 00000000",
+      ala => comp32_out
+    );
+
+    comp48_inst: m_comparator
+    generic map (
+      n_bits => 22
+    )
+    port map (
+      a   => buffers_out(0),
+      b   => "00000000110000 00000000",
+      ala => comp48_out
     );
 
     process(clk, res)
@@ -353,16 +391,16 @@ begin
                     -- port map alpha (buffer(0)) to comparators: TODO
                         -- comp16 comp48
 
-                    if (comp16 = '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
+                    if (comp16_out = '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
                         new_state       <= aprox_cos_pt1;
                         buffers_in(1)   <= buffers_out(0);    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
                         en(1)           <= '1';
-                    elsif (comp48 = '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
+                    elsif (comp48_out = '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
                         new_state       <= aprox_cos_32;
                         buffers_in(1)   <= (others => '0');
                         en(1)           <= '0';
                     else                            -- 48 < alpha <= 64
-                        new_state       <= aprox_cos_60;
+                        new_state       <= aprox_cos_64;
                         buffers_in(1)   <= (others => '0');
                         en(1)           <= '0';
                     end if;
@@ -491,7 +529,7 @@ begin
                 alpha_comp_buffer_in    <= comp32;    -- need to buffer result for later as we modify buffers(0) now
                 alpha_comp_buffer_en    <= '1';
 
-                if (comp32 = '0') then         -- comp32: '0' if alpha <= 32
+                if (comp32_out = '0') then         -- comp32: '0' if alpha <= 32
                     new_state   <= aprox_sin_pt1;
                 else                            -- 48 < alpha <= 64
                     new_state   <= aprox_sin_32;
