@@ -42,7 +42,7 @@ architecture structural of v_line is
                     --SIN APPROX SOMEWHERE HERE (Store Sin a in Buffer 0 and Cos a in Buffer 1)
                     aprox_cos_comp,
                     aprox_cos_32,
-                    aprox_cos_60,
+                    aprox_cos_64,
                     aprox_cos_pt1,
                     aprox_cos_pt2,
                     aprox_cos_out,
@@ -149,7 +149,7 @@ begin
                 if(data_in = "00000000000000") then
                     new_state <= populate_a_p;      
                 else
-                    new_state <= populate_x_v;                   -- next state to sin cos approx??
+                    new_state <= populate_x_v;                   
                     buffers(0)(21 downto 8) <= data_in;          -- store a_p in buffer 0
                     buffers(0)(7 downto 0) <= (others => '0');
                 end if;
@@ -167,24 +167,27 @@ begin
                 if(data_in = "00000000000000") then
                     new_state <= populate_y_v;      
                 else
-                    new_state <= invert_x_p;
+                    new_state <= aprox_cos_comp;
                     buffers(5)(21 downto 8) <= data_in;          -- store y_v in buffer 5
                     buffers(5)(7 downto 0) <= (others => '0');
                 end if;
 
             -- APPROXIMATOR
             when aprox_cos_comp =>
-                -- port map alpha (buffer(0)) to comparators: TODO
-                    -- comp16 comp48
+                if (buffers(1) /= "0000000000000000000000") then -- approx already done
+                    new_state <= invert_x_p;
+                else:
+                    -- port map alpha (buffer(0)) to comparators: TODO
+                        -- comp16 comp48
 
-                if (comp16 == '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
-                    buffers(1)  <= buffers(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
-                    new_state   <= aprox_cos_pt1;
-                elsif (comp48 == '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
-                    new_state   <= aprox_cos_32;
-                else                            -- 48 < alpha <= 64
-                    new_state   <= aprox_cos_60;
-                end if;
+                    if (comp16 == '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
+                        buffers(1)  <= buffers(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
+                        new_state   <= aprox_cos_pt1;
+                    elsif (comp48 == '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
+                        new_state   <= aprox_cos_32;
+                    else                            -- 48 < alpha <= 64
+                        new_state   <= aprox_cos_64;
+                    end if;
                   
             when aprox_cos_32 =>
                 -- subtract 32 so that alpha is in approximator's domain
@@ -195,7 +198,7 @@ begin
                 buffers(1)  <= block_out_sig;                -- store (intermediate) output of cos(alpha) into buffer 1
                 new_state   <= aprox_cos_pt1;
             
-            when aprox_cos_60 => 
+            when aprox_cos_64 => 
                 -- subtract 60 so that alpha is in approximator's domain
                 mult_1_sig  <= buffers(0);                   
                 mult_2_sig  <= "00000000000001 00000000";    
@@ -293,7 +296,7 @@ begin
                     inv_sig     <= '0';
                     adder_sig   <= "00000000000000 00000000";
                 end if;
-                new_state <= populate_x_v;      -- whatever the next state should be
+                new_state <= invert_x_p;                    -- whatever the next state should be
                  
                 
                 
