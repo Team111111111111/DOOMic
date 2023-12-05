@@ -13,8 +13,7 @@ port
 	clk : in std_logic;
 	en  : in std_logic;
 
-	debounced : out std_logic;
-	state_o   : out std_logic_vector(1 downto 0)
+	debounced : out std_logic
 );
 end entity; -- debouncer
 
@@ -33,14 +32,12 @@ begin
 			case (state) is
 				when idle =>
 					debounced <= '0';
-					state_o <= "00";
 					if en = '1' then
 						count <= 0;
 						state <= active;
 					end if;
 				when active =>
 					debounced <= '1';
-					state_o <= "11";
 					count <= count + 1;
 					if count >= max_count then
 						count <= 0;
@@ -48,7 +45,6 @@ begin
 					end if;
 				when waiting => 
 					debounced <= '0';
-					state_o <= "10";
 					count <= count + 1;
 					if count >= wait_count then
 						state <= idle;
