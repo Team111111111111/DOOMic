@@ -6,8 +6,7 @@ use IEEE.numeric_std.all;
 
 entity v_line is
     generic (
-        nr_of_buffers : integer := 7;
-        size_of_vector : integer := 22
+        nr_of_buffers : integer := 6
     );
     port (
         clk : in std_logic;
@@ -26,10 +25,6 @@ end entity v_line;
 
 architecture structural of v_line is
 
-    type buffer_array is array (0 to (nr_of_buffers-1)) of std_logic_vector((size_of_vector-1) downto 0);
-    signal buffers : buffer_array;
-    signal alpha_comp_buffer: std_logic; -- single bit
-
     type states is (reset_state, 
 
                     populate_x_p, 
@@ -40,18 +35,7 @@ architecture structural of v_line is
                     populate_y_v,
 
                     --SIN APPROX SOMEWHERE HERE (Store Sin a in Buffer 0 and Cos a in Buffer 1)
-                    aprox_cos_comp,
-                    aprox_cos_32,
-                    aprox_cos_60,
-                    aprox_cos_pt1,
-                    aprox_cos_pt2,
-                    aprox_cos_out,
-
-                    aprox_sin_comp,
-                    aprox_sin_32,
-                    aprox_sin_pt1,
-                    aprox_sin_pt2,
-                    aprox_sin_out,
+               
 
 
                     invert_x_p, -- invert_x_v + LSB
@@ -80,6 +64,13 @@ architecture structural of v_line is
                     );
     signal state, new_state : states;
 
+    type buffer_array is array (0 to (nr_of_buffers-1)) of std_logic_vector(21 downto 0);
+    signal buffers_in : buffer_array;
+    signal buffers_out : buffer_array;
+    signal alpha_comp_buffer: std_logic; -- single bit
+    type en_array is array (0 to (nr_of_buffers-1)) of std_logic;
+    signal en : en_array;
+
     signal mult_1_sig, mult_2_sig, adder_sig, block_out_sig : std_logic_vector(21 downto 0);
     signal inv_sig : std_logic;
 
@@ -95,6 +86,17 @@ architecture structural of v_line is
           overflow                        : out std_logic
         );
       end component;
+
+    component v_line_register is
+        port (
+          clk : in std_logic;
+          res : in std_logic;
+          en : in std_logic;
+      
+          input : in std_logic_vector(21 downto 0);
+          output : out std_logic_vector(21 downto 0)
+        );
+      end component;
   
 begin
 
@@ -106,6 +108,60 @@ begin
       inv_in    => inv_sig,
       block_out => block_out_sig,
       overflow  => adder_overflow_out
+    );
+
+    buffer_0: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(0),
+      input  => buffers_in(0),
+      output => buffers_out(0)
+    );
+
+    buffer_1: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(1),
+      input  => buffers_in(1),
+      output => buffers_out(1)
+    );
+
+    buffer_2: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(2),
+      input  => buffers_in(2),
+      output => buffers_out(2)
+    );
+
+    buffer_3: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(3),
+      input  => buffers_in(3),
+      output => buffers_out(3)
+    );
+
+    buffer_4: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(4),
+      input  => buffers_in(4),
+      output => buffers_out(4)
+    );
+
+    buffer_5: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(5),
+      input  => buffers_in(5),
+      output => buffers_out(5)
     );
 
     process(clk, res)
@@ -126,33 +182,55 @@ begin
                 
 
             when populate_x_p => 
-                buffers(0) <= "0000000000000000000000"; -- Reset the sin buffers such that they can be detected empty
-                buffers(1) <= "0000000000000000000000";
+                buffers_in(0) <= (others => '0'); -- Reset the sin buffers such that they can be detected empty
+                en(0) <= '1';
+                buffers_in(1) <= (others => '0');
+                en(1) <= '1';
+
                 if(data_in = "00000000000000") then -- Check if data is on the bus (please make the bus to honour this)
                     new_state <= populate_x_p;
+                    buffers_in(2) <= (others => '0');
+                    en(2) <= '0';
                 else
                     new_state <= populate_y_p;
-                    buffers(2)(21 downto 8) <= data_in;          -- if data on bus store x_p in buffer 2
-                    buffers(2)(7 downto 0) <= (others => '0');
+                    buffers_in(2)(21 downto 8) <= data_in;          -- if data on bus store x_p in buffer 2
+                    buffers_in(2)(7 downto 0) <= (others => '0');
+                    en(2) <= '1';
                 end if;
+
+                buffers_in(5 downto 3) <= (others => '0');
+                en(5 downto 3) <= '0';
 
             when populate_y_p =>
                 if(data_in = "00000000000000") then
                     new_state <= populate_y_p;      
+
                 else
                     new_state <= populate_a_p;
-                    buffers(3)(21 downto 8) <= data_in;          -- store y_p in buffer 3
-                    buffers(3)(7 downto 0) <= (others => '0');
+                    buffers_in(3)(21 downto 8) <= data_in;          -- store y_p in buffer 3
+                    buffers_in(3)(7 downto 0) <= (others => '0');
+                    en(3) <= '1';
                 end if;
+
+                buffers_in(5 downto 4) <= (others => '0');          -- Prevent Latches
+                en(5 downto 4) <= '0';
+                buffers_in(2 downto 0) <= (others => '0');
+                en(2 downto 0) <= '0';
 
             when populate_a_p =>
                 if(data_in = "00000000000000") then
-                    new_state <= populate_a_p;      
+                    new_state <= populate_a_p;     
+                    buffers_in(0) <= (others => '0');          -- Prevent Latches
+                    en(0) <= '0'; 
                 else
                     new_state <= populate_x_v;                   -- next state to sin cos approx??
-                    buffers(0)(21 downto 8) <= data_in;          -- store a_p in buffer 0
-                    buffers(0)(7 downto 0) <= (others => '0');
+                    buffers_in(0)(21 downto 8) <= data_in;          -- store a_p in buffer 0
+                    buffers_in(0)(7 downto 0) <= (others => '0');
+                    en(0) <= '1';
                 end if;
+
+                buffers_in(5 downto 1) <= (others => '0');          -- Prevent Latches
+                en(5 downto 1) <= '0';
 
             when populate_x_v =>
                 if(data_in = "00000000000000") then
@@ -165,12 +243,18 @@ begin
 
             when populate_y_v =>  
                 if(data_in = "00000000000000") then
-                    new_state <= populate_y_v;      
+                    new_state <= populate_y_v;    
+                    buffers_in(5) <= (others => '0');
+                    en(5) <= '0';  
                 else
-                    new_state <= invert_x_p;
-                    buffers(5)(21 downto 8) <= data_in;          -- store y_v in buffer 5
-                    buffers(5)(7 downto 0) <= (others => '0');
+                    new_state <= aprox_cos_comp;
+                    buffers_in(5)(21 downto 8) <= data_in;          -- store y_v in buffer 5
+                    buffers_in(5)(7 downto 0) <= (others => '0');
+                    en(5) <= '1';
                 end if;
+
+                buffers_in(4 downto 0) <= (others => '0');          -- Prevent Latches
+                en(4 downto 0) <= '0';
 
             -- APPROXIMATOR
             when aprox_cos_comp =>
@@ -178,9 +262,10 @@ begin
                     -- comp16 comp48
 
                 if (comp16 == '0') then         -- comp16 is a comparator that outputs '0' if alpha <= 16
-                    buffers(1)  <= buffers(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
+                    buffers_in(1)  <= buffers_out(0)    -- copy alpha into buffer 1, this is the input to aprox_cos_pt1
+                    en(1) <= '1';
                     new_state   <= aprox_cos_pt1;
-                elsif (comp48 == '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
+                else if (comp48 == '0') then      -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
                     new_state   <= aprox_cos_32;
                 else                            -- 48 < alpha <= 64
                     new_state   <= aprox_cos_60;
@@ -188,16 +273,17 @@ begin
                   
             when aprox_cos_32 =>
                 -- subtract 32 so that alpha is in approximator's domain
-                mult_1_sig  <= buffers(0);                   -- alpha stored in buffer 0
+                mult_1_sig  <= buffers_out(0);                   -- alpha stored in buffer 0
                 mult_2_sig  <= "00000000000001 00000000";    
                 inv_sig     <= '0';                             -- do not invert
-                adder_sig   <= "11111111100000 00000000";      -- add -32 (subtract)
-                buffers(1)  <= block_out_sig;                -- store (intermediate) output of cos(alpha) into buffer 1
+                adder_sig   <= "11111111100000 00000000";       -- add -32 (subtract)
+                buffers_in(1)  <= block_out_sig;  
+                en(1)       <= '1';                             -- store (intermediate) output of cos(alpha) into buffer 1
                 new_state   <= aprox_cos_pt1;
             
             when aprox_cos_60 => 
                 -- subtract 60 so that alpha is in approximator's domain
-                mult_1_sig  <= buffers(0);                   
+                mult_1_sig  <= buffers_out(0);                   
                 mult_2_sig  <= "00000000000001 00000000";    
                 inv_sig     <= '0';                             
                 adder_sig   <= "11111111000000 00000000";      -- add -64 (subtract)
