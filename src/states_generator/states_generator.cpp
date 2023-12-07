@@ -11,7 +11,7 @@ int main () {
         std::ifstream verticies (ifilename);
 
         if (!verticies.is_open()) {
-                std::cout << "File could not be open, f you!" << std::endl;
+                std::cout << "File could not be open!" << std::endl;
 
                 return -1;
         }
