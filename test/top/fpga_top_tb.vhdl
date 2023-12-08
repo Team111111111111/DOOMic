@@ -9,14 +9,13 @@ architecture arch of top_tb is
 	component toplevel is
 	port
 	(
-		clk : in std_logic;
-
-		signal rst	: in std_logic;
+		clk	 : in std_logic;
+		rst	 : in std_logic;
 		
-		signal button_l	: in std_logic;
-		signal button_r : in std_logic;
+		button_l : in std_logic;
+		button_r : in std_logic;
 
-		signal serial_bus : out std_logic
+		serial_bus : out std_logic_vector (13 downto 0)
 	);
 	end component;
 
@@ -27,7 +26,7 @@ architecture arch of top_tb is
 	signal button_l	: std_logic;
 	signal button_r : std_logic;
 
-	signal serial_bus : std_logic;
+	signal serial_bus : std_logic_vector (13 downto 0);
 
 begin
 
