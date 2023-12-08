@@ -37,7 +37,8 @@ begin
 		button_r => button_r
 	);
 
-	clk	 <= not clk after 20 ns;
+	clk	 <= '0' after 0 ns,
+		    '1' after 20 ns when clk /= '1' else '0' after 20 ns;
 
 	rst	 <= '1' after 0 ns,
 		    '0' after 500 ms;
