@@ -30,7 +30,7 @@ signal dy_temp: unsigned(7 downto 0);
 signal dx_temp: unsigned(8 downto 0);
 
 begin
-process(y1, y3)
+process(clk)
 begin
 	if (unsigned(y1) < unsigned(y3)) then
 		yL_temp <= y1;
