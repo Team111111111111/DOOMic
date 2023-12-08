@@ -64,7 +64,7 @@ begin
 				v_enable <= '1';
 				transmit <= '1';
 
-				if (output_bus = "0000000000000000") then
+				if (v_rdy = '0') then
 					new_state <= v_line;
 
 				else
@@ -91,7 +91,7 @@ begin
 				v_enable <= '1';
 				transmit <= '1';
 
-				if (output_bus = "0000000000000000") then
+				if (v_rdy = '0') then
 					new_state <= h_line;
 
 				else
@@ -117,10 +117,10 @@ begin
 				v_enable <= '0';
 				transmit <= '1';
 
-				if (input_bus = "11111111111111") then
+				if (input_bus = "11111111111111" and h_rdy = '0') then
 					new_state <= reset;
 
-				elsif (output_bus = "0000000000000000") then
+				elsif (input_bus /= "11111111111111" and h_rdy = '0') then
 					new_state <= v_line;
 
 				else
