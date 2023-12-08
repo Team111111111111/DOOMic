@@ -51,6 +51,7 @@ use ieee.numeric_std.all;
 
 entity adders is
 	port(
+	clk	: in std_logic;
 	add_1	: in std_logic_vector(15 downto 0);
 	add_2	: in std_logic_vector(15 downto 0);
 	sub	: in std_logic_vector(15 downto 0);
@@ -92,7 +93,7 @@ begin
 		a => inverse_r_sig,
 		b => add_r_sig,
 		r => sub_r_sig);
-process(sel)
+process(clk)
 begin
 	if (sel = '1') then
 		result <= sub_r_sig;
