@@ -132,25 +132,25 @@ use IEEE.std_logic_1164.ALL;
 
 entity bitshift_left is
 port(
-	input  : in  std_logic_vector(23 downto 0);
-        output : out std_logic_vector(23 downto 0);
+	input  : in  std_logic_vector(14 downto 0);
+        output : out std_logic_vector(14 downto 0);
         flag   : out std_logic
 );
 end bitshift_left;
 
 architecture structural of bitshift_left is
 begin
-	flag <= input(22);
-	output(23) <= input(23);
-	output(22) <= input(21);
-	output(21) <= input(20);
-	output(20) <= input(19);
-	output(19) <= input(18);
-	output(18) <= input(17);
-	output(17) <= input(16);
-	output(16) <= input(15);
-	output(15) <= input(14);
-	output(14) <= input(13);
+	flag <= input(13);
+	output(14) <= input(14);
+--	output(22) <= input(21);
+--	output(21) <= input(20);
+--	output(20) <= input(19);
+--	output(19) <= input(18);
+--	output(18) <= input(17);
+--	output(17) <= input(16);
+--	output(16) <= input(15);
+--	output(15) <= input(14);
+--	output(14) <= input(13);
 	output(13) <= input(12);
 	output(12) <= input(11);
 	output(11) <= input(10);
@@ -166,6 +166,7 @@ begin
 	output(1) <= input(0);
 	output(0) <= '0';
 end structural;
+
 
 
 
