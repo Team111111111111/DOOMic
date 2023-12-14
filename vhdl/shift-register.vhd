@@ -48,18 +48,18 @@ begin
 				y_bot_buf1 <= y_bot;
 
 				x_buf2 <= x_buf1;
-				y_top_buf2 <= y_top_buf2;
-				y_bot_buf2 <= y_bot_buf2;
+				y_top_buf2 <= y_top_buf1;
+				y_bot_buf2 <= y_bot_buf1;
 			end if;
 		end if;
 	end process;
 
-x1_out <= x_buf1;
-y1_top <= y_top_buf1;
-y2_bot <= y_bot_buf1;
+x1_out <= x_buf2;
+y1_top <= y_top_buf2;
+y2_bot <= y_bot_buf2;
 
-x2_out <= x_buf2;
-y3_top <= y_top_buf2;
-y4_bot <= y_bot_buf2;
+x2_out <= x_buf1;
+y3_top <= y_top_buf1;
+y4_bot <= y_bot_buf1;
 
 end architecture behavioural;
