@@ -14,21 +14,17 @@ entity v_line_1_bit_register is
 end entity;
 
 architecture behavioral of v_line_1_bit_register is
-  signal output_new : std_logic;
 begin
     process(clk)
     begin
         if res = '1' then
-            output_new <= '0';
+            output <= '0';
             if (rising_edge(clk)) then
                 if en = '1' then
-                    output_new <= input;
-                else
-                    output_new <= output;
+                    output <= input;
                 end if;
             end if;
         end if;
     end process;
-    output <= output_new;
             
 end architecture;
