@@ -93,16 +93,20 @@ begin
 		a => inverse_r_sig,
 		b => add_r_sig,
 		r => sub_r_sig);
+
 process(clk)
 begin
-	if (sel = '1') then
-		result <= sub_r_sig;
-	else
-		result <= add_r_sig;
-	end if;
+        case sel is
+            when '1' =>
+                result <= sub_r_sig;
+            when '0' =>
+                result <= add_r_sig;
+            when others =>
+                result <= (others => '0');
+        end case;
 end process;
-end architecture behavioural;
 
+end architecture behavioural;
 
 	
 
