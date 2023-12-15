@@ -28,6 +28,8 @@ architecture arch of top_tb is
 	signal button_l	: std_logic;
 	signal button_r : std_logic;
 
+	signal rdy	: std_logic;
+
 	signal serial_bus : std_logic_vector (13 downto 0);
 
 begin
@@ -36,7 +38,8 @@ begin
 		clk => clk,
 		rst => rst,
 		button_l => button_l,
-		button_r => button_r
+		button_r => button_r,
+		rdy => rdy
 	);
 
 	clk	 <= '0' after 0 ns,
