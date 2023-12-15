@@ -11,7 +11,7 @@ port
 	button_l : in std_logic;
 	button_r : in std_logic;
 
-	serial_bus : out std_logic_vector(13 downto 0)
+	serial_bus : out std_logic_vector(13 downto 0);
 
 	rdy : in std_logic
 );
