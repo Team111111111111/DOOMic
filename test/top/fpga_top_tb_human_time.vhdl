@@ -15,8 +15,6 @@ architecture arch of top_tb is
 		button_l : in std_logic;
 		button_r : in std_logic;
 
-		rdy	 : in std_logic;
-
 		serial_bus : out std_logic_vector (13 downto 0)
 	);
 	end component;
@@ -43,17 +41,14 @@ begin
 		    '1' after 20 ns when clk /= '1' else '0' after 20 ns;
 
 	rst	 <= '1' after 0 ns,
-		    '0' after 50 us;
+		    '0' after 500 ms;
 
 	button_l <= '0' after 0 ns,
-		    '1' after 1000 us,
-		    '0' after 1050 us;
+		    '1' after 10000 ms,
+		    '0' after 10500 ms;
 
 	button_r <= '0' after 0 ns,
-		    '1' after 1100 us;
-
-	rdy	 <= '0' after 0 ns,
-		    '1' after 51 us;
+		    '1' after 11000 ms;
 
 
 end architecture ; -- arch
