@@ -15,9 +15,9 @@ port
 
 	debounced : out std_logic
 );
-end entity; -- debouncer
+end entity; -- debounce
 
-architecture arch of debouncer is
+architecture behavioral of debounce is
 
 	type state_type is (idle, active, waiting);
 	signal state : state_type := idle;
