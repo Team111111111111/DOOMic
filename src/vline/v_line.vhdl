@@ -6,6 +6,7 @@
 -- ADDRESS IS 16 BIT CALC IS 14 BIT
 -- BITSHIFT? HOW
 
+-- double check how to do the Xps etc cause I dont think I can actually erase those, new buffers?
 -- -- Bithshift right by 2 when swithcing to 16 bit and bitshift left by 2 every time you go trought the multiplier
 
 
@@ -29,7 +30,8 @@ entity v_line is
         b_top_out : out std_logic_vector(7 downto 0);
         b_bot_out : out std_logic_vector(7 downto 0);
     
-        ready_out : out std_logic;
+        ready_out_h : out std_logic;
+        ready_out_bus: out std_logic;
         bus_empty_in : in std_logic;
         adder_overflow_out : out std_logic;
         adress_out : out std_logic_vector(15 downto 0)
@@ -98,7 +100,7 @@ architecture structural of v_line is
     
     signal alpha_comp_buffer_in :   std_logic; -- single bit
     signal alpha_comp_buffer_out :  std_logic; 
-    signal alpha_comp_buffer_en :   std_logic;
+    signal alpha_comp_buffer_en :   std_logic; -- Possible for deletion and use B6
 
     signal mult_1_sig, mult_2_sig, adder_sig, block_out_sig : std_logic_vector(21 downto 0);
     signal inv_sig : std_logic;
@@ -292,7 +294,8 @@ begin
                 alpha_comp_buffer_en <= '0';
                 lookup_in <= (others => '0');
                 
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
                 
 
             when populate_x_p => 
@@ -320,7 +323,8 @@ begin
                 adder_sig <= (others => '0');
                 buffers_in(6 downto 3) <= (others => (others => '0'));
                 en(6 downto 3) <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
                 lookup_in <= (others => '0');
 
             when populate_y_p =>
@@ -345,7 +349,8 @@ begin
                 buffers_in(2 downto 0) <= (others => (others => '0'));
                 en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when populate_a_p =>
                 if(data_in = "00000000000000") then
@@ -368,7 +373,8 @@ begin
                 buffers_in(6 downto 1) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 1) <= (others => '0');
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when populate_x_v =>
                 if(data_in = "00000000000000") then
@@ -397,7 +403,8 @@ begin
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when populate_y_v =>  
                 if(data_in = "00000000000000") then
@@ -425,7 +432,8 @@ begin
                 buffers_in(4 downto 0) <= (others => (others => '0'));          -- Prevent Latches
                 en(4 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             -- APPROXIMATOR
             when aprox_cos_comp =>
@@ -464,7 +472,7 @@ begin
                 alpha_comp_buffer_en    <= '0';
                 alpha_comp_buffer_in    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
                   
             when aprox_cos_32 =>
@@ -484,7 +492,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
             when aprox_cos_64 => 
                 -- subtract 60 so that alpha is in approximator's domain
@@ -503,7 +511,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
             when aprox_cos_pt1 =>
                 -- square and take -ve => -(x^2)
@@ -522,7 +530,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
             when aprox_cos_pt2 =>
                 -- divide by 256, add 1 (could shift but we have the mult anyway)
@@ -541,7 +549,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
             
             when aprox_cos_out =>   -- could be split into two states if needed?
                 -- checks if output needs to be -ve, then converts and stores output
@@ -572,7 +580,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
                     
             when aprox_sin_comp =>
                 
@@ -594,7 +602,7 @@ begin
                 inv_sig     <= '0';
                 adder_sig   <= (others => '0');
                 lookup_in <= (others => '0');
-                ready_out   <= '0';
+                ready_out_h   <= '0';
             
             when aprox_sin_32 =>
                 mult_1_sig      <= buffers_out(0);
@@ -610,7 +618,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
 
 
@@ -629,7 +637,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
             when aprox_sin_pt2 =>
                 -- divide by 256, add 1 (could shift but we have the mult anyway)
@@ -646,7 +654,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
 
             when aprox_sin_out =>
                 if (alpha_comp_buffer_out = '1') then      -- alpha > 32
@@ -673,7 +681,7 @@ begin
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
-                ready_out               <= '0';
+                ready_out_h               <= '0';
                  
             when invert_x_p =>          -- invert_x_p + LSB
                 mult_1_sig <= buffers_out(2);                   -- X_p stored in buffer 2
@@ -692,7 +700,8 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
              
 
@@ -712,7 +721,8 @@ begin
                 buffers_in(2 downto 0) <= (others => '0');
                 en(2 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_dx =>             -- x_v + (-x_p)
                 mult_1_sig <= buffers_out(4);                   -- x_v stored in buffer  4
@@ -730,7 +740,8 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_dy =>             -- y_v + (-y_p)
                 mult_1_sig <= buffers_out(5);                   -- y_v stored in buffer  5
@@ -748,7 +759,8 @@ begin
                 buffers_in(2 downto 0) <= (others => '0');
                 en(2 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_dy_sin_a_inv =>   -- -dy*sina_inv + LSB
                 mult_1_sig <= buffers_out(3);                   -- dY stored in buffer  3
@@ -766,7 +778,8 @@ begin
                 buffers_in(3 downto 0) <= (others => '0');
                 en(3 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_Z =>              -- dxcosa - dysina --> Somehow to LUT ( component?? )
                 mult_1_sig <= buffers_out(2);                   -- dX stored in buffer  2
@@ -778,7 +791,6 @@ begin
                 buffers_in(4)(21 downto 8) <= (others => '0');
                 en(4) <= '1';
                 new_state <= calc_dx_sin_a;
-                                                            -- Somehow LUT this
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
@@ -786,7 +798,8 @@ begin
                 en(6 downto 5) <= '0';
                 buffers_in(3 downto 0) <= (others => '0');
                 en(3 downto 0) <= '0';
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_dx_sin_a =>       -- -dx*sina
                 mult_1_sig <= buffers_out(2);                   -- dX stored in buffer  2
@@ -804,7 +817,8 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_da =>             -- -dy*cosa + dx sina
                 mult_1_sig <= buffers_out(3);                   -- dY stored in buffer  3
@@ -822,7 +836,8 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
             when calc_da_k =>           -- da * k
                 mult_1_sig <= buffers_out(3);                   -- da stored in buffer 2
@@ -840,14 +855,15 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
 
-            when calc_a =>              -- (da * k * c1) + 99 -- OUT TO HLINE
+            when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(2);                   -- daK stored in buffer 2
                 mult_2_sig <= "0000000000000100000000";     -- Multiply by Constant (tbd now set to 1)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= "0000000110001100000000";      -- add 99
+                adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(2) <= block_out_sig;                -- store result in buffer 2
                 en(2) <= '1';
                 new_state <= calc_a;    
@@ -859,12 +875,13 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);                   -- K stored in buffer 4
-                mult_2_sig <= "0000011001000000000000";   -- Multiply by Constant (tbd now set to 400)
+                mult_2_sig <= "0000001100100000000000";   -- Multiply by Constant (tbd now set to 00)
                 inv_sig <= '0';                             -- No invert
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(3) <= block_out_sig;                -- store result in buffer 3
@@ -878,7 +895,8 @@ begin
                 buffers_in(1 downto 0) <= (others => '0');
                 en(1 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+                ready_out_bus <='0';
 
 
             when calc_b_bot =>          -- h/2 + 99 -- OUT TO HLINE
@@ -897,7 +915,8 @@ begin
                 buffers_in(3 downto 0) <= (others => '0');
                 en(3 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
 
             when calc_b_top =>          -- h/2 - 99 -- OUT TO HLINE
@@ -916,7 +935,8 @@ begin
                 buffers_in(2 downto 0) <= (others => '0');
                 en(2 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
 
             when calc_bot_addr =>       -- 320 * b_bot + a
@@ -933,7 +953,8 @@ begin
                 buffers_in(5 downto 0) <= (others => '0');          -- Prevent Latches
                 en(5 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '1';
+ready_out_bus <='0';
 
             when calc_top_addr => -- 320 * b_top + a
                 mult_1_sig <= buffers_out(3);                -- b_top stored in buffer B3
@@ -951,7 +972,8 @@ begin
                 buffers_in(4 downto 0) <= (others => '0');
                 en(4 downto 0) <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+                ready_out_bus <='0';
                                         
                 
                                         -- Making the address calculation sequential saves an extra adder but needs an extra register
@@ -960,7 +982,8 @@ begin
                                         -- Possible optimisation, add an H-ready flag saves a buffer
 
             when addres_calc => -- B_top + 320
-                ready_out <= '1';
+                ready_out_bus <= '1';
+                ready_out_h <= '0';
 
                 mult_1_sig <= buffers_out(5);               -- curr_adr (top_addr) stored in buffer 5 
                 mult_2_sig <= "0000000000000100000000";    -- Multiply by 1
@@ -980,7 +1003,8 @@ begin
 
 
             when addres_wait => -- Add a small delay to make the bus catch up
-                ready_out <= '1';
+                ready_out_bus <= '1';
+                ready_out_h <= '0';
 
                 if (buffers_out(5) = buffers_out(6)) then
                     new_state <= done;
@@ -1001,7 +1025,8 @@ begin
                 lookup_in <= (others => '0');
 
             when done =>                -- wait for restart to send ready
-                ready_out <= '1';
+                ready_out_bus <= '1';
+                ready_out_h <= '0';
 
                 buffers_in(5) <= (others => '1');
                 en(5) <= '1';
@@ -1032,7 +1057,8 @@ begin
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
                 lookup_in <= (others => '0');
-                ready_out <= '0';
+                ready_out_h <= '0';
+ready_out_bus <='0';
 
         end case;
     end process;

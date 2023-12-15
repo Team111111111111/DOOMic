@@ -28,7 +28,7 @@ use ieee.numeric_std.all;
 entity complement is
 generic
 (
-    n_bits : integer := 24
+    n_bits : integer := 22
 );
 port
 (
