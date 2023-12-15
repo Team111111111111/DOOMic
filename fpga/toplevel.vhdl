@@ -12,6 +12,8 @@ port
 	button_r : in std_logic;
 
 	serial_bus : out std_logic_vector(13 downto 0)
+
+	rdy : in std_logic
 );
 end entity; -- toplevel
 
@@ -59,6 +61,6 @@ begin
 	r_deb : debouncer port map (clk, button_r, debounced_r); 
 
 	vertices : lov port map (clk, rst, serial_bus, 
-	                         debounced_l, debounced_r, lov_ready);
+	                         debounced_l, debounced_r, rdy);
 
 end architecture; -- arch
