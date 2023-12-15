@@ -39,6 +39,7 @@ begin
 		rst => rst,
 		button_l => button_l,
 		button_r => button_r,
+		serial_bus => serial_bus,
 		rdy => rdy
 	);
 
