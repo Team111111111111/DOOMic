@@ -2,11 +2,11 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity top_tb is
+entity toplevel_tb is
 end entity ; 
 
-architecture arch of top_tb is
-	component toplevel is
+architecture arch of toplevel_tb is
+	component toplevel_tb is
 	port
 	(
 		clk	 : in std_logic;
