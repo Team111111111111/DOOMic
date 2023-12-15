@@ -140,8 +140,8 @@ end bitshift_left;
 
 architecture structural of bitshift_left is
 begin
-	flag <= input(13);
-	output(14) <= input(14);
+	flag <= input(14);
+	output(15) <= input(15);
 --	output(22) <= input(21);
 --	output(21) <= input(20);
 --	output(20) <= input(19);
@@ -150,7 +150,7 @@ begin
 --	output(17) <= input(16);
 --	output(16) <= input(15);
 --	output(15) <= input(14);
---	output(14) <= input(13);
+	output(14) <= input(13);
 	output(13) <= input(12);
 	output(12) <= input(11);
 	output(11) <= input(10);
