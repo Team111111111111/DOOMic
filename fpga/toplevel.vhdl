@@ -47,6 +47,17 @@ architecture arch of toplevel is
 	);
 	end component; -- lov
 
+	component reg14 is
+	port 
+	(
+		reg_in	: in std_logic_vector (13 downto 0);
+		reg_out : out std_logic_vector (13 downto 0);
+
+		clk	: in std_logic;
+		reset	: in std_logic
+	);
+
+
 	-- These are the outputs of both debouncers
 	-- They are fed directly into the `lov` component
 	signal debounced_l, debounced_r : std_logic;
@@ -55,12 +66,17 @@ architecture arch of toplevel is
 	--  component, but is not assigned to an output of any other component
 	signal lov_ready : std_logic;
 
+	-- output of the lov
+	signal lov_out : std_logic;
+
 begin
 
 	l_deb : debouncer port map (clk, button_l, debounced_l); 
 	r_deb : debouncer port map (clk, button_r, debounced_r); 
 
-	vertices : lov port map (clk, rst, serial_bus, 
+	vertices : lov port map (clk, rst, lov_out, 
 	                         debounced_l, debounced_r, rdy);
+
+	input_buffer : reg14 port map (lov_out, serial_bus, clk, rst);
 
 end architecture; -- arch
