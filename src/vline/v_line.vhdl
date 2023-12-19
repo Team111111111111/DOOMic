@@ -348,8 +348,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(8) <= (others => (others => '0'));
-                en(8) <= (others => '0');
+                buffers_in(8) <= (others => '0');
+                en(8) <= '0';
                 buffers_in(6 downto 0) <= (others => (others => '0'));
                 en(6 downto 0) <= (others =>'0');
                 ready_out_h <= '0';
@@ -428,8 +428,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(8 downto 5) <= (others => '0');          -- Prevent Latches
-                en(8 downto 5) <= '0';
+                buffers_in(8 downto 5) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 5) <= (others => '0');
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -1000,8 +1000,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(8 downto 6) <= (others => '0');          -- Prevent Latches
-                en(8 downto 6) <= '0';
+                buffers_in(8 downto 6) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 6) <= (others => '0');
                 buffers_in(4 downto 0) <= (others => (others => '0'));
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -1028,8 +1028,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(8 downto 6) <= (others => '0');          -- Prevent Latches
-                en(8 downto 6) <= '0';
+                buffers_in(8 downto 6) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 6) <= (others => '0');
                 buffers_in(4 downto 0) <= (others => (others => '0'));
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
