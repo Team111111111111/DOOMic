@@ -913,7 +913,7 @@ ready_out_bus <='0';
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);                   -- K stored in buffer 4
-                mult_2_sig <= "0000001100100000000000";   -- Multiply by Constant (tbd now set to 00)
+                mult_2_sig <= "0000001100010000000000";   -- Multiply by Constant (tbd now set to 196)
                 inv_sig <= '0';                             -- No invert
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(3) <= block_out_sig;                -- store result in buffer 3
