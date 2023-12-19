@@ -17,7 +17,7 @@ port
 );
 end entity; -- debounce
 
-architecture behavioral of debounce is
+architecture behavioral of debouncer is
 
 	type state_type is (idle, active, waiting);
 	signal state : state_type := idle;
