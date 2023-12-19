@@ -590,6 +590,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
             
             when aprox_cos_out =>   -- could be split into two states if needed?
                 -- checks if output needs to be -ve, then converts and stores output
@@ -621,6 +622,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
                     
             when aprox_sin_comp =>
                 
@@ -643,6 +645,7 @@ ready_out_bus <='0';
                 adder_sig   <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h   <= '0';
+                ready_out_bus <='0';
             
             when aprox_sin_32 =>
                 mult_1_sig      <= buffers_out(0);
@@ -659,8 +662,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
-
-
+                ready_out_bus <='0';
 
             when aprox_sin_pt1 =>
                 -- square and take -ve => -(x^2)
@@ -678,6 +680,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
 
             when aprox_sin_pt2 =>
                 -- divide by 256, add 1 (could shift but we have the mult anyway)
@@ -695,6 +698,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
 
             when aprox_sin_out =>
                 if (alpha_comp_buffer_out = '1') then      -- alpha > 32
@@ -722,6 +726,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
                  
             when invert_x_p =>          -- invert_x_p + LSB
                 mult_1_sig <= buffers_out(7);                   -- X_p stored in buffer 2
