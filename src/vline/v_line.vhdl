@@ -18,7 +18,7 @@ use IEEE.numeric_std.all;
 
 entity v_line is
     generic (
-        nr_of_buffers : integer := 7
+        nr_of_buffers : integer := 9
     );
     port (
         clk : in std_logic;
@@ -223,6 +223,33 @@ begin
       input  => buffers_in(5),
       output => buffers_out(5)
     );
+    
+    buffer_6: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(6),
+      input  => buffers_in(6),
+      output => buffers_out(6)
+    );
+
+    buffer_7: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(7),
+      input  => buffers_in(7),
+      output => buffers_out(7)
+    );
+
+    buffer_8: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(8),
+      input  => buffers_in(8),
+      output => buffers_out(8)
+    );
 
     v_line_1_bit_register_inst: v_line_1_bit_register
     port map (
@@ -306,13 +333,13 @@ ready_out_bus <='0';
 
                 if(data_in = "00000000000000") then -- Check if data is on the bus (please make the bus to honour this)
                     new_state <= populate_x_p;
-                    buffers_in(2) <= (others => '0');
-                    en(2) <= '0';
+                    buffers_in(7) <= (others => '0');
+                    en(7) <= '0';
                 else
                     new_state <= populate_y_p;
-                    buffers_in(2)(21 downto 8) <= data_in;          -- if data on bus store x_p in buffer 2
-                    buffers_in(2)(7 downto 0) <= (others => '0');
-                    en(2) <= '1';
+                    buffers_in(7)(21 downto 8) <= data_in;          -- if data on bus store x_p in buffer 2
+                    buffers_in(7)(7 downto 0) <= (others => '0');
+                    en(7) <= '1';
                 end if;
 
                 alpha_comp_buffer_in <= '0';
@@ -321,21 +348,26 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(6 downto 3) <= (others => (others => '0'));
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8) <= (others => (others => '0'));
+                en(8) <= (others => '0');
+                buffers_in(6 downto 0) <= (others => (others => '0'));
+                en(6 downto 0) <= (others =>'0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
                 lookup_in <= (others => '0');
 
             when populate_y_p =>
                 if(data_in = "00000000000000") then
-                    new_state <= populate_y_p;      
+                    new_state <= populate_y_p;
+                    buffers_in(8)(21 downto 8) <= (others => '0');          -- store y_p in buffer 8
+                    buffers_in(8)(7 downto 0) <= (others => '0');
+                    en(8) <= '1';      
 
                 else
                     new_state <= populate_a_p;
-                    buffers_in(3)(21 downto 8) <= data_in;          -- store y_p in buffer 3
-                    buffers_in(3)(7 downto 0) <= (others => '0');
-                    en(3) <= '1';
+                    buffers_in(8)(21 downto 8) <= data_in;          -- store y_p in buffer 8
+                    buffers_in(8)(7 downto 0) <= (others => '0');
+                    en(8) <= '1';
                 end if;
 
                 alpha_comp_buffer_in <= '0';
@@ -344,10 +376,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(6 downto 4) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 4) <= (others => '0');
-                buffers_in(2 downto 0) <= (others => (others => '0'));
-                en(2 downto 0) <= (others => '0');
+                buffers_in(7 downto 0) <= (others => (others => '0'));          -- Prevent Latches
+                en(7 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
 ready_out_bus <='0';
@@ -370,8 +400,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(6 downto 1) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 1) <= (others => '0');
+                buffers_in(8 downto 1) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 1) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
 ready_out_bus <='0';
@@ -398,8 +428,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
-                buffers_in(5) <= (others => '0');          -- Prevent Latches
-                en(5) <= '0';
+                buffers_in(8 downto 5) <= (others => '0');          -- Prevent Latches
+                en(8 downto 5) <= '0';
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -429,6 +459,8 @@ ready_out_bus <='0';
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
                 adder_sig <= (others => '0');
+                buffers_in(8 downto 6) <= (others => (others => '0'));
+                en(8 downto 6) <= (others => '0');
                 buffers_in(4 downto 0) <= (others => (others => '0'));          -- Prevent Latches
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -439,6 +471,8 @@ ready_out_bus <='0';
             when aprox_cos_comp =>
                 if (buffers_out(1) /= "0000000000000000000000") then -- approx already done
                     new_state <= invert_x_p;
+                    buffers_in(8 downto 0)   <= (others => (others => '0'));  
+                    en(8 downto 0)           <= (others => '0');
                 else
                     -- port map alpha (buffer(0)) to comparators: TODO
                         -- comp16 comp48
@@ -457,14 +491,12 @@ ready_out_bus <='0';
                         en(1)           <= '0';
                     end if;
 
-                    buffers_in(6 downto 2)  <= (others => (others => '0'));
+                    buffers_in(8 downto 2)  <= (others => (others => '0'));
                     buffers_in(0)           <= (others => '0');
-                    en(6 downto 2)  <= (others => '0');
+                    en(8 downto 2)  <= (others => '0');
                     en(0)           <= '0';
                 end if;
 
-                buffers_in(6 downto 0)  <= (others => (others => '0'));
-                en(6 downto 0)          <= (others => '0');
                 mult_1_sig  <= (others => '0');
                 mult_2_sig  <= (others => '0');
                 inv_sig     <= '0';
@@ -485,9 +517,9 @@ ready_out_bus <='0';
                 en(1)           <= '1';                             -- store (intermediate) output of cos(alpha) into buffer 1
                 new_state       <= aprox_cos_pt1;
 
-                buffers_in(6 downto 2)  <= (others => (others => '0'));
+                buffers_in(8 downto 2)  <= (others => (others => '0'));
                 buffers_in(0)           <= (others => '0');
-                en(6 downto 2)          <= (others => '0');
+                en(8 downto 2)          <= (others => '0');
                 en(0)                   <= '0';
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
@@ -504,9 +536,9 @@ ready_out_bus <='0';
                 en(1)           <= '1';
                 new_state       <= aprox_cos_pt1;
 
-                buffers_in(6 downto 2)  <= (others => (others => '0'));
+                buffers_in(8 downto 2)  <= (others => (others => '0'));
                 buffers_in(0)           <= (others => '0');
-                en(6 downto 2)          <= (others => '0');
+                en(8 downto 2)          <= (others => '0');
                 en(0)                   <= '0';
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
@@ -523,9 +555,9 @@ ready_out_bus <='0';
                 en(1) <= '1';
                 new_state       <= aprox_cos_pt2;
                 
-                buffers_in(6 downto 2)  <= (others => (others => '0'));
+                buffers_in(8 downto 2)  <= (others => (others => '0'));
                 buffers_in(0)           <= (others => '0');
-                en(6 downto 2)          <= (others => '0');
+                en(8 downto 2)          <= (others => '0');
                 en(0)                   <= '0';
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
@@ -542,9 +574,9 @@ ready_out_bus <='0';
                 en(1)           <= '1';
                 new_state       <= aprox_cos_out;
                 
-                buffers_in(6 downto 2)  <= (others => (others => '0'));
+                buffers_in(8 downto 2)  <= (others => (others => '0'));
                 buffers_in(0)           <= (others => '0');
-                en(6 downto 2)          <= (others => '0');
+                en(8 downto 2)          <= (others => '0');
                 en(0)                   <= '0';
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
@@ -563,13 +595,13 @@ ready_out_bus <='0';
                     buffers_in(1)   <= block_out_sig;
                     en(1)           <= '1';
                     
-                    buffers_in(6 downto 2)  <= (others => (others => '0'));
+                    buffers_in(8 downto 2)  <= (others => (others => '0'));
                     buffers_in(0)           <= (others => '0');
-                    en(6 downto 2)          <= (others => '0');
+                    en(8 downto 2)          <= (others => '0');
                     en(0)                   <= '0';
                 else
-                    buffers_in(6 downto 0)  <= (others => (others => '0'));
-                    en(6 downto 0)          <= (others => '0');
+                    buffers_in(8 downto 0)  <= (others => (others => '0'));
+                    en(8 downto 0)          <= (others => '0');
                     mult_1_sig              <= (others => '0');
                     mult_2_sig              <= (others => '0');
                     inv_sig                 <= '0'; 
@@ -595,8 +627,8 @@ ready_out_bus <='0';
                     new_state   <= aprox_sin_32;
                 end if;
 
-                buffers_in(6 downto 0)  <= (others => (others => '0'));
-                en(6 downto 0)          <= (others => '0');
+                buffers_in(8 downto 0)  <= (others => (others => '0'));
+                en(8 downto 0)          <= (others => '0');
                 mult_1_sig  <= (others => '0');
                 mult_2_sig  <= (others => '0');
                 inv_sig     <= '0';
@@ -613,8 +645,8 @@ ready_out_bus <='0';
                 en(0)           <= '1';
                 new_state       <= aprox_sin_pt1;
 
-                buffers_in(6 downto 1)  <= (others => (others => '0'));
-                en(6 downto 1)          <= (others => '0');
+                buffers_in(8 downto 1)  <= (others => (others => '0'));
+                en(8 downto 1)          <= (others => '0');
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
@@ -632,8 +664,8 @@ ready_out_bus <='0';
                 en(0)           <= '1';
                 new_state       <= aprox_sin_pt2;
                 
-                buffers_in(6 downto 1)  <= (others => (others => '0'));
-                en(6 downto 1)          <= (others => '0');
+                buffers_in(8 downto 1)  <= (others => (others => '0'));
+                en(8 downto 1)          <= (others => '0');
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
@@ -649,8 +681,8 @@ ready_out_bus <='0';
                 en(0)           <= '1';
                 new_state       <= aprox_sin_out;
 
-                buffers_in(6 downto 1)  <= (others => (others => '0'));
-                en(6 downto 1)          <= (others => '0');
+                buffers_in(8 downto 1)  <= (others => (others => '0'));
+                en(8 downto 1)          <= (others => '0');
                 alpha_comp_buffer_in    <= '0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
@@ -666,11 +698,11 @@ ready_out_bus <='0';
                     buffers_in(0)  <= block_out_sig;  
                     en(0)       <= '1';
                     
-                    buffers_in(6 downto 1)  <= (others => (others => '0'));
-                    en(6 downto 1)          <= (others => '0');
+                    buffers_in(8 downto 1)  <= (others => (others => '0'));
+                    en(8 downto 1)          <= (others => '0');
                 else
-                    buffers_in(6 downto 0)  <= (others => (others => '0'));
-                    en(6 downto 0)  <= (others => '0');
+                    buffers_in(8 downto 0)  <= (others => (others => '0'));
+                    en(8 downto 0)  <= (others => '0');
                     mult_1_sig      <= (others => '0');
                     mult_2_sig      <= (others => '0');
                     inv_sig         <= '0';
@@ -684,7 +716,7 @@ ready_out_bus <='0';
                 ready_out_h               <= '0';
                  
             when invert_x_p =>          -- invert_x_p + LSB
-                mult_1_sig <= buffers_out(2);                   -- X_p stored in buffer 2
+                mult_1_sig <= buffers_out(7);                   -- X_p stored in buffer 2
                 mult_2_sig <= "0000000000000100000000"; 
                 inv_sig <= '1';
                 adder_sig <= "0000000000000000000001";        -- add LSB to calc 2s complement inverse
@@ -695,8 +727,8 @@ ready_out_bus <='0';
                 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -706,7 +738,7 @@ ready_out_bus <='0';
              
 
             when invert_y_p =>          -- invert_y_p + LSB
-                mult_1_sig <= buffers_out(3);                   -- Y_p stored in buffer 3
+                mult_1_sig <= buffers_out(8);                   -- Y_p stored in buffer 3
                 mult_2_sig <= "0000000000000100000000";       -- set mult2_sig to fixed point 1
                 inv_sig <= '1';                             -- bitwise not
                 adder_sig <= "0000000000000000000001";        -- add LSB to calc 2s complement inverse
@@ -716,8 +748,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 4) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 4) <= (others => '0');
+                buffers_in(8 downto 4) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 4) <= (others => '0');
                 buffers_in(2 downto 0) <= (others => (others => '0'));
                 en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -735,8 +767,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -754,8 +786,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 4) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 4) <= (others => '0');
+                buffers_in(8 downto 4) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 4) <= (others => '0');
                 buffers_in(2 downto 0) <= (others => (others => '0'));
                 en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -773,8 +805,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 5) <= (others => '0');
+                buffers_in(8 downto 5) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 5) <= (others => '0');
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -794,8 +826,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 5) <= (others => '0');
+                buffers_in(8 downto 5) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 5) <= (others => '0');
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 ready_out_h <= '0';
@@ -812,8 +844,8 @@ ready_out_bus <='0';
                 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -831,8 +863,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -850,8 +882,8 @@ ready_out_bus <='0';
                 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -870,8 +902,8 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
+                buffers_in(8 downto 3) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 3) <= (others => '0');
                 buffers_in(1 downto 0) <= (others => (others => '0'));
                 en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -890,66 +922,67 @@ ready_out_bus <='0';
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 3) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 3) <= (others => '0');
-                buffers_in(1 downto 0) <= (others => (others => '0'));
-                en(1 downto 0) <= (others => '0');
+                buffers_in(8 downto 4) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 4) <= (others => '0');
+                buffers_in(2 downto 0) <= (others => (others => '0'));
+                en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
                 ready_out_bus <='0';
 
 
-            when calc_b_bot =>          -- h/2 + 99 -- OUT TO HLINE --                          THIS IS WEIRD 99+h/2 and 99-h/2???
-                mult_1_sig <= buffers_out(3);                   -- h/2 stored in buffer 3
-                mult_2_sig <= "0000000000000100000000";    -- Multiply by 1
+            when calc_b_bot =>          -- h/2 + 99 -- OUT TO HLINE --  (TODO? change 99 to 101)   THIS IS WEIRD 99+h/2 and 99-h/2???
+                mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(3)), 2));                   -- h/2 stored in buffer 3
+                mult_2_sig <= "0000000000000100000000";    -- Multiply by 4 (16.6 format) == 1 (14.8 format)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= "0000000110001100000000";      -- add 99
-                buffers_in(4) <= block_out_sig;                -- store result in buffer 4
+                adder_sig <= "00000000001100011000000";      -- add (99) (16.6 format)
+                buffers_in(4) <= block_out_sig; -- store result in buffer 4 (16.6)
                 en(4) <= '1';
                 new_state <= calc_b_top;
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 5) <= (others => '0');
+                buffers_in(8 downto 5) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 5) <= (others => '0');
                 buffers_in(3 downto 0) <= (others => (others => '0'));
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
 ready_out_bus <='0';
 
-
-            when calc_b_top =>          -- h/2 - 99 -- OUT TO HLINE
-                mult_1_sig <= buffers_out(3);                   -- h/2 stored in buffer 3
-                mult_2_sig <= "0000000000000100000000";    -- Multiply by 1
+            when calc_b_top =>          -- 99 - h/2 -- OUT TO HLINE
+                mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(3)), 2));  -- h/2 stored in buffer 3, change to 16.6
+                mult_2_sig <= "1111111111111100000000";    -- Multiply by -4 (16.6 format) == -1 (14.8)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= "1111111001110100000000";      -- add -99
-                buffers_in(3) <= block_out_sig;                -- store result in buffer 3
+                adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
+                buffers_in(3) <= block_out_sig;  -- store result in buffer 3 (16.6 format)
                 en(3) <= '1';
                 new_state <= calc_bot_addr;
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6 downto 4) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 4) <= (others => '0');
+                buffers_in(8 downto 4) <= (others => (others => '0'));          -- Prevent Latches
+                en(8 downto 4) <= (others => '0');
                 buffers_in(2 downto 0) <= (others => (others => '0'));
                 en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
 
 
             when calc_bot_addr =>       -- 320 * b_bot + a
-                mult_1_sig <= buffers_out(4);               -- b_bot stored in B4
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320
+                mult_1_sig <= buffers_out(4);               -- b_bot stored in B4 (16.6 format)
+                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= buffers_out(2);      -- add a stored in B2
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(2)), 2));      -- add a stored in B2  changed to 16.6
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= calc_top_addr;
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
+                buffers_in(8 downto 7) <= (others => (others => '0'));
+                en(8 downto 7) <= (others => '0');
                 buffers_in(5 downto 0) <= (others => (others => '0'));          -- Prevent Latches
                 en(5 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -957,18 +990,18 @@ ready_out_bus <='0';
 ready_out_bus <='0';
 
             when calc_top_addr => -- 320 * b_top + a
-                mult_1_sig <= buffers_out(3);                -- b_top stored in buffer B3
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320
+                mult_1_sig <= buffers_out(3);                -- b_top stored in buffer B3 (16.6)
+                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= buffers_out(2);      -- add a in B2
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(2)), 2));      -- add a stored in B2  changed to 16.6
                 buffers_in(5) <= block_out_sig;                -- store result in buffer 5
                 en(5) <= '1';
                 new_state <= addres_calc;
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6) <= (others => '0');          -- Prevent Latches
-                en(6) <= '0';
+                buffers_in(8 downto 6) <= (others => '0');          -- Prevent Latches
+                en(8 downto 6) <= '0';
                 buffers_in(4 downto 0) <= (others => (others => '0'));
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -985,18 +1018,18 @@ ready_out_bus <='0';
                 ready_out_bus <= '1';
                 ready_out_h <= '0';
 
-                mult_1_sig <= buffers_out(5);               -- curr_adr (top_addr) stored in buffer 5 
-                mult_2_sig <= "0000000000000100000000";    -- Multiply by 1
+                mult_1_sig <= buffers_out(5);               -- curr_adr (top_addr) stored in buffer 5 (16.6)
+                mult_2_sig <= "0000000000000100000000";    -- Multiply by 1 (14.8) == 4 (16.6)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= "1111111001110100000000";      -- add 320
+                adder_sig <= "0000000101000000000000";      -- add 320 (16.6)
                 buffers_in(5) <= block_out_sig;             -- store result in buffer 5
                 en(5) <= '1';
                 new_state <= addres_wait;
 
                 alpha_comp_buffer_in <= '0';
                 alpha_comp_buffer_en <= '0';
-                buffers_in(6) <= (others => '0');          -- Prevent Latches
-                en(6) <= '0';
+                buffers_in(8 downto 6) <= (others => '0');          -- Prevent Latches
+                en(8 downto 6) <= '0';
                 buffers_in(4 downto 0) <= (others => (others => '0'));
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
@@ -1014,8 +1047,8 @@ ready_out_bus <='0';
                     new_state <= addres_wait;
                 end if;
 
-                buffers_in(6 downto 0) <= (others => (others => '0'));
-                en(6 downto 0) <= (others => '0');
+                buffers_in(8 downto 0) <= (others => (others => '0'));
+                en(8 downto 0) <= (others => '0');
                 mult_1_sig <= (others => '0');
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
@@ -1048,8 +1081,8 @@ ready_out_bus <='0';
             when others =>
                 new_state <= reset_state;
                 
-                buffers_in(6 downto 0) <= (others => (others => '0'));
-                en(6 downto 0) <= (others => '0');
+                buffers_in(8 downto 0) <= (others => (others => '0'));
+                en(8 downto 0) <= (others => '0');
                 mult_1_sig <= (others => '0');
                 mult_2_sig <= (others => '0');
                 inv_sig <= '0'; 
@@ -1066,7 +1099,7 @@ ready_out_bus <='0';
     a_out <= buffers_out(2)(16 downto 8);
     b_bot_out <= buffers_out(4)(15 downto 8);
     b_top_out <= buffers_out(3)(15 downto 8);
-    adress_out <= buffers_out(5)(21 downto 8);
+    adress_out <= buffers_out(5)(21 downto 6);
     
 end architecture;
 
