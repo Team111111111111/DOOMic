@@ -56,6 +56,7 @@ architecture arch of toplevel is
 		clk	: in std_logic;
 		reset	: in std_logic
 	);
+	end component; -- input buffer
 
 
 	-- These are the outputs of both debouncers
@@ -67,7 +68,7 @@ architecture arch of toplevel is
 	signal lov_ready : std_logic;
 
 	-- output of the lov
-	signal lov_out : std_logic;
+	signal lov_out : std_logic_vector (13 downto 0);
 
 begin
 
