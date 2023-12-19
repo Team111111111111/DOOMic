@@ -15,7 +15,7 @@ end entity;
 
 architecture behavioral of v_line_register is
 begin
-    process(clk)
+    process(clk, res)
     begin
         if res = '1' then
             output <= (others => '0');

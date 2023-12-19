@@ -92,7 +92,7 @@ architecture structural of v_line is
                     );
     signal state, new_state : states;
 
-    type buffer_array is array ((nr_of_buffers-1) downto 0) of std_logic_vector(21 downto (nr_of_buffers-1));
+    type buffer_array is array ((nr_of_buffers-1) downto 0) of std_logic_vector(21 downto 0);
     signal buffers_in : buffer_array;
     signal buffers_out : buffer_array;
     type en_array is array ((nr_of_buffers-1) downto 0) of std_logic;
@@ -153,8 +153,8 @@ architecture structural of v_line is
     
     component v_line_lookup is
         port (
-            input_vector :  std_logic_vector(5 downto 0);
-            output_vector : std_logic_vector(7 downto 0)
+            input_vector :  in std_logic_vector(5 downto 0);
+            output_vector : out std_logic_vector(7 downto 0)
         );
     end component;
   
@@ -305,7 +305,7 @@ begin
         end if;
     end process;
             
-    process(state)
+    process(state, data_in, buffers_out, comp16_out)
     begin
 
         case state is
@@ -322,7 +322,7 @@ begin
                 lookup_in <= (others => '0');
                 
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
                 
 
             when populate_x_p => 
@@ -420,6 +420,7 @@ ready_out_bus <='0';
                     new_state <= populate_y_v;
                     buffers_in(4)(21 downto 8) <= data_in;          -- store x_v in buffer 4
                     buffers_in(4)(7 downto 0) <= (others => '0');
+                    en(4) <= '1';
                 end if;
 
                 alpha_comp_buffer_in <= '0';
@@ -505,6 +506,7 @@ ready_out_bus <='0';
                 alpha_comp_buffer_in    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
 
                   
             when aprox_cos_32 =>
@@ -525,6 +527,8 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
+
 
             when aprox_cos_64 => 
                 -- subtract 60 so that alpha is in approximator's domain
@@ -544,6 +548,8 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
+
 
             when aprox_cos_pt1 =>
                 -- square and take -ve => -(x^2)
@@ -563,6 +569,8 @@ ready_out_bus <='0';
                 alpha_comp_buffer_en    <= '0';
                 lookup_in <= (others => '0');
                 ready_out_h               <= '0';
+                ready_out_bus <='0';
+
 
             when aprox_cos_pt2 =>
                 -- divide by 256, add 1 (could shift but we have the mult anyway)
@@ -935,7 +943,7 @@ ready_out_bus <='0';
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(3)), 2));                   -- h/2 stored in buffer 3
                 mult_2_sig <= "0000000000000100000000";    -- Multiply by 4 (16.6 format) == 1 (14.8 format)
                 inv_sig <= '0';                             -- No invert
-                adder_sig <= "00000000001100011000000";      -- add (99) (16.6 format)
+                adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
                 buffers_in(4) <= block_out_sig; -- store result in buffer 4 (16.6)
                 en(4) <= '1';
                 new_state <= calc_b_top;

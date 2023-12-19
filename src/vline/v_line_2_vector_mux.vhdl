@@ -15,7 +15,7 @@ end entity;
 
 architecture behavioral of v_line_2_vector_mux is
 begin
-    process(sel)
+    process(sel, input_1, input_2)
     begin
         case sel is
             when '0' =>
