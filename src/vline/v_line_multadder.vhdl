@@ -10,25 +10,24 @@ entity v_line_multadder is
     mult_in_1                       : in std_logic_vector(21 downto 0);
     mult_in_2                       : in std_logic_vector(21 downto 0);
     adder_in                        : in std_logic_vector(21 downto 0);
-    inv_in                          : in std_logic;
+    -- inv_in                          : in std_logic;
 
-    block_out                       : out std_logic_vector(21 downto 0);
-    overflow                        : out std_logic
+    block_out                       : out std_logic_vector(21 downto 0)
   );
 end entity;
 
 architecture structural of v_line_multadder is
 
-  component v_line_2_vector_mux is
-    port (
-      input_1 : in std_logic_vector(21 downto 0);
-      input_2 : in std_logic_vector(21 downto 0);
+  -- component v_line_2_vector_mux is
+  --   port (
+  --     input_1 : in std_logic_vector(21 downto 0);
+  --     input_2 : in std_logic_vector(21 downto 0);
 
-      sel : in std_logic;
+  --     sel : in std_logic;
 
-      output : out std_logic_vector(21 downto 0)
-    );
-  end component;
+  --     output : out std_logic_vector(21 downto 0)
+  --   );
+  -- end component;
 
   component multiplier is
     generic
@@ -40,8 +39,8 @@ architecture structural of v_line_multadder is
     (
       a     : in  std_logic_vector(n_bits - 1 downto 0);
       b     : in  std_logic_vector(n_bits - 1 downto 0);
-      r     : out std_logic_vector(n_bits - 1 downto 0);
-      inv_r : out std_logic_vector(n_bits - 1 downto 0)
+      r     : out std_logic_vector(n_bits - 1 downto 0)
+      -- inv_r : out std_logic_vector(n_bits - 1 downto 0)
     );
   end component ; -- multiplier
 
@@ -58,8 +57,8 @@ architecture structural of v_line_multadder is
     );
   end component adder;
     
-    signal mult_out, mult_out_inv   : std_logic_vector(21 downto 0);
-    signal mux_out                  : std_logic_vector(21 downto 0);
+    signal mult_out   : std_logic_vector(21 downto 0);
+    -- signal mux_out                  : std_logic_vector(21 downto 0);
 
 
 begin
@@ -72,24 +71,23 @@ begin
     port map (
       a     => mult_in_1,
       b     => mult_in_2,
-      r     => mult_out,
-      inv_r => mult_out_inv
+      r     => mult_out
     );
 
-    mux_inst: v_line_2_vector_mux
-    port map (
-      input_1 => mult_out,
-      input_2 => mult_out_inv,
-      sel     => inv_in,
-      output  => mux_out
-    );
+    -- mux_inst: v_line_2_vector_mux
+    -- port map (
+    --   input_1 => mult_out,
+    --   input_2 => mult_out_inv,
+    --   sel     => inv_in,
+    --   output  => mux_out
+    -- );
 
     adder_inst: adder
     generic map (
       n_bits => 22
     )
     port map (
-      a => mux_out,
+      a => mult_out,
       b => adder_in,
       r => block_out
     );

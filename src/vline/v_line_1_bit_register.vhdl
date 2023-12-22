@@ -15,16 +15,13 @@ end entity;
 
 architecture behavioral of v_line_1_bit_register is
 begin
-    process(clk, res)
+    process(clk, res, en)
     begin
-        if res = '1' then
-            output <= '0';
-            if (rising_edge(clk)) then
-                if en = '1' then
-                    output <= input;
-                end if;
-            end if;
-        end if;
+      if res = '1' then
+        output <= '0';
+      elsif (rising_edge(clk) and en = '1') then
+          output <= input;
+      end if;
     end process;
             
 end architecture;
