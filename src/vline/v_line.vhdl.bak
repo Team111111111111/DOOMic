@@ -220,6 +220,24 @@ begin
       output => buffers_out(6)
     );
 
+    buffer_7: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(7),
+      input  => buffers_in(7),
+      output => buffers_out(7)
+    );
+
+    buffer_8: v_line_register
+    port map (
+      clk    => clk,
+      res    => res,
+      en     => en(8),
+      input  => buffers_in(8),
+      output => buffers_out(8)
+    );
+
     comp16_inst: m_comparator -- used by cos
     generic map (
       n_bits => 22
@@ -265,7 +283,7 @@ begin
         end if;
     end process;
             
-    process(state, data_in, buffers_out, comp16_out, comp48_out, block_out_sig, comp32_out, lookup_out, bus_empty_in, en)
+    process(state, data_in, buffers_out, comp16_out, comp48_out, block_out_sig, comp32_out, alpha_comp_buffer_out, lookup_out, bus_empty_in, en)
     begin
 
         case state is
@@ -331,8 +349,8 @@ begin
                 adder_sig <= (others => '0');
                 buffers_in(6 downto 4) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 4) <= (others => '0');
-                buffers_in(2 downto 0) <= (others => (others => '0'));          -- Prevent Latches
-                en(2 downto 0) <= (others => '0');
+                buffers_in(1 downto 0) <= (others => (others => '0'));          -- Prevent Latches
+                en(1 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
 ready_out_bus <='0';
@@ -428,8 +446,8 @@ ready_out_bus <='0';
             when aprox_cos_comp =>
                 if (buffers_out(1) /= "0000000000000000000000") then -- approx already done
                     new_state <= calc_dx;
-                    buffers_in(6 downto 0)   <= (others => (others => '0'));  
-                    en(6 downto 0)           <= (others => '0');
+                    buffers_in(8 downto 0)   <= (others => (others => '0'));  
+                    en(8 downto 0)           <= (others => '0');
                     mult_1_sig      <= (others => '0');
                     mult_2_sig      <= (others => '0');
                     adder_sig       <= (others => '0');
@@ -654,7 +672,7 @@ ready_out_bus <='0';
                 adder_sig <= buffers_out(5);                    -- add y_v stored in buffer 5
                 buffers_in(5) <= block_out_sig;                 -- store result in buffer 5
                 en(5) <= '1';
-                new_state <= calc_dy_sin_a;
+                new_state <= calc_dy_sin_a_inv;
 
                 buffers_in(6) <= (others => '0');          -- Prevent Latches
                 en(6) <= '0';
@@ -670,7 +688,7 @@ ready_out_bus <='0';
                 adder_sig <= "0000000000000000000000";         -- add 0
                 buffers_in(4) <= block_out_sig;                 -- store result in buffer 4
                 en(4) <= '1';
-                new_state <= inv_dysina;
+                new_state <= calc_z;
                     
                 buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 5) <= (others => '0');
@@ -686,7 +704,7 @@ ready_out_bus <='0';
                 adder_sig <= "0000000000000000000000";         -- add 0
                 buffers_in(4) <= block_out_sig;                 -- store result in buffer 4
                 en(4) <= '1';
-                new_state <= calc_Z;
+                new_state <= calc_z;
 
                 buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 5) <= (others => '0');
@@ -816,7 +834,7 @@ ready_out_bus <='0';
                 adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
                 buffers_in(5) <= block_out_sig;  -- store result in buffer 5 (16.6 format)
                 en(5) <= '1';
-                new_state <= Hold_for_H;
+                new_state <= calc_bot_addr;
 
                 
                 buffers_in(6) <= (others => '0');          -- Prevent Latches
@@ -937,8 +955,8 @@ ready_out_bus <='0';
             when others =>
                 new_state <= reset_state;
                 
-                buffers_in( 6 downto 0) <= (others => (others => '0'));
-                en( 6 downto 0) <= (others => '0');
+                buffers_in(8 downto 0) <= (others => (others => '0'));
+                en(8 downto 0) <= (others => '0');
                 mult_1_sig <= (others => '0');
                 mult_2_sig <= (others => '0');
                 adder_sig <= (others => '0');
@@ -951,9 +969,9 @@ ready_out_bus <='0';
         end case;
     end process;
 
-    a_out <= buffers_out(6)(16 downto 8);
-    b_bot_out <= buffers_out(4)(13 downto 6);
-    b_top_out <= buffers_out(5)(13 downto 6);
+    a_out <= buffers_out(6)(15 downto 8);
+    b_bot_out <= buffers_out(4)(14 downto 6);
+    b_top_out <= buffers_out(5)(14 downto 6);
     adress_out <= buffers_out(6)(21 downto 6);
     
 end architecture;
