@@ -2,7 +2,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity toplevel is
+entity fpga_top is
 port
 (
 	clk : in std_logic;
@@ -11,13 +11,14 @@ port
 	button_l : in std_logic;
 	button_r : in std_logic;
 
+	address_bus : in std_logic_vector(13 downto 0);
 	serial_bus : out std_logic_vector(13 downto 0);
 
 	rdy : in std_logic
 );
-end entity; -- toplevel
+end entity; -- fpga_top
 
-architecture arch of toplevel is
+architecture arch of fpga_top is
 
 	component debouncer is
 	generic
