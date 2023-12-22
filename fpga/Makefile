@@ -5,5 +5,6 @@
 compile_test:
 	ghdl -a debounce/debounce.vhdl
 	ghdl -a -fsynopsys vertices_list/lov.vhdl
+	ghdl -a sram/sram.vhdl
 	ghdl -a toplevel.vhdl
 	rm -f ./*.cf
