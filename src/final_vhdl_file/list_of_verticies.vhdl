@@ -237,7 +237,7 @@ begin
 		end if;
 	end process;
 
-	process (state)
+	process (state, clk)
 	begin
 		case state is
 			when reset =>
