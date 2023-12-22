@@ -8,12 +8,19 @@ port
 	clk : in std_logic;
 	rst : in std_logic;
 
+	-- These are the inputs for both of the buttons that the player has 
+	--  access to. They are wired directly to their respective button
+	--  debouncer component.
 	button_l : in std_logic;
 	button_r : in std_logic;
 
-	serial_bus : out std_logic_vector(13 downto 0);
+	-- The address bus is a 16 bit input that is wired through a 16 bit
+	--  register to the frame buffers.
+	address_bus : in std_logic_vector(15 downto 0);
 
-	rdy : in std_logic
+	-- The serial bus is a 14 bit output that is wired directly to the
+	--  list of vertices.
+	serial_bus : out std_logic_vector(13 downto 0)
 );
 end entity; -- toplevel
 
@@ -50,34 +57,31 @@ architecture arch of toplevel is
 	component reg14 is
 	port 
 	(
-		reg_in	: in std_logic_vector (13 downto 0);
+		reg_in	: in  std_logic_vector (13 downto 0);
 		reg_out : out std_logic_vector (13 downto 0);
 
-		clk	: in std_logic;
-		reset	: in std_logic
+		clk	  : in std_logic;
+		reset : in std_logic
 	);
 	end component; -- input buffer
 
 
-	-- These are the outputs of both debouncers
-	-- They are fed directly into the `lov` component
+	-- These are the outputs of both button debouncers. They are fed
+	--  directly into the list of vertices.
 	signal debounced_l, debounced_r : std_logic;
 
-	-- WARNING: This signal is assigned to the `rdy` input of the `lov` 
-	--  component, but is not assigned to an output of any other component
+	-- This is the 'ready' signal created by the frame buffer component,
+	--  it is wired directly into the list of vertices.
 	signal lov_ready : std_logic;
-
-	-- output of the lov
-	signal lov_out : std_logic_vector (13 downto 0);
 
 begin
 
+	-- Both button debouncers
 	l_deb : debouncer port map (clk, button_l, debounced_l); 
 	r_deb : debouncer port map (clk, button_r, debounced_r); 
 
+	-- The list of vertices
 	vertices : lov port map (clk, rst, lov_out, 
 	                         debounced_l, debounced_r, rdy);
-
-	input_buffer : reg14 port map (lov_out, serial_bus, clk, rst);
 
 end architecture; -- arch
