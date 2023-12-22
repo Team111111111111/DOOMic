@@ -55,11 +55,16 @@ int main () {
 			std::size_t lengthA = line.copy(A, line.length(), 0);
 			A[lengthA] = '\0';
 
-			iA = atoi(A) + 45;
+			iA = atoi(A) - 45;
 
 			if (iA >= 360) {
 				iA = iA - 360;
+
+			} else if (iA < 0) {
+				iA = iA + 360;
+
 			}
+
 
 			iA = iA * 63 / 360;
 			std::bitset<14> biA(iA); 

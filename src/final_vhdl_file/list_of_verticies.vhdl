@@ -269,13 +269,13 @@ begin
 				new_state <= plr_x;
 
 			when plr_x =>
-				serial_bus	<= "00000100101100";
+				serial_bus	<= "00000100101101";
 				new_pointer	<= pointer;
 
 				new_state <= plr_y;
 
 			when plr_y =>
-				serial_bus <= "00001001011000";
+				serial_bus <= "00001001011001";
 				
 
 				-- Updating the pointer based on the input buttons
@@ -419,8 +419,8 @@ begin
 				end if;
 
 			when vert0_0_a =>
-				-- bus output in decimal: 7
-				serial_bus <= "00000000000111";
+				-- bus output in decimal: 55
+				serial_bus <= "00000000110111";
 				new_pointer <= pointer;
 
 				new_state <= vert0_0_x;
@@ -552,8 +552,8 @@ begin
 				end if;
 
 			when vert1_0_a =>
-				-- bus output in decimal: 9
-				serial_bus <= "00000000001001";
+				-- bus output in decimal: 56
+				serial_bus <= "00000000111000";
 				new_pointer <= pointer;
 
 				new_state <= vert1_0_x;
@@ -685,8 +685,8 @@ begin
 				end if;
 
 			when vert2_0_a =>
-				-- bus output in decimal: 11
-				serial_bus <= "00000000001011";
+				-- bus output in decimal: 58
+				serial_bus <= "00000000111010";
 				new_pointer <= pointer;
 
 				new_state <= vert2_0_x;
@@ -818,8 +818,8 @@ begin
 				end if;
 
 			when vert3_0_a =>
-				-- bus output in decimal: 13
-				serial_bus <= "00000000001101";
+				-- bus output in decimal: 60
+				serial_bus <= "00000000111100";
 				new_pointer <= pointer;
 
 				new_state <= vert3_0_x;
@@ -969,8 +969,8 @@ begin
 				end if;
 
 			when vert4_0_a =>
-				-- bus output in decimal: 14
-				serial_bus <= "00000000001110";
+				-- bus output in decimal: 62
+				serial_bus <= "00000000111110";
 				new_pointer <= pointer;
 
 				new_state <= vert4_0_x;
@@ -1102,8 +1102,8 @@ begin
 				end if;
 
 			when vert5_0_a =>
-				-- bus output in decimal: 16
-				serial_bus <= "00000000010000";
+				-- bus output in decimal: 0
+				serial_bus <= "00000000000000";
 				new_pointer <= pointer;
 
 				new_state <= vert5_0_x;
@@ -1217,8 +1217,8 @@ begin
 				end if;
 
 			when vert6_0_a =>
-				-- bus output in decimal: 18
-				serial_bus <= "00000000010010";
+				-- bus output in decimal: 2
+				serial_bus <= "00000000000010";
 				new_pointer <= pointer;
 
 				new_state <= vert6_0_x;
@@ -1350,8 +1350,8 @@ begin
 				end if;
 
 			when vert7_0_a =>
-				-- bus output in decimal: 20
-				serial_bus <= "00000000010100";
+				-- bus output in decimal: 4
+				serial_bus <= "00000000000100";
 				new_pointer <= pointer;
 
 				new_state <= vert7_0_x;
@@ -1483,8 +1483,8 @@ begin
 				end if;
 
 			when vert8_0_a =>
-				-- bus output in decimal: 21
-				serial_bus <= "00000000010101";
+				-- bus output in decimal: 6
+				serial_bus <= "00000000000110";
 				new_pointer <= pointer;
 
 				new_state <= vert8_0_x;
@@ -1580,8 +1580,8 @@ begin
 				end if;
 
 			when vert9_0_a =>
-				-- bus output in decimal: 23
-				serial_bus <= "00000000010111";
+				-- bus output in decimal: 7
+				serial_bus <= "00000000000111";
 				new_pointer <= pointer;
 
 				new_state <= vert9_0_x;
@@ -1677,8 +1677,8 @@ begin
 				end if;
 
 			when vert10_0_a =>
-				-- bus output in decimal: 25
-				serial_bus <= "00000000011001";
+				-- bus output in decimal: 9
+				serial_bus <= "00000000001001";
 				new_pointer <= pointer;
 
 				new_state <= vert10_0_x;
@@ -1774,8 +1774,8 @@ begin
 				end if;
 
 			when vert11_0_a =>
-				-- bus output in decimal: 27
-				serial_bus <= "00000000011011";
+				-- bus output in decimal: 11
+				serial_bus <= "00000000001011";
 				new_pointer <= pointer;
 
 				new_state <= vert11_0_x;
@@ -1853,8 +1853,8 @@ begin
 				end if;
 
 			when vert12_0_a =>
-				-- bus output in decimal: 28
-				serial_bus <= "00000000011100";
+				-- bus output in decimal: 13
+				serial_bus <= "00000000001101";
 				new_pointer <= pointer;
 
 				new_state <= vert12_0_x;
@@ -1914,8 +1914,8 @@ begin
 				end if;
 
 			when vert13_0_a =>
-				-- bus output in decimal: 30
-				serial_bus <= "00000000011110";
+				-- bus output in decimal: 14
+				serial_bus <= "00000000001110";
 				new_pointer <= pointer;
 
 				new_state <= vert13_0_x;
@@ -1975,8 +1975,8 @@ begin
 				end if;
 
 			when vert14_0_a =>
-				-- bus output in decimal: 32
-				serial_bus <= "00000000100000";
+				-- bus output in decimal: 16
+				serial_bus <= "00000000010000";
 				new_pointer <= pointer;
 
 				new_state <= vert14_0_x;
@@ -2036,8 +2036,8 @@ begin
 				end if;
 
 			when vert15_0_a =>
-				-- bus output in decimal: 34
-				serial_bus <= "00000000100010";
+				-- bus output in decimal: 18
+				serial_bus <= "00000000010010";
 				new_pointer <= pointer;
 
 				new_state <= vert15_0_x;
@@ -2097,8 +2097,8 @@ begin
 				end if;
 
 			when vert16_0_a =>
-				-- bus output in decimal: 35
-				serial_bus <= "00000000100011";
+				-- bus output in decimal: 20
+				serial_bus <= "00000000010100";
 				new_pointer <= pointer;
 
 				new_state <= vert16_0_x;
@@ -2158,8 +2158,8 @@ begin
 				end if;
 
 			when vert17_0_a =>
-				-- bus output in decimal: 37
-				serial_bus <= "00000000100101";
+				-- bus output in decimal: 21
+				serial_bus <= "00000000010101";
 				new_pointer <= pointer;
 
 				new_state <= vert17_0_x;
@@ -2219,8 +2219,8 @@ begin
 				end if;
 
 			when vert18_0_a =>
-				-- bus output in decimal: 39
-				serial_bus <= "00000000100111";
+				-- bus output in decimal: 23
+				serial_bus <= "00000000010111";
 				new_pointer <= pointer;
 
 				new_state <= vert18_0_x;
@@ -2298,8 +2298,8 @@ begin
 				end if;
 
 			when vert19_0_a =>
-				-- bus output in decimal: 41
-				serial_bus <= "00000000101001";
+				-- bus output in decimal: 25
+				serial_bus <= "00000000011001";
 				new_pointer <= pointer;
 
 				new_state <= vert19_0_x;
@@ -2395,8 +2395,8 @@ begin
 				end if;
 
 			when vert20_0_a =>
-				-- bus output in decimal: 42
-				serial_bus <= "00000000101010";
+				-- bus output in decimal: 27
+				serial_bus <= "00000000011011";
 				new_pointer <= pointer;
 
 				new_state <= vert20_0_x;
@@ -2510,8 +2510,8 @@ begin
 				end if;
 
 			when vert21_0_a =>
-				-- bus output in decimal: 44
-				serial_bus <= "00000000101100";
+				-- bus output in decimal: 28
+				serial_bus <= "00000000011100";
 				new_pointer <= pointer;
 
 				new_state <= vert21_0_x;
@@ -2625,8 +2625,8 @@ begin
 				end if;
 
 			when vert22_0_a =>
-				-- bus output in decimal: 46
-				serial_bus <= "00000000101110";
+				-- bus output in decimal: 30
+				serial_bus <= "00000000011110";
 				new_pointer <= pointer;
 
 				new_state <= vert22_0_x;
@@ -2740,8 +2740,8 @@ begin
 				end if;
 
 			when vert23_0_a =>
-				-- bus output in decimal: 48
-				serial_bus <= "00000000110000";
+				-- bus output in decimal: 32
+				serial_bus <= "00000000100000";
 				new_pointer <= pointer;
 
 				new_state <= vert23_0_x;
@@ -2873,8 +2873,8 @@ begin
 				end if;
 
 			when vert24_0_a =>
-				-- bus output in decimal: 49
-				serial_bus <= "00000000110001";
+				-- bus output in decimal: 34
+				serial_bus <= "00000000100010";
 				new_pointer <= pointer;
 
 				new_state <= vert24_0_x;
@@ -2988,8 +2988,8 @@ begin
 				end if;
 
 			when vert25_0_a =>
-				-- bus output in decimal: 51
-				serial_bus <= "00000000110011";
+				-- bus output in decimal: 35
+				serial_bus <= "00000000100011";
 				new_pointer <= pointer;
 
 				new_state <= vert25_0_x;
@@ -3103,8 +3103,8 @@ begin
 				end if;
 
 			when vert26_0_a =>
-				-- bus output in decimal: 53
-				serial_bus <= "00000000110101";
+				-- bus output in decimal: 37
+				serial_bus <= "00000000100101";
 				new_pointer <= pointer;
 
 				new_state <= vert26_0_x;
@@ -3218,8 +3218,8 @@ begin
 				end if;
 
 			when vert27_0_a =>
-				-- bus output in decimal: 55
-				serial_bus <= "00000000110111";
+				-- bus output in decimal: 39
+				serial_bus <= "00000000100111";
 				new_pointer <= pointer;
 
 				new_state <= vert27_0_x;
@@ -3315,8 +3315,8 @@ begin
 				end if;
 
 			when vert28_0_a =>
-				-- bus output in decimal: 56
-				serial_bus <= "00000000111000";
+				-- bus output in decimal: 41
+				serial_bus <= "00000000101001";
 				new_pointer <= pointer;
 
 				new_state <= vert28_0_x;
@@ -3412,8 +3412,8 @@ begin
 				end if;
 
 			when vert29_0_a =>
-				-- bus output in decimal: 58
-				serial_bus <= "00000000111010";
+				-- bus output in decimal: 42
+				serial_bus <= "00000000101010";
 				new_pointer <= pointer;
 
 				new_state <= vert29_0_x;
@@ -3509,8 +3509,8 @@ begin
 				end if;
 
 			when vert30_0_a =>
-				-- bus output in decimal: 60
-				serial_bus <= "00000000111100";
+				-- bus output in decimal: 44
+				serial_bus <= "00000000101100";
 				new_pointer <= pointer;
 
 				new_state <= vert30_0_x;
@@ -3606,8 +3606,8 @@ begin
 				end if;
 
 			when vert31_0_a =>
-				-- bus output in decimal: 62
-				serial_bus <= "00000000111110";
+				-- bus output in decimal: 46
+				serial_bus <= "00000000101110";
 				new_pointer <= pointer;
 
 				new_state <= vert31_0_x;
@@ -3721,8 +3721,8 @@ begin
 				end if;
 
 			when vert32_0_a =>
-				-- bus output in decimal: 0
-				serial_bus <= "00000000000000";
+				-- bus output in decimal: 48
+				serial_bus <= "00000000110000";
 				new_pointer <= pointer;
 
 				new_state <= vert32_0_x;
@@ -3836,8 +3836,8 @@ begin
 				end if;
 
 			when vert33_0_a =>
-				-- bus output in decimal: 2
-				serial_bus <= "00000000000010";
+				-- bus output in decimal: 49
+				serial_bus <= "00000000110001";
 				new_pointer <= pointer;
 
 				new_state <= vert33_0_x;
@@ -3951,8 +3951,8 @@ begin
 				end if;
 
 			when vert34_0_a =>
-				-- bus output in decimal: 4
-				serial_bus <= "00000000000100";
+				-- bus output in decimal: 51
+				serial_bus <= "00000000110011";
 				new_pointer <= pointer;
 
 				new_state <= vert34_0_x;
@@ -4066,8 +4066,8 @@ begin
 				end if;
 
 			when vert35_0_a =>
-				-- bus output in decimal: 6
-				serial_bus <= "00000000000110";
+				-- bus output in decimal: 53
+				serial_bus <= "00000000110101";
 				new_pointer <= pointer;
 
 				new_state <= vert35_0_x;
@@ -4218,3 +4218,4 @@ begin
 		end case;
 	end process;
 end architecture;
+-- bottom text
