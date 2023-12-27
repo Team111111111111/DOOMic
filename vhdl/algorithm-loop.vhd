@@ -9,7 +9,7 @@ entity algorithm is
     port (
 	clk		: in std_logic;
 	reset		: in std_logic;
-	mux   		: in std_logic;
+	sel   		: in std_logic;
 	enable		: in std_logic;
 
 	start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -37,13 +37,13 @@ architecture behavioural of algorithm is
 					draw_2_add,
 					adress_2_out, -- adress out
 
-					e_calc, -- e + dy or e + dx (MUX = '0')
+					e_calc, -- e + dy or e + dx (sel = '0')
 					e_shift_compare_temp,
 					e_compare, 
-					e_calc1, -- e - dx or e - dy (MUX = '0')
+					e_calc1, -- e - dx or e - dy (sel = '0')
 
-					count_increase, -- x+1 or y + 1 (MUX = '0')
-					sec_count_increase, -- y+1 or x+1 (MUX = '0')
+					count_increase, -- x+1 or y + 1 (sel = '0')
+					sec_count_increase, -- y+1 or x+1 (sel = '0')
 					done);
 	
 	signal state, next_state: loop_states;
@@ -238,7 +238,7 @@ port map(
 				new_sec_position <= sec_position;
 				new_e_count <= e_count;
 
-				if (mux = '1') then
+				if (sel = '1') then
 					draw_x_sig <= position;
 					draw_y_sig <= sec_position(7 downto 0);
 				else
