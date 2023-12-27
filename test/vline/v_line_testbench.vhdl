@@ -53,10 +53,10 @@ begin
 
     data_in <= "00000000000000" after 0 ns, --start at 0
                "00001010111100" after 140 ns, -- set x to 700
-               "00000001100100" after 160 ns, -- set y yo 100
-               "00000000000001" after 180 ns, -- set alpha to 1
-               "00001010111100" after 200 ns, -- set first vertex x to 700
-               "00000000101000" after 220 ns, -- set first vertex y to 40
-               "00000000000000" after 241 ns;
+               "00000001100100" after 180 ns, -- set y yo 100
+               "00000000000001" after 220 ns, -- set alpha to 1
+               "00001010111100" after 260 ns, -- set first vertex x to 700
+               "00000000101000" after 300 ns, -- set first vertex y to 40
+               "00000000000001" after 340 ns;
 
 end architecture;

@@ -546,20 +546,24 @@ ready_out_bus <='0';
                 ready_out_bus   <='0';
                     
             when aprox_sin_comp =>
+                -- Note sin(x) = cos(x-16) for n=6 bit binary angles
                 if (comp32_out = '0') then         -- comp32: '0' if alpha <= 32 (portmapped to buffer 6)
-                    --don't do anything
-                    mult_1_sig  <= (others => '0');
-                    mult_2_sig  <= (others => '0');
-                    adder_sig   <= (others => '0');
+                    --subtract 16 to approx sin
+                    mult_1_sig  <= buffers_out(0);
+                    mult_2_sig  <= "0000000000000100000000";
+                    adder_sig   <= "1111111111000000000000"; -- add -16 (subtract)
+                    buffers_in(0)   <= block_out_sig;
+                    en(0)           <= '1'; 
                     new_state   <= aprox_sin_pt1;
                     
-                    buffers_in (6 downto 0) <= (others => (others => '0'));
-                    en(6 downto 0)          <= (others => '0');
+                    buffers_in (6 downto 1) <= (others => (others => '0'));
+                    en(6 downto 1)          <= (others => '0');
                 else                            -- 48 < alpha <= 64
                     -- subtract 32 so alpha is in approximator's domain
+                    -- subtract 16 to approx sin: total subtract 48
                     mult_1_sig      <= buffers_out(0);
                     mult_2_sig      <= "0000000000000100000000";
-                    adder_sig       <= "1111111110000000000000";      -- add -32 (subtract)
+                    adder_sig       <= "1111111101000000000000";      -- add -48 (subtract)
                     buffers_in(0)   <= block_out_sig;                   -- store (intermediate) output of sin(alpha) into buffer 0
                     en(0)           <= '1';
                     new_state   <= aprox_sin_pt1;
