@@ -23,7 +23,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if unsigned(a) > 16 then
+		if (unsigned(a) > 16) then
 			y := '1';
 		end if;
 		return (y);
@@ -33,7 +33,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if unsigned(a) > 32 then
+		if (unsigned(a) > 32) then
 			y := '1';
 		end if;
 		return (y);
@@ -43,7 +43,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if unsigned(a) > 48 then
+		if (unsigned(a) > 48) then
 			y := '1';
 		end if;
 		return (y);
