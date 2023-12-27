@@ -23,7 +23,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if (unsigned(a) > 16) then
+		if (unsigned(a) > 4096) then -- because 8 fractional bits (4096 = 16*2^8)
 			y := '1';
 		end if;
 		return (y);
@@ -33,7 +33,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if (unsigned(a) > 32) then
+		if (unsigned(a) > 8192) then -- because 8 fractional bits (8192 = 32*2^8)
 			y := '1';
 		end if;
 		return (y);
@@ -43,7 +43,7 @@ generic(n_bits : integer := 24);
 	return std_logic is
 		variable y: std_logic := '0';
 	begin
-		if (unsigned(a) > 48) then
+		if (unsigned(a) > 12288) then -- because 8 fractional bits (12288 = 48*2^8)
 			y := '1';
 		end if;
 		return (y);
