@@ -20,7 +20,7 @@ entity comb is
 	dxy1_out	: out std_logic_vector(8 downto 0);
 	dxy2_out	: out std_logic_vector(8 downto 0);
 	
-	sel_out 	 : out std_logic
+	sel_out 	: out std_logic
     );	
 end entity comb;
 
