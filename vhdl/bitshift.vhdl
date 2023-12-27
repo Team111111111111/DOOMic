@@ -132,8 +132,8 @@ use IEEE.std_logic_1164.ALL;
 
 entity bitshift_left is
 port(
-	input  : in  std_logic_vector(14 downto 0);
-        output : out std_logic_vector(14 downto 0);
+	input  : in  std_logic_vector(15 downto 0);
+        output : out std_logic_vector(15 downto 0);
         flag   : out std_logic
 );
 end bitshift_left;
