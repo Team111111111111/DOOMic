@@ -56,7 +56,7 @@ component comb is
 		dxy1_out	: out std_logic_vector(8 downto 0);
 		dxy2_out	: out std_logic_vector(8 downto 0);
 
-		mux_out 	: out std_logic
+		sel_out 	: out std_logic
 	);
 end component;
 
@@ -65,7 +65,7 @@ component algorithm is
 	port(
 		clk		: in std_logic;
 		reset		: in std_logic;
-		mux   		: in std_logic;
+		sel   		: in std_logic;
 		enable		: in std_logic;
 
 		start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -83,7 +83,7 @@ end component;
 signal x1_signal, x2_signal: std_logic_vector(8 downto 0);
 signal y1_signal, y2_signal, y3_signal, y4_signal: std_logic_vector(7 downto 0);
 signal right_cond_sig, start_pos_1_sig, start_pos_2_sig, dxy1_sig, dxy2_sig: std_logic_vector(8 downto 0);
-signal mux_sig: std_logic;
+signal sel_mux_sig: std_logic;
 
 begin
 	buff: reg port map(	clk	=> clk,
@@ -112,12 +112,12 @@ begin
 				start_pos_2_out	=> start_pos_2_sig,
 				dxy1_out	=> dxy1_sig,
 				dxy2_out	=> dxy2_sig,
-				mux_out		=> mux_sig
+				sel_out		=> sel_mux_sig
 				);
 
 	alg: algorithm port map(clk		=> clk,
 				reset		=> reset,
-				mux		=> mux_sig,
+				sel		=> sel_mux_sig,
 				enable		=> enable,
 				start_pos_1	=> start_pos_1_sig,
 				start_pos_2	=> start_pos_2_sig,
