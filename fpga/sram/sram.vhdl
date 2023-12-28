@@ -11,7 +11,6 @@ entity sram is
 		data_out    : out std_logic_vector(7 downto 0); -- byte out
 		address	    : in std_logic_vector(17 downto 0); -- address in
 
-		maskselect  : in std_logic;	-- 0 for lower byte, 1 for upper byte
 		readwrite	: in std_logic; -- 0 for read, 1 for write
 		enable		: in std_logic; -- 1 tp perform r/w action
 		
@@ -42,7 +41,7 @@ begin
 	
 process(clk)
 	begin
-		if(res = '1') then --async resit
+		if(res = '1') then --async reset
 			S_readdata <= (others => '0');
 			SRAM_CE_N<='0'; --enable chip
 			SRAM_LB_N<='1'; --disable low bit mask
@@ -71,13 +70,13 @@ process(clk)
 	
 process(S_readwrite) --perform read/write action when signal changes
 	begin
-		SRAM_OE_N <= '1'; --disable output
-		SRAM_WE_N <= '1'; --disable write
 		if(S_readwrite = '0') then --read
 			S_ramstate <= readstate;
+			SRAM_WE_N <= '1'; --disable write
 			SRAM_OE_N <= '0'; --enable output
 		else --write
 			S_ramstate <= writestate;
+			SRAM_OE_N <= '1'; --disable output
 			SRAM_WE_N <= '0'; --enable write
 		end if;
 	end process;
