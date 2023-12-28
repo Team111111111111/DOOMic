@@ -20,7 +20,7 @@ entity comb is
 	dxy1_out	: out std_logic_vector(8 downto 0);
 	dxy2_out	: out std_logic_vector(8 downto 0);
 	
-	mux 	  	: out std_logic
+	sel_out 	: out std_logic
     );	
 end entity comb;
 
@@ -45,14 +45,14 @@ begin
 	dy_temp <= unsigned(yR_temp) - unsigned(yL_temp);
 
 	if (dx_temp >= dy_temp) then
-		mux_out <= '1';
+		sel_out <= '1';
 		start_pos_1_out <= x1;
 		start_pos_2_out <= ('0' & yL_temp);
 		right_cond_out <= x2;
 		dxy1_out <= ('0' & std_logic_vector(dy_temp));
 		dxy2_out <= std_logic_vector(dx_temp);
 	else
-		mux_out <= '0';
+		sel_out <= '0';
 		start_pos_1_out <= ('0' & yL_temp);
 		start_pos_2_out <= x1;
 		right_cond_out <= ('0' & yR_temp);
