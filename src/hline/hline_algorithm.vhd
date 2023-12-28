@@ -1,6 +1,3 @@
-
--- this is an FSM for the line drawing algorithm. 
-
 library IEEE;
 use IEEE.std_logic_1164.all;
 use IEEE.numeric_std.all;
@@ -9,7 +6,7 @@ entity algorithm is
     port (
 	clk		: in std_logic;
 	reset		: in std_logic;
-	mux   		: in std_logic;
+	sel   		: in std_logic;
 	enable		: in std_logic;
 
 	start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -19,48 +16,54 @@ entity algorithm is
         dxy1		: in std_logic_vector(8 downto 0);
         dxy2		: in std_logic_vector(8 downto 0);
 
-	adress		: out std_logic_vector(15 downto 0);
+	address		: out std_logic_vector(15 downto 0);
 	ready		: out std_logic    );
 end entity algorithm;
 
 architecture behavioural of algorithm is
 
-	type loop_states is (		reset_state,
-					populate,
-					for_loop,
-					prepare_draw,
-					draw_1_mulp,
-					draw_1_add,
-					adress_1_out, -- adress out
-					mirror, -- 199 - y 
-					draw_2_mulp,
-					draw_2_add,
-					adress_2_out, -- adress out
+	type loop_states is (		reset_state,		-- sets everything to 0
+					populate,		-- initializes start values
+					for_loop,		-- checks if 'loop' is done or should continue
+					prepare_draw,		-- sets with 'sel' if 'start_pos_1' is x or y and 'start_pos_2' is x or y
+								-- and appropriately assigns them to temp x, y signals.
+					draw_1_mulp,		-- mulp_y <= 320 * y 
+					draw_1_add,		-- address_temp <= mulp_y + x
+					address_1_out, 		-- address out (320 * y + x)
 
-					e_calc, -- e + dy or e + dx (MUX = '0')
-					e_shift_compare_temp,
-					e_compare, 
-					e_calc1, -- e - dx or e - dy (MUX = '0')
+					mirror, 		-- 199 - y 
+					draw_2_mulp,		-- 320 * mirror_y
+					draw_2_add,		-- + x
+					address_2_out, 		-- address out (320 * y_mirror + x)
 
-					count_increase, -- x+1 or y + 1 (MUX = '0')
-					sec_count_increase, -- y+1 or x+1 (MUX = '0')
+					e_calc, 		-- e + dy (sel = '1') or e + dx (sel = '0')
+					e_shift_compare_temp,	-- temp. shifts e to left (e * 2)
+					e_compare, 		-- compares shifted value to dxy2 and determined next new state
+					e_calc1, 		-- e - dx (sel = '1') or e - dy (sel = '0')
+
+					count_increase, 	-- x+1 (sel = '1') or y + 1 (sel = '0')
+					sec_count_increase, 	-- y+1 (sel = '1') or x+1 (sel = '0')
 					done);
 	
 	signal state, next_state: loop_states;
 
-
+-- 'signals' (memory) used for counters.
 signal position, new_position: unsigned(8 downto 0);
 signal sec_position, new_sec_position: unsigned(8 downto 0);
 signal e_count, new_e_count: signed(15 downto 0);
-signal adress_temp: std_logic_vector(15 downto 0);
 
+
+-- 'signals' to temporary store values (memory elements)
+signal address_temp: std_logic_vector(15 downto 0);
 signal draw_x_sig: unsigned(8 downto 0);
 signal draw_y_sig: unsigned(7 downto 0);
 signal mirror_y: unsigned(7 downto 0);
-signal mulp_y, mulp_y_mirror: std_logic_vector(16 downto 0);
+signal mulp_y, mulp_mirror_y: std_logic_vector(16 downto 0);
 
+
+-- signals used to connect to components.
 signal shift_in_sign, shift_out_sign, shift_out_temp: std_logic_vector(15 downto 0);
-
+signal add_1_sig, add_2_sig, sub_sig, result_adder_sig: std_logic_vector(15 downto 0);
 
 component bitshift_left is
 	port(
@@ -70,55 +73,45 @@ component bitshift_left is
 	);
 end component;
 
-component adders is
+component plus_minus is
 	port(
-		clk	: in std_logic;
 		add_1	: in std_logic_vector(15 downto 0);
 		add_2	: in std_logic_vector(15 downto 0);
 		sub	: in std_logic_vector(15 downto 0);
-		sel	: in std_logic;
 		result	: out std_logic_vector(15 downto 0));
 end component;
-
-
-signal add_1_sig, add_2_sig, sub_sig, result_adder_sig: std_logic_vector(15 downto 0);
-signal sel_sig: std_logic;
 
 
 begin
 
 bitshift: bitshift_left
 port map(
-	input => shift_in_sign,
-	output => shift_out_sign,
-	flag => open);
+	input 	=> shift_in_sign,
+	output 	=> shift_out_sign,
+	flag 	=> open);
 
-addsub: adders
+addsub: plus_minus
 port map(
-	clk => clk,
-	add_1 => add_1_sig,
-	add_2 => add_2_sig,
-	sub   => sub_sig,
-	result => result_adder_sig,
-	sel => sel_sig);
-
+	add_1	=> add_1_sig,
+	add_2	=> add_2_sig,
+	sub  	=> sub_sig,
+	result 	=> result_adder_sig);
 
 
 	process (clk)
 	begin	
 		if (rising_edge (clk)) then
 			if (reset = '1') then
-				state <= reset_state;
-
-				position <= (others => '0') ;
-				sec_position <= (others => '0');
-				e_count <= (others => '0');
+				state 		<= reset_state;
+				position 	<= (others => '0');
+				sec_position 	<= (others => '0');
+				e_count 	<= (others => '0');
 
 			else 
-				state <= next_state;
-				position <= new_position;
-				sec_position <= new_sec_position;
-				e_count <= new_e_count;
+				state 		<= next_state;
+				position 	<= new_position;
+				sec_position 	<= new_sec_position;
+				e_count 	<= new_e_count;
 
 			end if;
 		end if;
@@ -128,22 +121,26 @@ port map(
 	begin
 		case state is
 			when reset_state => 
-				shift_in_sign <= (others => '0');
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= (others => '0');
-				new_sec_position <= (others => '0');
-				new_e_count <= (others => '0');
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= (others => '0');
+				new_sec_position<= (others => '0');
+				new_e_count 	<= (others => '0');
 
 				if (enable = '1') then
 					next_state <= populate;
@@ -151,44 +148,52 @@ port map(
 					next_state <= reset_state;
 				end if;
 
-			when populate => 
-				shift_in_sign <= (others => '0');
+			when populate => 		-- initializes start values for the 'loop'
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= unsigned(start_pos_1);
-				new_sec_position <= unsigned(start_pos_2);
-				new_e_count <= (others => '0');
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				next_state <= for_loop;
+				new_position 	<= unsigned(start_pos_1);
+				new_sec_position<= unsigned(start_pos_2);
+				new_e_count 	<= (others => '0');
+
+				next_state 	<= for_loop;
 			
 		
-			when for_loop =>
-				shift_in_sign <= (others => '0');
+			when for_loop =>		-- checks if 'loop' is done or should continue
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
 				if (unsigned(position) < unsigned(right_cond)) then
 					next_state <= prepare_draw;
@@ -197,22 +202,26 @@ port map(
 				end if;
 
 			when done =>
-				shift_in_sign <= (others => '0');
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
 				if (enable = '1') then
 					next_state <= reset_state;
@@ -220,334 +229,385 @@ port map(
 					next_state <= done;
 				end if;
 
-			when prepare_draw =>
-				shift_in_sign <= (others => '0');
+			when prepare_draw =>		-- sets with 'sel' if 'start_pos_1' is x or y and 'start_pos_2' is x or y
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
-
-				adress <= (others => '0');
-				ready <= '0';
-
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
-
-				if (mux = '1') then
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				if (sel = '1') then
 					draw_x_sig <= position;
 					draw_y_sig <= sec_position(7 downto 0);
 				else
 					draw_x_sig <= sec_position;
 					draw_y_sig <= position(7 downto 0);
 				end if;
+				address_temp	<= (others => '0');
 
-				next_state <= draw_1_mulp;
 
-			when draw_1_mulp => --320*Y
+				address 	<= (others => '0');
+				ready 		<= '0';
 
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-				shift_in_sign <= (others => '0');
+				next_state 	<= draw_1_mulp;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+			when draw_1_mulp =>		-- for address = 320*y+x, first 320*y
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
 
-				mulp_y <= std_logic_vector((draw_y_sig & "00000") * "1010"); --320*y;
+				mulp_y 		<= std_logic_vector((draw_y_sig & "00000") * "1010"); --320*y;
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= draw_y_sig;
+				address_temp	<= (others => '0');
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
 
-				adress <= (others => '0');
-				ready <= '0';
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-				next_state <= draw_1_add;
+				address 	<= (others => '0');
+				ready 		<= '0';
 
+				next_state 	<= draw_1_add;
 
-			when draw_1_add => -- +X
-				shift_in_sign <= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+			when draw_1_add => 		-- + x
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= mulp_y(15 downto 0);
+				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
+				sub_sig 	<= (others => '0');
 
-				add_1_sig <= mulp_y(15 downto 0);
-				add_2_sig <= std_logic_vector("0000000"& draw_x_sig);
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				mulp_y 		<= mulp_y;
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= draw_y_sig;
+				address_temp	<= result_adder_sig; 	
 
-				adress_temp <= result_adder_sig; 				
-				ready <= '0';
 
-				next_state <= adress_1_out;
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-			when adress_1_out => -- adress <= 320*Y+X
-				shift_in_sign <= (others => '0');
+				address 	<= (others => '0');			
+				ready 		<= '0';
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				next_state 	<= address_1_out;
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+			when address_1_out => 		-- address <= 320*y+x
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mirror_y <= (others => '0');
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= draw_y_sig;
+				address_temp	<= address_temp;
 
-				adress <= adress_temp; --320draw_y_sig+draw_x_sig
-				ready <= '1';
-				next_state <= mirror;
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-			when mirror =>
-				shift_in_sign <= (others => '0');
+				address 	<= address_temp; -- final output is 320*draw_y_sig + draw_x_sig
+				ready 		<= '1';
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				next_state 	<= mirror;
 
-				add_1_sig <= "0000000011000111";
-				add_2_sig <= (others=> '0');
-				sub_sig <= ("00000000" & std_logic_vector(draw_y_sig));
-				sel_sig <= '1';
+			when mirror =>			-- y gets mirrored, this to draw the second line
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= "0000000011000111";
+				add_2_sig 	<= (others=> '0');
+				sub_sig 	<= ("00000000" & std_logic_vector(draw_y_sig));
 
-				mirror_y <= unsigned(result_adder_sig(7 downto 0));
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= unsigned(result_adder_sig(7 downto 0));
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= draw_y_sig;
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				next_state <= draw_2_mulp;
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-			when draw_2_mulp =>
-				shift_in_sign <= (others => '0');
+				next_state 	<= draw_2_mulp;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= std_logic_vector((mirror_y & "00000") * "1010");
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+			when draw_2_mulp =>		-- 320*mirror_y (address = 320*y_mirror+x)
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
 
-				adress <= (others => '0');
-				ready <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= mirror_y;
+				mulp_mirror_y 	<= std_logic_vector((mirror_y & "00000") * "1010");
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				next_state <=draw_2_add;
 
-			when draw_2_add =>
-				shift_in_sign <= (others => '0');
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				add_1_sig <= mulp_y_mirror(15 downto 0);
-				add_2_sig <= std_logic_vector("0000000"& draw_x_sig);
-				sub_sig <= (others=> '0');
-				sel_sig <= '0';
+				next_state 	<= draw_2_add;
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+			when draw_2_add =>		-- + x
+				shift_in_sign 	<= (others => '0');
+				add_1_sig	<= mulp_mirror_y(15 downto 0);
+				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
+				sub_sig 	<= (others=> '0');
 
-				adress_temp <= result_adder_sig; -- 320y_mirror+x_position;
-				ready <= '0';
 
-				next_state <=adress_2_out;
+				mulp_y 		<= (others => '0');
+				mirror_y	<= (others => '0');
+				mulp_mirror_y 	<= mulp_mirror_y;
+				draw_x_sig	<= draw_x_sig;
+				draw_y_sig	<= (others => '0');
+				address_temp	<= result_adder_sig; -- 320mirror_y+x_position;
 
-			when adress_2_out =>
-				shift_in_sign <= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				adress <= adress_temp;
-				ready <= '1';
+				next_state 	<= address_2_out;
 
-				next_state <=e_calc;
+			when address_2_out =>		-- address out (320 * mirror_y + x)
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
 
-			when e_calc =>
-				shift_in_sign <= (others => '0');
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= address_temp;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= std_logic_vector(e_count);
-				add_2_sig <= std_logic_vector("0000000"& dxy1);
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= signed(result_adder_sig);	
+				address 	<= address_temp;
+				ready 		<= '1';
 
-				adress <= (others => '0');
-				ready <= '0';
+				next_state 	<= e_calc;
 
-				next_state <= e_shift_compare_temp;
 
+			when e_calc =>			-- e + dy or e + dy depending on 'sel' signal
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= std_logic_vector(e_count);
+				add_2_sig 	<= std_logic_vector("0000000"& dxy1);
+				sub_sig 	<= (others => '0');
 
-			when e_shift_compare_temp =>
-				shift_in_sign <= std_logic_vector(e_count);
-				shift_out_temp <= shift_out_sign;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= signed(result_adder_sig);	
 
-				adress <= (others => '0');
-				ready <= '0';
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				next_state <=e_compare;
+				next_state 	<= e_shift_compare_temp;
 
 
-			when e_compare =>
-				shift_in_sign <= (others => '0');
+			when e_shift_compare_temp =>		-- e**2
+				shift_in_sign 	<= std_logic_vector(e_count);
+				shift_out_temp 	<= shift_out_sign;
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				add_1_sig	<= (others => '0');
+				add_2_sig	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
 
-				adress <= (others => '0');
-				ready <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
+
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				next_state 	<= e_compare;
+
+
+			when e_compare =>		-- (e**2) > dxy2 
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
+
+
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
+
+
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
 
 				
 				if (signed(shift_out_temp) > signed("0000000" & dxy2)) then
-					next_state <=e_calc1;
+					next_state <= e_calc1;
 				else
-					next_state <=count_increase;
+					next_state <= count_increase;
 				end if;
 
 
-			when e_calc1 =>
-				shift_in_sign <= (others => '0');
-
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
-
-				add_1_sig <= std_logic_vector(e_count);
-				add_2_sig <= (others => '0');
-				sub_sig <= (std_logic_vector("0000000"& dxy2));
-				sel_sig <= '1';
-
-				adress <= (others => '0');
-				ready <= '0';
-
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= signed(result_adder_sig);
-
-				next_state <= sec_count_increase;
+			when e_calc1 =>			-- e - dx (sel = '1') or e - dy
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= std_logic_vector(e_count);
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (std_logic_vector("0000000"& dxy2));
 
 
-			when sec_count_increase => 
-				shift_in_sign <= (others => '0');
-
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
-
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
-
-				adress <= (others => '0');
-				ready <= '0';
-
-				new_position <= position;
-				new_sec_position <= sec_position+1;
-				new_e_count <= e_count;
-
-				next_state <= count_increase;
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
 
-			when count_increase =>
-				shift_in_sign <= (others => '0');
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= signed(result_adder_sig);
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				next_state 	<= sec_count_increase;
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= position+1;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+			when sec_count_increase => 	-- x + 1 or y + 1 
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				next_state <= for_loop;
+
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
+
+
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= position;
+				new_sec_position<= sec_position+1;
+				new_e_count 	<= e_count;
+
+				next_state 	<= count_increase;
+
+
+			when count_increase =>		-- x + 1 or y + 1, depending on which axis the algorithm iterates
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
+
+
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
+
+
+				address 	<= (others => '0');
+				ready 		<= '0';
+
+				new_position 	<= position + 1;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
+
+				next_state 	<= for_loop;
 
 			when others =>
-				shift_in_sign <= (others => '0');
+				shift_in_sign 	<= (others => '0');
+				add_1_sig 	<= (others => '0');
+				add_2_sig 	<= (others => '0');
+				sub_sig 	<= (others => '0');
 
-				mulp_y <= (others => '0');
-				mulp_y_mirror <= (others => '0');
 
-				add_1_sig <= (others => '0');
-				add_2_sig <= (others => '0');
-				sub_sig <= (others => '0');
-				sel_sig <= '0';
+				mulp_y 		<= (others => '0');
+				mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= (others => '0');
+				draw_x_sig	<= (others => '0');
+				draw_y_sig	<= (others => '0');
+				address_temp	<= (others => '0');
 
-				adress <= (others => '0');
-				ready <= '0';
 
-				new_position <= position;
-				new_sec_position <= sec_position;
-				new_e_count <= e_count;
+				address 	<= (others => '0');
+				ready 		<= '0';
 
-				next_state <= reset_state;
+				new_position 	<= position;
+				new_sec_position<= sec_position;
+				new_e_count 	<= e_count;
+
+				next_state 	<= reset_state;
 				
 		end case;
 	end process;	
