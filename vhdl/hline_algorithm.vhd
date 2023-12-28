@@ -64,7 +64,6 @@ signal mulp_y, mulp_mirror_y: std_logic_vector(16 downto 0);
 -- signals used to connect to components.
 signal shift_in_sign, shift_out_sign, shift_out_temp: std_logic_vector(15 downto 0);
 signal add_1_sig, add_2_sig, sub_sig, result_adder_sig: std_logic_vector(15 downto 0);
-signal sel_sig: std_logic;
 
 component bitshift_left is
 	port(
@@ -76,11 +75,9 @@ end component;
 
 component plus_minus is
 	port(
-		clk	: in std_logic;
 		add_1	: in std_logic_vector(15 downto 0);
 		add_2	: in std_logic_vector(15 downto 0);
 		sub	: in std_logic_vector(15 downto 0);
-		sel	: in std_logic;
 		result	: out std_logic_vector(15 downto 0));
 end component;
 
@@ -95,12 +92,10 @@ port map(
 
 addsub: plus_minus
 port map(
-	clk	=> clk,
 	add_1	=> add_1_sig,
 	add_2	=> add_2_sig,
 	sub  	=> sub_sig,
-	result 	=> result_adder_sig,
-	sel 	=> sel_sig);
+	result 	=> result_adder_sig);
 
 
 	process (clk)
@@ -130,7 +125,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -159,7 +153,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig	 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -185,7 +178,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -214,7 +206,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -243,7 +234,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -273,7 +263,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= std_logic_vector((draw_y_sig & "00000") * "1010"); --320*y;
@@ -299,10 +288,9 @@ port map(
 				add_1_sig 	<= mulp_y(15 downto 0);
 				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
 				sub_sig 	<= (others => '0');
-				sel_sig		<= '0';
 
 
-				mulp_y 		<= (others => '0');
+				mulp_y 		<= mulp_y;
 				mirror_y	<= (others => '0');
 				mulp_mirror_y 	<= (others => '0');
 				draw_x_sig	<= draw_x_sig;
@@ -324,7 +312,7 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
+
 
 				mulp_y 		<= (others => '0');
 				mirror_y	<= (others => '0');
@@ -347,7 +335,6 @@ port map(
 				add_1_sig 	<= "0000000011000111";
 				add_2_sig 	<= (others=> '0');
 				sub_sig 	<= ("00000000" & std_logic_vector(draw_y_sig));
-				sel_sig 	<= '1';
 
 
 				mulp_y 		<= (others => '0');
@@ -373,7 +360,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -398,12 +384,11 @@ port map(
 				add_1_sig	<= mulp_mirror_y(15 downto 0);
 				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
 				sub_sig 	<= (others=> '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
 				mirror_y	<= (others => '0');
-				mulp_mirror_y 	<= (others => '0');
+				mulp_mirror_y 	<= mulp_mirror_y;
 				draw_x_sig	<= draw_x_sig;
 				draw_y_sig	<= (others => '0');
 				address_temp	<= result_adder_sig; -- 320mirror_y+x_position;
@@ -424,7 +409,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -450,7 +434,6 @@ port map(
 				add_1_sig 	<= std_logic_vector(e_count);
 				add_2_sig 	<= std_logic_vector("0000000"& dxy1);
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -478,7 +461,6 @@ port map(
 				add_1_sig	<= (others => '0');
 				add_2_sig	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig		<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -504,7 +486,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -535,7 +516,6 @@ port map(
 				add_1_sig 	<= std_logic_vector(e_count);
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (std_logic_vector("0000000"& dxy2));
-				sel_sig 	<= '1';
 
 
 				mulp_y 		<= (others => '0');
@@ -561,7 +541,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -587,7 +566,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
@@ -612,7 +590,6 @@ port map(
 				add_1_sig 	<= (others => '0');
 				add_2_sig 	<= (others => '0');
 				sub_sig 	<= (others => '0');
-				sel_sig 	<= '0';
 
 
 				mulp_y 		<= (others => '0');
