@@ -28,13 +28,13 @@ architecture behavioural of vga_ram_controller is
 	type ctrl_state is (
 		reset,
 		read_chip,
-		red_zeros,
+		read_zeros,
 		out_store_chip,
 		out_store_zeros,
 		mux_chip,
 		mux_zeros,
 		in_store,
-		store_zeros,
+		zeros_store,
 		mux_vga_chip,
 		mux_vga_zeros.
 		wait_vga_chip,
@@ -92,7 +92,7 @@ begin
 
 			when read_chip =>
 				in_hold		<= '0'; 
-				out_hold	<= '1'; 
+				out_hold	<= '0'; 
 				rdy		<= '0'; 
 				r\w		<= '0'; -- read is 0 
 				sram_enable	<= '1'; 
@@ -113,7 +113,7 @@ begin
 
 			when out_store_chip => 
 				in_hold		<= '0'; 
-				out_hold	<= '1'; 
+				out_hold	<= '0'; 
 				rdy		<= '0'; 
 				r\w		<= '0'; -- read is 0 
 				sram_enable	<= '1'; 
@@ -134,8 +134,23 @@ begin
 				end if;
 
 			when mux_chip =>
-				in_hold		<= '0'; 
-				out_hold	<= '0'; 
+				in_hold		<= '1'; 
+				out_hold	<= '1'; 
+				rdy		<= '0'; 
+				r\w		<= '1'; -- read is 0 
+				sram_enable	<= '0'; 
+				mux_switch	<= "01"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
+
+				new_counter	<= "0000000000000000";
+				new_clk_counter <= "00";
+
+				new_state	<= in_store;
+				new_offset_bit	<= offset_bit;
+
+			when in_store =>
+				in_hold		<= '1'; 
+				out_hold	<= '1'; 
 				rdy		<= '0'; 
 				r\w		<= '1'; -- read is 0 
 				sram_enable	<= '1'; 
@@ -143,7 +158,52 @@ begin
 				color_byte	<= "1100111"; 
 
 				new_counter	<= "0000000000000000";
+				new_clk_counter <= clk_counter + 1;
+				new_offset_bit	<= offset_bit;
+
+				if (unsigned(clk_counter) >= 1) then
+					new_state <= mux_vga_chip;
+
+				else
+					new_state <= in_store;
+
+				end if;
+
+				
+			when mux_vga_chip =>
+				in_hold		<= '0'; 
+				out_hold	<= '1'; 
+				rdy		<= '0'; 
+				r\w		<= '1'; -- read is 0 
+				sram_enable	<= '0'; 
+				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
+
+				new_counter	<= "0000000000000000";
 				new_clk_counter <= "00";
 
-					new_state	<= mux_zeros;
-					new_offset_bit	<= not offset_bit;
+				new_state	<= wait_vga_chip;
+				new_offset_bit	<= offset_bit;
+
+			when wait_vga_chip =>
+				in_hold		<= '0'; 
+				out_hold	<= '1'; 
+				rdy		<= '0'; 
+				r\w		<= '0'; -- read is 0 
+				sram_enable	<= '0'; 
+				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
+
+				new_counter	<= "0000000000000000";
+				new_clk_counter <= "00";
+				new_offset_bit	<= offset_bit;
+
+				if (enable = '1') then
+					new_state <= read_chip;
+
+				else
+					new_state <= wait_vga_chip;
+
+				end if;
+
+			when read_zeros =>

@@ -1,3 +1,7 @@
+-- This is no longer used. The controller now does the counting
+-- job so the counting is done at the correct transition and in
+-- the correct tempo - VGA clock not the ram clock.
+
 library ieee;
 use ieee.std_logic_1164.all;
 
