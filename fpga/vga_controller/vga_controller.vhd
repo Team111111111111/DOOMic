@@ -18,7 +18,7 @@ entity vga_ram_controller is
 		counter		: out std_logic_vector (15 downto 0);
 
 		enable		: in std_logic;
-		address		: in std_logic_vector (15 downto 0)
+		eof_flag	: in std_logic
 	);
 end entity;
 
@@ -72,11 +72,12 @@ begin
 			when reset =>
 				in_hold		<= '0'; 
 				out_hold	<= '0'; 
-				rdy		<= '1'; 
+				rdy		<= '0';
 				r\w		<= '0'; 
 				sram_enable	<= '0'; 
-				mux_switch	<= '0'; 
-				color_byte	<= '0'; 
+
+				mux_switch	<= "00"; 
+				color_byte	<= "00000000"; 
 
 				new_counter	<= "0000000000000000";
 				new_clk_counter <= "00";
@@ -91,16 +92,16 @@ begin
 
 			when read_chip =>
 				in_hold		<= '0'; 
-				out_hold	<= '0'; 
+				out_hold	<= '1'; 
 				rdy		<= '0'; 
-				r\w		<= '0'; 
-				sram_enable	<= '0'; 
-				mux_switch	<= '0'; 
-				color_byte	<= '0'; 
+				r\w		<= '0'; -- read is 0 
+				sram_enable	<= '1'; 
+				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
 
 				new_counter	<= "0000000000000000";
 				new_clk_counter <= clk_counter + 1;
-				new_offset_bit	<= '0';
+				new_offset_bit	<= offset_bit;
 
 				if (unsigned(clk_counter) >= 1) then
 					new_state <= out_store_chip;
@@ -109,3 +110,40 @@ begin
 					new_state <= read_chip;
 
 				end if;
+
+			when out_store_chip => 
+				in_hold		<= '0'; 
+				out_hold	<= '1'; 
+				rdy		<= '0'; 
+				r\w		<= '0'; -- read is 0 
+				sram_enable	<= '1'; 
+				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
+
+				new_counter	<= "0000000000000000";
+				new_clk_counter <= "00";
+
+				if (eof_flag = '1') then
+					new_state	<= mux_zeros;
+					new_offset_bit	<= not offset_bit;
+
+				else
+					new_state <= mux_chip;
+					new_offset_bit <= offset_bit;
+
+				end if;
+
+			when mux_chip =>
+				in_hold		<= '0'; 
+				out_hold	<= '0'; 
+				rdy		<= '0'; 
+				r\w		<= '1'; -- read is 0 
+				sram_enable	<= '1'; 
+				mux_switch	<= "01"; -- 00 - counter; 01 - chip; 10 - VGA;
+				color_byte	<= "1100111"; 
+
+				new_counter	<= "0000000000000000";
+				new_clk_counter <= "00";
+
+					new_state	<= mux_zeros;
+					new_offset_bit	<= not offset_bit;
