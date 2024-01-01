@@ -2,7 +2,7 @@ library ieee;
 use ieee.numeric_std.all;
 use ieee.std_logic_1164.all;
 
-entity vga_ram_controller is
+entity controller is
 	port (
 		clk	: in std_logic;
 		reset	: in std_logic;
@@ -23,7 +23,7 @@ entity vga_ram_controller is
 end entity;
 
 
-architecture behavioural of vga_ram_controller is
+architecture behavioural of controller is
 
 	type ctrl_state is (
 		res,

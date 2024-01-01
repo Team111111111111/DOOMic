@@ -1,7 +1,7 @@
 library ieee;
 use ieee.std_logic_1164.all;
 
-entity vga_ram_mux is 
+entity ram_mux is 
 	port (
 		reset 	 : in std_logic;
 		
@@ -13,7 +13,7 @@ entity vga_ram_mux is
 	);
 end entity;
 
-architecture behavioural of vga_ram_mux is
+architecture behavioural of ram_mux is
 
 begin
 	process (reset, switch)
