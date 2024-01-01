@@ -17,6 +17,7 @@ architecture behavioural of address_buffer is
 
 	signal memory : std_logic_vector (15 downto 0);
 
+begin
 	process(hold, reset)
 	begin
 		if (reset = '1') then

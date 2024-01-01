@@ -15,6 +15,7 @@ end entity;
 
 architecture behavioural of vga_ram_mux is
 
+begin
 	process (reset, switch)
 	begin
 		if (reset = '1') then
