@@ -23,7 +23,7 @@ entity rop is
 		sram_color_out : out std_logic_vector(7 downto 0);
 
 		readwrite  : out std_logic;
-		enable     : out std_logic;
+		enable     : out std_logic
 	);
 end entity;
 
@@ -38,6 +38,18 @@ architecture structural of rop is
 			hold    : in std_logic
 		);
 	end component;
+
+	component color_buffer is
+		port (
+			reset   : in std_logic;
+
+			input   : in std_logic_vector (7 downto 0);
+			output  : out std_logic_vector (7 downto 0);
+
+			hold    : in std_logic
+		);
+	end component;
+
 
 	component ram_mux is
 		port (
@@ -86,8 +98,34 @@ architecture structural of rop is
 		);
 	end component;
 
-	signal out_hold, in_hold, offset, ctrl_eof, ctrl_rdy : std_logic;
-	signal mux_switch : std_logic_vector (1 downto 0);
-	signal address : std_logic_vector (15 downto 0);
+	signal out_hold, in_hold, offset, ctr_eof, ctr_rdy : std_logic;
+	signal mux_switch	: std_logic_vector (1 downto 0);
+	signal address		: std_logic_vector (15 downto 0);
+	signal clearing_addres	: std_logic_vector (15 downto 0);
 
+begin
 
+	in_buffer : address_buffer	port map (res, chip_data, address, in_hold);
+
+	out_buffer : color_buffer	port map (res, sram_color_out, display_color, out_hold); 
+
+	-- 00 - counter; 01 - chip; 10 - VGA;
+	-- I am connectin that offset bit to the bus so we can swap the buffers with it by
+	-- swapping the adresses, by fliping one bit in the address buses; it's also inverted
+	-- on the vga so it always points to the other buffer;
+	mux : ram_mux			port map (res, mux_switch,
+							'0' & offset & clearing_addres,
+							'0' & offset & address,
+							'0' & not offset & vga_address,
+							sram_address);
+
+	the_controller : controller	port map (clk, res, in_hold, out_hold, offset,
+							ctr_rdy, readwrite, enable,
+							mux_switch, sram_color_in,
+							clearing_addres, vga_enable,
+							ctr_eof);
+
+	the_eof_detector : eof_detector	port map (clk, res, butt_l, butt_r, ctr_rdy, ctr_eof,
+							lov_eof, lov_rdy, address);
+
+end architecture;
