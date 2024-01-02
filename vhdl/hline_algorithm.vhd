@@ -11,10 +11,10 @@ entity algorithm is
 
 	start_pos_1 	: in std_logic_vector(8 downto 0);
 	start_pos_2	: in std_logic_vector(8 downto 0);
-        right_cond	: in std_logic_vector(8 downto 0);
+        right_cond_in	: in std_logic_vector(8 downto 0);
 
-        dxy1		: in std_logic_vector(8 downto 0);
-        dxy2		: in std_logic_vector(8 downto 0);
+        dxy1_in		: in std_logic_vector(8 downto 0);
+        dxy2_in		: in std_logic_vector(8 downto 0);
 
 	address		: out std_logic_vector(15 downto 0);
 	ready		: out std_logic    );
@@ -53,12 +53,13 @@ signal sec_position, new_sec_position: unsigned(8 downto 0);
 signal e_count, new_e_count: signed(15 downto 0);
 
 
--- 'signals' to temporary store values (memory elements)
+-- 'signals' to (temporary) store values (memory elements)
 signal address_temp: std_logic_vector(15 downto 0);
 signal draw_x_sig: unsigned(8 downto 0);
 signal draw_y_sig: unsigned(7 downto 0);
 signal mirror_y: unsigned(7 downto 0);
 signal mulp_y, mulp_mirror_y: std_logic_vector(16 downto 0);
+signal dxy1, dxy2, right_cond: std_logic_vector(8 downto 0);
 
 
 -- signals used to connect to components.
@@ -134,6 +135,10 @@ port map(
 				draw_y_sig	<= (others => '0');
 				address_temp	<= (others => '0');
 
+				dxy1		<= (others => '0');
+				dxy2		<= (others => '0');
+				right_cond	<= (others => '0');
+
 
 				address 	<= (others => '0');
 				ready 		<= '0';
@@ -162,6 +167,10 @@ port map(
 				draw_y_sig	<= (others => '0');
 				address_temp	<= (others => '0');
 
+				dxy1		<= dxy1_in;
+				dxy2		<= dxy2_in;
+				right_cond	<= right_cond_in;	
+
 
 				address 	<= (others => '0');
 				ready 		<= '0';
@@ -189,7 +198,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
@@ -216,18 +225,14 @@ port map(
 				address_temp	<= (others => '0');
 
 
-				address 	<= (others => '0');
-				ready 		<= '0';
+				address 	<= (others => '0'); -- or should it be "1111111111111111" ?
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
 				new_e_count 	<= e_count;
 
-				if (enable = '1') then
-					next_state <= reset_state;
-				else
-					next_state <= done;
-				end if;
+				next_state 	<= reset_state;
 
 			when prepare_draw =>		-- sets with 'sel' if 'start_pos_1' is x or y and 'start_pos_2' is x or y
 				shift_in_sign 	<= (others => '0');
@@ -250,7 +255,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
@@ -278,7 +283,7 @@ port map(
 				new_e_count 	<= e_count;
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= draw_1_add;
 
@@ -303,7 +308,7 @@ port map(
 				new_e_count 	<= e_count;
 
 				address 	<= (others => '0');			
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= address_1_out;
 
@@ -350,7 +355,7 @@ port map(
 				new_e_count 	<= e_count;
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= draw_2_mulp;
 
@@ -375,7 +380,7 @@ port map(
 				new_e_count 	<= e_count;
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= draw_2_add;
 
@@ -400,7 +405,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= address_2_out;
 
@@ -449,7 +454,7 @@ port map(
 				new_e_count 	<= signed(result_adder_sig);	
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= e_shift_compare_temp;
 
@@ -476,7 +481,7 @@ port map(
 				new_e_count 	<= e_count;
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				next_state 	<= e_compare;
 
@@ -497,7 +502,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
@@ -527,7 +532,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
@@ -552,7 +557,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position;
 				new_sec_position<= sec_position+1;
@@ -577,7 +582,7 @@ port map(
 
 
 				address 	<= (others => '0');
-				ready 		<= '0';
+				ready 		<= '1';
 
 				new_position 	<= position + 1;
 				new_sec_position<= sec_position;
