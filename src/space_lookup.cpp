@@ -27,7 +27,7 @@ int main () {
 	std::ofstream lov (ofilename);			//short for the list of verticies
 
 	if (!verticies.is_open() || !lov.is_open()) {
-		std::cout << "File could not be open, f you!" << std::endl;
+		std::cout << "File could not be open!" << std::endl;
 
 		verticies.close();
 		lov.close();
@@ -76,6 +76,7 @@ int main () {
 				lov << "\t-- bus output in decimal: " << iA << std::endl;
 				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
 				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << "\teof_flag <= '0';" << std::endl;
 				lov << std::endl;
 				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
 				lov << std::endl;
@@ -88,6 +89,7 @@ int main () {
 				lov << "\t-- bus output in decimal: " << iA << std::endl;
 				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
 				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << "\teof_flag <= '0';" << std::endl;
 				lov << std::endl;
 				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
 				lov << std::endl;
@@ -166,6 +168,7 @@ int main () {
 			lov << "\t-- bus output in decimal: " << ix << std::endl;
 			lov << "\tserial_bus <= \"" << bix <<  "\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
+			lov << "\teof_flag <= '0';" << std::endl;
 			lov << std::endl;
 			lov << "\tnew_state <= vert" << set << "_" << vertex << "_y;" << std::endl;
 			lov << std::endl;
@@ -177,6 +180,7 @@ int main () {
 			lov << "\t-- bus output in decimal: " << iy << std::endl;
 			lov << "\tserial_bus <= \"" << biy << "\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
+			lov << "\teof_flag <= '0';" << std::endl;
 			lov << std::endl;
 			
 
