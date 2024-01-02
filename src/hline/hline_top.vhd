@@ -8,12 +8,12 @@ entity h_line is
 		shift 		: in std_logic;		-- from v-line 
 		enable 		: in std_logic;		-- from controller
 
-        	x_in 		: in std_logic_vector(8 downto 0);
-        	y_top 		: in std_logic_vector(7 downto 0);
-        	y_bot 		: in std_logic_vector(7 downto 0);
+        	x_in 		: in std_logic_vector(8 downto 0);	-- from v-line
+        	y_top 		: in std_logic_vector(7 downto 0);	-- from v-line
+        	y_bot 		: in std_logic_vector(7 downto 0);	-- from v-line
 
-		address_out 	: out std_logic_vector(15 downto 0);
-		ready		: out std_logic
+		address_out 	: out std_logic_vector(15 downto 0);	-- to bus
+		ready		: out std_logic				-- to bus controller
     );
 end entity h_line;
 
@@ -70,10 +70,10 @@ component algorithm is
 
 		start_pos_1 	: in std_logic_vector(8 downto 0);
 		start_pos_2	: in std_logic_vector(8 downto 0);
-        	right_cond	: in std_logic_vector(8 downto 0);
+        	right_cond_in	: in std_logic_vector(8 downto 0);
 
-        	dxy1		: in std_logic_vector(8 downto 0);
-        	dxy2		: in std_logic_vector(8 downto 0);
+        	dxy1_in		: in std_logic_vector(8 downto 0);
+        	dxy2_in		: in std_logic_vector(8 downto 0);
 
 		address		: out std_logic_vector(15 downto 0);
 		ready		: out std_logic   
@@ -121,9 +121,9 @@ begin
 				enable		=> enable,
 				start_pos_1	=> start_pos_1_sig,
 				start_pos_2	=> start_pos_2_sig,
-				right_cond	=> right_cond_sig,
-				dxy1		=> dxy1_sig,
-				dxy2		=> dxy2_sig,
+				right_cond_in	=> right_cond_sig,
+				dxy1_in		=> dxy1_sig,
+				dxy2_in		=> dxy2_sig,
 				address		=> address_out,
 				ready		=> ready
 				);
