@@ -8,12 +8,12 @@ entity h_line is
 		shift 		: in std_logic;		-- from v-line 
 		enable 		: in std_logic;		-- from controller
 
-        	x_in 		: in std_logic_vector(8 downto 0);
-        	y_top 		: in std_logic_vector(7 downto 0);
-        	y_bot 		: in std_logic_vector(7 downto 0);
+        	x_in 		: in std_logic_vector(8 downto 0);	-- from v-line
+        	y_top 		: in std_logic_vector(7 downto 0);	-- from v-line
+        	y_bot 		: in std_logic_vector(7 downto 0);	-- from v-line
 
-		address_out 	: out std_logic_vector(15 downto 0);
-		ready		: out std_logic
+		address_out 	: out std_logic_vector(15 downto 0);	-- to bus
+		ready		: out std_logic				-- to bus controller
     );
 end entity h_line;
 
