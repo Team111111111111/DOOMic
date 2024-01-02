@@ -20,7 +20,7 @@ entity rop is
 	
 		sram_address   : out std_logic_vector(17 downto 0);
 		sram_color_in  : out std_logic_vector(7 downto 0);
-		sram_color_out : out std_logic_vector(7 downto 0);
+		sram_color_out : in std_logic_vector(7 downto 0);
 
 		readwrite  : out std_logic;
 		enable     : out std_logic
@@ -102,6 +102,7 @@ architecture structural of rop is
 	signal mux_switch	: std_logic_vector (1 downto 0);
 	signal address		: std_logic_vector (15 downto 0);
 	signal clearing_addres	: std_logic_vector (15 downto 0);
+	signal mux0, mux1, mux2 : std_logic_vector (17 downto 0);
 
 begin
 
@@ -113,10 +114,8 @@ begin
 	-- I am connectin that offset bit to the bus so we can swap the buffers with it by
 	-- swapping the adresses, by fliping one bit in the address buses; it's also inverted
 	-- on the vga so it always points to the other buffer;
-	mux : ram_mux			port map (res, mux_switch,
-							'0' & offset & clearing_addres,
-							'0' & offset & address,
-							'0' & not offset & vga_address,
+	-- This also has to be checked, idk it the ram chips uses small or big endian;
+	mux : ram_mux			port map (res, mux_switch, mux0, mux1, mux2,
 							sram_address);
 
 	the_controller : controller	port map (clk, res, in_hold, out_hold, offset,
@@ -127,5 +126,10 @@ begin
 
 	the_eof_detector : eof_detector	port map (clk, res, butt_l, butt_r, ctr_rdy, ctr_eof,
 							lov_eof, lov_rdy, address);
+	
+	-- This has to be done with those intermidiate signals otherwise compiler craps out
+	mux0 <= '0' & offset & clearing_addres;         
+	mux1 <= '0' & offset & address;
+	mux2 <= '0' & not offset & vga_address;
 
 end architecture;
