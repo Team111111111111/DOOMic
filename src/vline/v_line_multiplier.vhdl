@@ -22,6 +22,6 @@ architecture arch of multiplier is
 	signal tmp : signed((n_bits * 2) - 1 downto 0);
 begin
 	tmp   <= signed(a) * signed(b);
-	r     <= std_logic_vector(shift_right(resize(tmp, n_bits), f_bits));
+	r     <= std_logic_vector(resize(shift_right(tmp, f_bits), n_bits)); 	-- swapped order of resize and shift
 	-- inv_r <= not std_logic_vector(shift_right(resize(tmp, n_bits), f_bits));
 end architecture ; -- arch

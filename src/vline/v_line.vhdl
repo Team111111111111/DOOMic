@@ -764,7 +764,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000000000000100000000";     -- Multiply by Constant (tbd now set to 1)
+                mult_2_sig <= "0000011000100000000000";     -- Multiply by Constant (tbd now set to 1)
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
