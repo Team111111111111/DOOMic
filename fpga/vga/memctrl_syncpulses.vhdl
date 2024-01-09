@@ -26,7 +26,7 @@ end entity;
 
 architecture behavioral of syncpulses is  
   signal hcount, vcount : unsigned (15 downto 0) := (others => '0');
-  signal screen_address_new : unsigned (15 downto 0);
+  signal screen_address_new : unsigned(15 downto 0);
   signal count_enable : std_logic;
   signal h_end : std_logic;
 
@@ -41,7 +41,7 @@ architecture behavioral of syncpulses is
   constant v_pulse : integer     	  := 2;
   constant v_back_porch : integer     := 35;
     --clk
-  constant clock_demultiplier : integer := 2; # for 50MHZ clock;
+  constant clock_demultiplier : integer := 2; -- for 50MHZ clock;
 
 
 begin
@@ -101,7 +101,7 @@ begin
   ----------------------------------------------------------------
     -- screen address signal assignment
   ----------------------------------------------------------------
-  # this signal asynchronously desides whether the color can be shown or not
+  -- this signal asynchronously desides whether the color can be shown or not
   count_enable <= '0' when hcount > h_screen * clock_demultiplier or vcount > v_screen else '1'; 
 
   process(clk)
@@ -121,7 +121,7 @@ begin
     end if;
   end process;
 
-  # this sets 0xFF as a do not send bit in color memory, a memory location that isnt used anyway in the buffer (but is used in the rest of the system memory)
-  screen_address <= (others => '1') when count_enable = '0' else screen_address_new; 
+  -- this sets 0xFF as a do not send bit in color memory, a memory location that isnt used anyway in the buffer (but is used in the rest of the system memory)
+  screen_address <= (others => '1') when count_enable = '0' else std_logic_vector(screen_address_new); -- !added typecast to vector
 
   end architecture;
