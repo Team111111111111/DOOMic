@@ -14,7 +14,7 @@ library ieee;
 
 entity syncpulses is
   port (
-    clk   : in std_logic;
+    clk_6   : in std_logic;
     res : in std_logic;
 
     hsync : out std_logic;
@@ -31,17 +31,17 @@ architecture behavioral of syncpulses is
   signal h_end : std_logic;
 
      -- horizontal
-  constant h_screen : integer         := 640 ; 
-  constant h_front_porch : integer    := 16;
-  constant h_pulse : integer          := 96;
-  constant h_back_porch : integer     := 48;
+  constant h_screen : integer         := 320 ; 
+  constant h_front_porch : integer    := 8;
+  constant h_pulse : integer          := 48;
+  constant h_back_porch : integer     := 24;
    -- vertical
-  constant v_screen : integer         := 400;
-  constant v_front_porch : integer    := 12;
-  constant v_pulse : integer     	  := 2;
-  constant v_back_porch : integer     := 35;
+  constant v_screen : integer         := 200;
+  constant v_front_porch : integer    := 6;
+  constant v_pulse : integer     	  := 1;
+  constant v_back_porch : integer     := 17;
     --clk
-  constant clock_demultiplier : integer := 2; -- for 50MHZ clock;
+  constant clock_demultiplier : integer := 1; -- for 6MHZ clock;
 
 
 begin
@@ -55,14 +55,14 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk)
+  process (clk_6)
   begin
       --hsync counter
     if (res = '1') then 
       hcount <= (others => '0');
     else
 
-        if (rising_edge(clk)) then
+        if (rising_edge(clk_6)) then
           if (hcount >= (h_screen + h_front_porch + h_pulse + h_back_porch) * clock_demultiplier) then
             hcount <= (others => '0');
           else
@@ -81,12 +81,12 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk)
+  process (clk_6)
   begin
     if(res = '1') then
       vcount <= (others => '0');
     else
-      if(rising_edge(clk)) then
+      if(rising_edge(clk_6)) then
         if (h_end = '1') then
           if (vcount >= (v_screen + v_front_porch + v_pulse + v_back_porch)) then
             vcount <= (others => '0');
@@ -104,12 +104,12 @@ begin
   -- this signal asynchronously desides whether the color can be shown or not
   count_enable <= '0' when hcount > h_screen * clock_demultiplier or vcount > v_screen else '1'; 
 
-  process(clk)
+  process(clk_6)
   begin
     if(res = '1') then
       screen_address_new <= (others => '0');
     else
-      if(rising_edge(clk)) then
+      if(rising_edge(clk_6)) then
         if vcount > v_screen then
           screen_address_new <= (others => '0');
         elsif count_enable = '1' then
