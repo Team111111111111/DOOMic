@@ -45,6 +45,14 @@ end entity; -- toplevel
 
 architecture arch of toplevel is
 
+	component clk_divider is
+	port
+	(
+		clk : in std_logic;
+		res : in std_logic;
+		clk_6 : out std_logic
+	);
+
 	component debouncer is
 	generic
 	(
@@ -139,6 +147,10 @@ architecture arch of toplevel is
 		
 	);
 	end component; -- sram
+
+
+	-- This is clk divided by 8 so it's like 8Mhz for VGA, lov, and the chip
+	signal clk_6 : std_logic;
 
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
