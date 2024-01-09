@@ -43,8 +43,7 @@ architecture behavioural of algorithm is
 
 					count_increase, 	-- x+1 (sel = '1') or y + 1 (sel = '0')
 					sec_count_increase, 	-- y+1 (sel = '1') or x+1 (sel = '0')
-					done,
-					end_of_frame);
+					done);
 	
 	signal state, next_state: loop_states;
 
@@ -205,40 +204,13 @@ port map(
 				new_sec_position<= sec_position;
 				new_e_count 	<= e_count;
 
-
-				if (((unsigned(position)+2) mod 320) = 0) then -- Checks if end of frame is reached
-					next_state <= end_of_frame;
-
-				elsif (unsigned(position) < unsigned(right_cond)) then
+				if (unsigned(position) < unsigned(right_cond)) then
 					next_state <= prepare_draw;
 
 				else
 					next_state <= done;
 				end if;
 
-			when end_of_frame =>
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
-
-				mulp_y 		<= (others => '0');
-				mirror_y	<= (others => '0');
-				mulp_mirror_y 	<= (others => '0');
-				draw_x_sig	<= (others => '0');
-				draw_y_sig	<= (others => '0');
-				address_temp	<= (others => '0');
-
-
-				address 	<= "1111111111111111"; -- when end of frame, address out is all ones
-				ready 		<= '0';
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-
-				next_state 	<= reset_state;
 
 			when done =>		-- The done state is when the end of a wall is reached NOT end of frame.
 				shift_in_sign 	<= (others => '0');
@@ -254,9 +226,13 @@ port map(
 				draw_y_sig	<= (others => '0');
 				address_temp	<= (others => '0');
 
-
-				address 	<= (others => '0'); 
-				ready 		<= '0';
+				if (((unsigned(position)+1) mod 320) = 0) then 
+					address 	<= (others => '1'); 
+					ready 		<= '1';
+				else 
+					address		<= (others => '0');
+					ready		<= '0';
+				end if;
 
 				new_position 	<= position;
 				new_sec_position<= sec_position;
