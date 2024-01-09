@@ -55,7 +55,7 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6)
+  process (clk_6, res)
   begin
       --hsync counter
     if (res = '1') then 
