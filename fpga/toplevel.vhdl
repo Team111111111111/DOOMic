@@ -67,30 +67,36 @@ architecture arch of toplevel is
 		res	: in std_logic;
 
 		serial_bus : out std_logic_vector (13 downto 0);
+		eof_flag   : out std_logic;
 		left       : in  std_logic;
 		right      : in  std_logic;
 		rdy        : in  std_logic
 	);
 	end component; -- lov
 
-	component parent is
+	component rop is
 	port
 	(
-		clk : in std_logic;
-		rst : in std_logic;
+		clk      : in std_logic;
+                res      : in std_logic;
 
-		chip_data   : in std_logic_vector(15 downto 0);
-		vga_address : in std_logic_vector(15 downto 0);
-	
-		display_color : out std_logic_vector(7 downto 0);
-	
-		sram_address   : out std_logic_vector(17 downto 0);
-		sram_color_in  : out std_logic_vector(7 downto 0);
-		sram_color_out : out std_logic_vector(7 downto 0);
+                lov_eof  : in std_logic;
+                lov_rdy  : out std_logic;
+                butt_l   : in std_logic;
+                butt_r   : in std_logic;
 
-		readwrite  : out std_logic;
-		enable     : out std_logic;
-		maskselect : out std_logic
+                chip_data   : in std_logic_vector(15 downto 0);
+                vga_address : in std_logic_vector(15 downto 0);
+
+                display_color   : out std_logic_vector(7 downto 0);
+                vga_enable      : in std_logic;
+
+                sram_address   : out std_logic_vector(17 downto 0);
+                sram_color_in  : out std_logic_vector(7 downto 0);
+                sram_color_out : in std_logic_vector(7 downto 0);
+
+                readwrite  : out std_logic;
+                enable     : out std_logic
 	);
 	end component; -- parent
 
@@ -120,7 +126,6 @@ architecture arch of toplevel is
 		data_out : out std_logic_vector(7 downto 0);
 		address  : in std_logic_vector(17 downto 0);
 
-		maskselect : in std_logic;
 		readwrite  : in std_logic;
 		enable     : in std_logic;
 		
@@ -148,6 +153,13 @@ architecture arch of toplevel is
 	--  component
 	signal screen_address : std_logic_vector(15 downto 0);
 
+	-- This is needed because vsync is connected to the output and to the rop
+	signal vsync_signal : std_logic;
+
+	-- This signal is to send eof flag from the lov to vga
+	signal eof_flag : std_logic;
+
+	signal vga_rgb_color : std_logic_vector(7 downto 0);
 	signal ram_address  : std_logic_vector(17 downto 0);
 
 	-- These are the color that are being sent/received between the parent
@@ -168,22 +180,26 @@ begin
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk, rst, serial_bus, 
+	vertices : lov port map (clk, rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
-	vga_sp : syncpulses port map(clk, rst, hsync, vsync, screen_address);
+	vga_sp : syncpulses port map(clk, rst, hsync, vsync_signal, screen_address);
 
-	-- The parent entity
-	vga_parent : parent port map(clk, rst, chip_data_bus, screen_address,
-	                             vga_rgb, ram_address, ram_color_in,
-	                             ram_color_out, ram_readwrite, ram_enable,
-	                             ram_maskselect);
+	-- The VGA rop top entity entity
+	vga_rop : rop port map(clk, rst, eof_flag, lov_rdy, debounced_l, debounced_r,
+				chip_data_bus, screen_address,
+	                        vga_rgb_color, vsync_signal, ram_address, ram_color_in,
+	                        ram_color_out, ram_readwrite, ram_enable);
 
 	-- The SRAM entity
 	memory_c : sram port map(clk, rst, ram_color_out, ram_color_in, 
-	                         ram_address, ram_maskselect, ram_readwrite,
+	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
+
+	vsync <= vsync_signal;
+
+	vga_rgb <= ("00000000") when screen_address = ("11111111") else vga_rgb_color;
 
 end architecture; -- arch
