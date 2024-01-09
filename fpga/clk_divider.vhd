@@ -30,7 +30,7 @@ begin
 
 	process (counter)
 	begin
-		if (reset = '1') then
+		if (res = '1') then
 			new_counter <= "000";
 			clk_6 <= '1';
 
