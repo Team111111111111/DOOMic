@@ -56,7 +56,7 @@ begin
       res   => res
     );
 
-    color <= "111100001111";
+	color <= ("000000000000") when screen_address = ("11111111") else ("111100001111");
 
 end architecture;
 
