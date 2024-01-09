@@ -9,6 +9,8 @@ entity syncpulses_tb is
       
           hsync : out std_logic;
           vsync : out std_logic;
+      	  
+      	  color : out std_logic_vector (11 downto 0);
       
           screen_address : out std_logic_vector(15 downto 0)
       );
@@ -54,6 +56,7 @@ begin
       res   => res
     );
 
+    color <= "111100001111";
 
 end architecture;
 
