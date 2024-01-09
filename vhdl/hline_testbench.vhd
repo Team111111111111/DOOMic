@@ -64,7 +64,7 @@ begin
 
 	x_in			<=	"000000000"	after 0 ns,--0
 					"000010100"	after 1 us,--20
-					"000011001"     after 9 us;--25
+					"000011001"     after 9 us;--25. To test if end-of-frame detection works, change this to "100111111"; 319.
 	
 	y_top			<=	"00000000"	after 0 ns, --0
 					"01100010"      after 2 us, --98
