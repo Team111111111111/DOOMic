@@ -6,6 +6,8 @@ entity syncpulses_tb is
       port (
           clk   : in std_logic;
           res : in std_logic;
+
+          clk_6 : out std_logic;
       
           hsync : out std_logic;
           vsync : out std_logic;
@@ -29,7 +31,7 @@ architecture rtl of syncpulses_tb is
         );    
       end component;
 
-      signal clk_sig : std_logic := '0';
+      signal clk_sig, res_sig : std_logic;
 
       component clk_divider is
         port (
@@ -42,8 +44,8 @@ begin
 
     syncpulses_inst: syncpulses
     port map (
-      clk_6          => clk_sig,
-      res            => res,
+      clk_6          => clk,
+      res            => res_sig,
       hsync          => hsync,
       vsync          => vsync,
       screen_address => screen_address
@@ -53,10 +55,12 @@ begin
     port map (
       clk => clk,
       clk_6 => clk_sig,
-      res   => res
+      res   => res_sig
     );
 
     color <= "111100001111";
+    clk_6 <= clk_sig;
+    res_sig <= not res;
 
 end architecture;
 
