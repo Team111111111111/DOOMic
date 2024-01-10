@@ -182,6 +182,7 @@ architecture arch of toplevel is
 	signal ram_color_out : std_logic_vector(7 downto 0); -- from parent to sram
 
 	signal ram_readwrite  : std_logic;
+	signal ram_enable : std_logic;
 
 begin
 
