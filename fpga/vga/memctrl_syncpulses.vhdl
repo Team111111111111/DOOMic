@@ -55,7 +55,7 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6)
+  process (clk_6, res)
   begin
       --hsync counter
     if (res = '1') then 
@@ -81,7 +81,7 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6)
+  process (clk_6, res)
   begin
     if(res = '1') then
       vcount <= (others => '0');
@@ -104,7 +104,7 @@ begin
   -- this signal asynchronously desides whether the color can be shown or not
   count_enable <= '0' when hcount > h_screen * clock_demultiplier or vcount > v_screen else '1'; 
 
-  process(clk_6)
+  process(clk_6, res)
   begin
     if(res = '1') then
       screen_address_new <= (others => '0');
