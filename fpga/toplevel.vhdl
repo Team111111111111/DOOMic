@@ -7,6 +7,7 @@ port
 (
 	clk : in std_logic;
 	rst : in std_logic;
+	clk_out : out std_logic; -- clk for the epo chip
 
 	-- These are the inputs for both of the buttons that the player has 
 	--  access to. They are wired directly to their respective button
@@ -52,6 +53,7 @@ architecture arch of toplevel is
 		res : in std_logic;
 		clk_6 : out std_logic
 	);
+	end component;
 
 	component debouncer is
 	generic
@@ -186,17 +188,20 @@ architecture arch of toplevel is
 begin
 
 	-- Both button debouncers
-	l_deb : debouncer port map (clk, button_l, debounced_l); 
-	r_deb : debouncer port map (clk, button_r, debounced_r); 
+	l_deb : debouncer port map (clk_6, button_l, debounced_l); 
+	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
+
+	-- This is the clock divider for the vga, lov, chip, and other shizzle
+	divider_of_the_clock : clk_divider port map (clk, rst, clk_6); 
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk, rst, serial_bus, eof_flag, 
+	vertices : lov port map (clk_6, rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
-	vga_sp : syncpulses port map(clk, rst, hsync, vsync_signal, screen_address);
+	vga_sp : syncpulses port map(clk_6, rst, hsync, vsync_signal, screen_address);
 
 	-- The VGA rop top entity entity
 	vga_rop : rop port map(clk, rst, eof_flag, lov_rdy, debounced_l, debounced_r,
@@ -212,6 +217,6 @@ begin
 
 	vsync <= vsync_signal;
 
-	vga_rgb <= ("00000000") when screen_address = ("11111111") else vga_rgb_color;
+	vga_rgb <= ("00000000") when screen_address = ("111111111111111") else vga_rgb_color;
 
 end architecture; -- arch
