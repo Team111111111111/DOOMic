@@ -253,6 +253,13 @@ begin
 					new_state <= reset;
 				end if;
 
+			when others =>
+				serial_bus <= "0000000000000000";
+				new_pointer <= pointer;
+				eof_flag <= '0';
+
+				new_state <= reset;
+
 			when EOF =>
 				serial_bus	<= "11111111111111";
 				new_pointer	<= pointer;
