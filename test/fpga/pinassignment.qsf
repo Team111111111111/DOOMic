@@ -1,0 +1,71 @@
+set_location_assignment PIN_AA3 -to SRAM_ADDR[0]
+set_location_assignment PIN_AB3 -to SRAM_ADDR[1]
+set_location_assignment PIN_AA4 -to SRAM_ADDR[2]
+set_location_assignment PIN_AB4 -to SRAM_ADDR[3]
+set_location_assignment PIN_AA5 -to SRAM_ADDR[4]
+set_location_assignment PIN_AB10 -to SRAM_ADDR[5]
+set_location_assignment PIN_AA11 -to SRAM_ADDR[6]
+set_location_assignment PIN_AB11 -to SRAM_ADDR[7]
+set_location_assignment PIN_V11 -to SRAM_ADDR[8]
+set_location_assignment PIN_W11 -to SRAM_ADDR[9]
+set_location_assignment PIN_R11 -to SRAM_ADDR[10]
+set_location_assignment PIN_T11 -to SRAM_ADDR[11]
+set_location_assignment PIN_Y10 -to SRAM_ADDR[12]
+set_location_assignment PIN_U10 -to SRAM_ADDR[13]
+set_location_assignment PIN_R10 -to SRAM_ADDR[14]
+set_location_assignment PIN_T7 -to SRAM_ADDR[15]
+set_location_assignment PIN_Y6 -to SRAM_ADDR[16]
+set_location_assignment PIN_Y5 -to SRAM_ADDR[17]
+set_location_assignment PIN_AA6 -to SRAM_DQ[0]
+set_location_assignment PIN_AB6 -to SRAM_DQ[1]
+set_location_assignment PIN_AA7 -to SRAM_DQ[2]
+set_location_assignment PIN_AB7 -to SRAM_DQ[3]
+set_location_assignment PIN_AA8 -to SRAM_DQ[4]
+set_location_assignment PIN_AB8 -to SRAM_DQ[5]
+set_location_assignment PIN_AA9 -to SRAM_DQ[6]
+set_location_assignment PIN_AB9 -to SRAM_DQ[7]
+set_location_assignment PIN_Y9 -to SRAM_DQ[8]
+set_location_assignment PIN_W9 -to SRAM_DQ[9]
+set_location_assignment PIN_V9 -to SRAM_DQ[10]
+set_location_assignment PIN_U9 -to SRAM_DQ[11]
+set_location_assignment PIN_R9 -to SRAM_DQ[12]
+set_location_assignment PIN_W8 -to SRAM_DQ[13]
+set_location_assignment PIN_V8 -to SRAM_DQ[14]
+set_location_assignment PIN_U8 -to SRAM_DQ[15]
+set_location_assignment PIN_AA10 -to SRAM_WE_N
+set_location_assignment PIN_T8 -to SRAM_OE_N
+set_location_assignment PIN_W7 -to SRAM_UB_N
+set_location_assignment PIN_Y7 -to SRAM_LB_N
+set_location_assignment PIN_AB5 -to SRAM_CE_N
+
+set_location_assignment PIN_L22 -to chip_data_bus[6]
+set_location_assignment PIN_L21 -to chip_data_bus[7]
+set_location_assignment PIN_M22 -to chip_data_bus[8]
+set_location_assignment PIN_V12 -to chip_data_bus[9]
+set_location_assignment PIN_W12 -to chip_data_bus[10]
+set_location_assignment PIN_U12 -to chip_data_bus[11]
+set_location_assignment PIN_U11 -to chip_data_bus[12]
+set_location_assignment PIN_M2 -to chip_data_bus[13]
+set_location_assignment PIN_M2 -to chip_data_bus[14]
+set_location_assignment PIN_M2 -to chip_data_bus[15]
+
+
+set_location_assignment PIN_C9 -to vga_rgb[0]
+set_location_assignment PIN_A7 -to vga_rgb[1]
+set_location_assignment PIN_B7 -to vga_rgb[2]
+
+set_location_assignment PIN_B9 -to vga_rgb[3]
+set_location_assignment PIN_A8 -to vga_rgb[4]
+
+set_location_assignment PIN_D11 -to vga_rgb[5]
+set_location_assignment PIN_A10 -to vga_rgb[6]
+set_location_assignment PIN_B10 -to vga_rgb[7]
+
+set_location_assignment PIN_A11 -to hsync
+set_location_assignment PIN_B11 -to vsync
+
+set_location_assignment PIN_T21 -to button_r
+set_location_assignment PIN_T22 -to button_l
+
+set_location_assignment PIN_R22 -to rst
+set_location_assignment PIN_L1 -to clk
