@@ -16,7 +16,7 @@ end entity;
 architecture behavioural of ram_mux is
 
 begin
-	process (reset, switch)
+	process (reset, switch, addr_0, addr_1, addr_2)
 	begin
 		if (reset = '1') then
 			addr_out <= "000000000000000000";
