@@ -30,6 +30,7 @@ begin
 
 		else
 			output <= memory;
+			memory <= memory;
 
 		end if;
 	end process;

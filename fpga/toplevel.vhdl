@@ -191,25 +191,25 @@ begin
 	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
 
 	-- This is the clock divider for the vga, lov, chip, and other shizzle
-	divider_of_the_clock : clk_divider port map (clk, rst, clk_6); 
+	divider_of_the_clock : clk_divider port map (clk, not rst, clk_6); 
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk_6, rst, serial_bus, eof_flag, 
+	vertices : lov port map (clk_6, not rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
-	vga_sp : syncpulses port map(clk_6, rst, hsync, vsync_signal, screen_address);
+	vga_sp : syncpulses port map(clk_6, not rst, hsync, vsync_signal, screen_address);
 
 	-- The VGA rop top entity entity
-	vga_rop : rop port map(clk, rst, eof_flag, lov_rdy, debounced_l, debounced_r,
+	vga_rop : rop port map(clk, not rst, eof_flag, lov_rdy, debounced_l, debounced_r,
 				chip_data_bus, screen_address,
 	                        vga_rgb_color, vsync_signal, ram_address, ram_color_in,
 	                        ram_color_out, ram_readwrite, ram_enable);
 
 	-- The SRAM entity
-	memory_c : sram port map(clk, rst, ram_color_in, ram_color_out, 
+	memory_c : sram port map(clk, not rst, ram_color_in, ram_color_out, 
 	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
@@ -217,6 +217,6 @@ begin
 
 	vsync <= vsync_signal;
 
-	vga_rgb <= ("00000000") when screen_address = ("1111111111111111") else vga_rgb_color;
+	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else vga_rgb_color;
 
 end architecture; -- arch
