@@ -66,7 +66,7 @@ begin
 		end if;
 	end process;
 
-	process (state, enable)
+	process (state, enable, clk_counter, offset_bit, eof_flag, counter)
 	begin
 		case state is
 			when res =>
