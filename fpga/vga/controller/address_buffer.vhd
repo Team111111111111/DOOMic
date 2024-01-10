@@ -18,7 +18,7 @@ architecture behavioural of address_buffer is
 	signal memory : std_logic_vector (15 downto 0);
 
 begin
-	process(hold, reset)
+	process(hold, reset, input, memory)
 	begin
 		if (reset = '1') then
 			output <= "0000000000000000";
@@ -30,6 +30,7 @@ begin
 
 		else
 			output <= memory;
+			memory <= memory;
 
 		end if;
 	end process;
