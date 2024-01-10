@@ -76,7 +76,7 @@ architecture structural of rop is
 			sram_enable     : out std_logic;
 			mux_switch      : out std_logic_vector (1 downto 0);
 			color_byte      : out std_logic_vector (7 downto 0);
-			count           : out std_logic_vector (15 downto 0);
+			count           : out std_logic_vector (16 downto 0);
 
 			enable          : in std_logic;
 			eof_flag        : in std_logic
@@ -101,7 +101,7 @@ architecture structural of rop is
 	signal out_hold, in_hold, offset, ctr_eof, ctr_rdy : std_logic;
 	signal mux_switch	: std_logic_vector (1 downto 0);
 	signal address		: std_logic_vector (15 downto 0);
-	signal clearing_addres	: std_logic_vector (15 downto 0);
+	signal clearing_addres	: std_logic_vector (16 downto 0);
 	signal mux0, mux1, mux2 : std_logic_vector (17 downto 0);
 
 begin
@@ -128,8 +128,8 @@ begin
 							lov_eof, lov_rdy, address);
 	
 	-- This has to be done with those intermidiate signals otherwise compiler craps out
-	mux0 <= '0' & offset & clearing_addres;         
+	mux0 <= offset & clearing_addres;         
 	mux1 <= '0' & offset & address;
-	mux2 <= '0' & not offset & vga_address;
+	mux2 <= not offset & vga_address;
 
 end architecture;

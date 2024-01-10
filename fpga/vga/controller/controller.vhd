@@ -15,7 +15,7 @@ entity controller is
 		sram_enable	: out std_logic;
 		mux_switch	: out std_logic_vector (1 downto 0);
 		color_byte	: out std_logic_vector (7 downto 0);
-		count		: out std_logic_vector (15 downto 0);
+		count		: out std_logic_vector (16 downto 0);
 
 		enable		: in std_logic;
 		eof_flag	: in std_logic
@@ -42,7 +42,7 @@ architecture behavioural of controller is
 	);
 
 	signal state, new_state			: ctrl_state;
-	signal new_counter, counter 		: unsigned (15 downto 0);
+	signal new_counter, counter 		: unsigned (16 downto 0);
 	signal clk_counter, new_clk_counter 	: unsigned (1 downto 0);
 	signal new_offset_bit, offset_bit	: std_logic;
 
@@ -52,7 +52,7 @@ begin
 		if (clk'event and clk = '1' ) then
 			if (reset = '1') then
 				state	<= res;
-				counter <= "0000000000000000";
+				counter <= "00000000000000000";
 				clk_counter	<= "00";
 				offset_bit	<= '0';
 
@@ -79,7 +79,7 @@ begin
 				mux_switch	<= "10"; 
 				color_byte	<= "00000000"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= "00";
 				new_offset_bit	<= '0';
 
@@ -99,7 +99,7 @@ begin
 				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= clk_counter + 1;
 				new_offset_bit	<= offset_bit;
 
@@ -120,7 +120,7 @@ begin
 				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= "00";
 
 				if (eof_flag = '1') then
@@ -142,7 +142,7 @@ begin
 				mux_switch	<= "01"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= "00";
 
 				new_state	<= in_store;
@@ -157,7 +157,7 @@ begin
 				mux_switch	<= "01"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= clk_counter + 1;
 				new_offset_bit	<= offset_bit;
 
@@ -178,7 +178,7 @@ begin
 				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= "00";
 
 				new_state	<= wait_vga_chip;
@@ -193,7 +193,7 @@ begin
 				mux_switch	<= "10"; -- 00 - counter; 01 - chip; 10 - VGA;
 				color_byte	<= "11100111"; 
 
-				new_counter	<= "0000000000000000";
+				new_counter	<= "00000000000000000";
 				new_clk_counter <= "00";
 				new_offset_bit	<= offset_bit;
 
@@ -269,7 +269,7 @@ begin
 				new_offset_bit	<= offset_bit;
 
 				if (clk_counter >= 1) then
-					if (counter >= 64000) then
+					if (counter >= 76800) then
 						new_state	<= mux_vga_chip;
 						rdy		<= '1'; 
 
