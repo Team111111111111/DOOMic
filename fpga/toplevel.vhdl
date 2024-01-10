@@ -209,7 +209,7 @@ begin
 	                        ram_color_out, ram_readwrite, ram_enable);
 
 	-- The SRAM entity
-	memory_c : sram port map(clk, rst, ram_color_out, ram_color_in, 
+	memory_c : sram port map(clk, rst, ram_color_in, ram_color_out, 
 	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
