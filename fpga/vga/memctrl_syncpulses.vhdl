@@ -1,6 +1,6 @@
 -- component for further implementation is emulated_mem_ctrl
 -- usage
--- plug in clk and reset
+-- plug in clk_6 and reset
 
 
 --/* 
@@ -20,28 +20,28 @@ entity syncpulses is
     hsync : out std_logic;
     vsync : out std_logic;
 
-    screen_address : out std_logic_vector(15 downto 0)
+    screen_address : out std_logic_vector(16 downto 0)
   );    
 end entity;
 
 architecture behavioral of syncpulses is  
   signal hcount, vcount : unsigned (15 downto 0) := (others => '0');
-  signal screen_address_new : unsigned(15 downto 0);
+  signal screen_address_new : unsigned(16 downto 0);
   signal count_enable : std_logic;
   signal h_end : std_logic;
 
      -- horizontal
-  constant h_screen : integer         := 320 ; 
+  constant h_screen : integer         := 320; 
   constant h_front_porch : integer    := 8;
-  constant h_pulse : integer          := 48;
+  constant h_pulse : integer          := 49;
   constant h_back_porch : integer     := 24;
    -- vertical
-  constant v_screen : integer         := 200;
-  constant v_front_porch : integer    := 6;
+  constant v_screen : integer         := 240;
+  constant v_front_porch : integer    := 5;
   constant v_pulse : integer     	  := 1;
-  constant v_back_porch : integer     := 17;
+  constant v_back_porch : integer     := 16;
     --clk
-  constant clock_demultiplier : integer := 1; -- for 6MHZ clock;
+  constant clock_demultiplier : integer := 1; -- for MHZ clock;
 
 
 begin
@@ -55,7 +55,7 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6, res)
+  process (clk_6)
   begin
       --hsync counter
     if (res = '1') then 

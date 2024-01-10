@@ -52,6 +52,7 @@ architecture arch of toplevel is
 		res : in std_logic;
 		clk_6 : out std_logic
 	);
+	end component;
 
 	component debouncer is
 	generic
@@ -111,7 +112,7 @@ architecture arch of toplevel is
 	component syncpulses is
 	port 
 	(
-		clk : in std_logic;
+		clk_6 : in std_logic;
 		res : in std_logic;
 
 		-- These are wired directly to the VGA display
@@ -149,7 +150,7 @@ architecture arch of toplevel is
 	end component; -- sram
 
 
-	-- This is clk divided by 8 so it's like 8Mhz for VGA, lov, and the chip
+	-- This is clk divided by 8 so it's like 6Mhz for VGA, lov, and the chip
 	signal clk_6 : std_logic;
 
 	-- These are the outputs of both button debouncers. They are fed
@@ -209,6 +210,24 @@ begin
 	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
+
+	syncpulses_inst: entity work.syncpulses
+	port map (
+	  clk_6          => clk_6,
+	  res            => rst,
+	  hsync          => hsync,
+	  vsync          => vsync,
+	  screen_address => screen_address
+	);
+
+	clk_divider_inst: clk_divider
+	port map (
+	  clk   => clk,
+	  res   => rst,
+	  clk_6 => clk_6
+	);
+
+
 
 	vsync <= vsync_signal;
 
