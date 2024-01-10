@@ -422,6 +422,9 @@ begin
 				elsif (pointer = 35) then
 					new_state <= vert35_0_a;
 
+				else
+					new_state <= plr_y;
+
 				end if;
 
 			when vert0_0_a =>
