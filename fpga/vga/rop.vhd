@@ -13,7 +13,7 @@ entity rop is
 		butt_r	 : in std_logic;
 
 		chip_data   : in std_logic_vector(15 downto 0);
-		vga_address : in std_logic_vector(15 downto 0);
+		vga_address : in std_logic_vector(16 downto 0);
 	
 		display_color   : out std_logic_vector(7 downto 0);
 		vga_enable	: in std_logic;

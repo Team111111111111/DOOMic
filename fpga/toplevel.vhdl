@@ -96,7 +96,7 @@ architecture arch of toplevel is
                 butt_r   : in std_logic;
 
                 chip_data   : in std_logic_vector(15 downto 0);
-                vga_address : in std_logic_vector(15 downto 0);
+                vga_address : in std_logic_vector(16 downto 0);
 
                 display_color   : out std_logic_vector(7 downto 0);
                 vga_enable      : in std_logic;
@@ -122,7 +122,7 @@ architecture arch of toplevel is
 
 		-- This output is wired directly to the 'vga_address' input
 		--  of the 'parent' component.
-		screen_address : out std_logic_vector(15 downto 0)
+		screen_address : out std_logic_vector(16 downto 0)
 	);    
 	end component; -- syncpulses
 
@@ -165,7 +165,7 @@ architecture arch of toplevel is
 	-- This is the 'screen_address' output of the syncpulses entity 
 	--  (the 'vga_sp' component), it is wired directly to the 'vga_parent'
 	--  component
-	signal screen_address : std_logic_vector(15 downto 0);
+	signal screen_address : std_logic_vector(16 downto 0);
 
 	-- This is needed because vsync is connected to the output and to the rop
 	signal vsync_signal : std_logic;
@@ -213,26 +213,9 @@ begin
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
 
-	syncpulses_inst: entity work.syncpulses
-	port map (
-	  clk_6          => clk_6,
-	  res            => rst,
-	  hsync          => hsync,
-	  vsync          => vsync,
-	  screen_address => screen_address
-	);
-
-	clk_divider_inst: clk_divider
-	port map (
-	  clk   => clk,
-	  res   => rst,
-	  clk_6 => clk_6
-	);
-
-
 
 	vsync <= vsync_signal;
 
-	vga_rgb <= ("00000000") when screen_address = ("111111111111111") else vga_rgb_color;
+	vga_rgb <= ("00000000") when screen_address = ("1111111111111111") else vga_rgb_color;
 
 end architecture; -- arch
