@@ -280,6 +280,7 @@ begin
 					end if;
 				else
 					new_state <= zeros_store;
+					rdy <= '0';
 
 				end if;
 				
