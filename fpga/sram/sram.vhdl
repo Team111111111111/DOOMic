@@ -32,24 +32,22 @@ architecture behaviour of sram is
 		readstate,
 		writestate
 	);
-	signal S_ramstate : ramstate := inactive;
 	signal S_readwrite : std_logic;
-	signal S_readdata : std_logic_vector(7 downto 0);
 	
 begin
 
 	
-process(clk)
+process(clk, res, enable)
 	begin
 		if(res = '1') then --async reset
-			S_readdata <= (others => '0');
 			SRAM_CE_N<='0'; --enable chip
 			SRAM_LB_N<='1'; --disable low bit mask
 			SRAM_UB_N<='1'; --disable high bit mask
 			SRAM_ADDR <= (others => '-'); --RAM adress dont care
 			SRAM_DQ <= (others => 'Z'); --RAM data high Z
 
-		elsif (rising_edge(clk) and enable = '1') then 
+		elsif (rising_edge(clk) and enable = '1') then
+			SRAM_CE_N<='0'; --enable chip
 			SRAM_ADDR <= (others => '-'); --RAM adress dont care
 			SRAM_DQ <= (others => 'Z'); --RAM data high Z
 			if readwrite = '0'  then --byte read
@@ -71,11 +69,9 @@ process(clk)
 process(S_readwrite) --perform read/write action when signal changes
 	begin
 		if(S_readwrite = '0') then --read
-			S_ramstate <= readstate;
 			SRAM_WE_N <= '1'; --disable write
 			SRAM_OE_N <= '0'; --enable output
 		else --write
-			S_ramstate <= writestate;
 			SRAM_OE_N <= '1'; --disable output
 			SRAM_WE_N <= '0'; --enable write
 		end if;
