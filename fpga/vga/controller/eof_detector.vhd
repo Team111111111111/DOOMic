@@ -35,7 +35,7 @@ begin
 		end if;
 	end process;
 
-	process(reset, butt_l, butt_r, ctr_rdy, lov_eof, address, new_ctr_rdy_memory)
+	process(reset, butt_l, butt_r, ctr_rdy, lov_eof, address, new_ctr_rdy_memory, ctr_rdy_memory)
 	begin
 		-- This is though component, it does a bunch of shit toegether
 

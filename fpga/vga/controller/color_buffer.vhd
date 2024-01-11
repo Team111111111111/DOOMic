@@ -18,7 +18,7 @@ architecture behavioural of color_buffer is
 	signal memory : std_logic_vector (7 downto 0);
 
 begin
-	process(hold, reset)
+	process(hold, reset, input, memory)
 	begin
 		if (reset = '1') then
 			output <= "00000000";

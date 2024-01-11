@@ -28,7 +28,7 @@ begin
 		end if;
 	end process;
 
-	process (counter)
+	process (counter, res)
 	begin
 		if (res = '1') then
 			new_counter <= "000";
