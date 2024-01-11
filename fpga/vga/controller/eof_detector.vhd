@@ -23,10 +23,19 @@ end entity;
 
 architecture behavioural of eof_detector is
 
-	signal ctr_rdy_memory : std_logic;
+	signal ctr_rdy_memory, new_ctr_rdy_memory : std_logic;
 
 begin
-	process(reset, butt_l, butt_r, ctr_rdy, lov_eof, address)
+
+	process(clk, reset)
+	begin
+		if (rising_edge(clk)) then
+			ctr_rdy_memory <= new_ctr_rdy_memory;
+
+		end if;
+	end process;
+
+	process(reset, butt_l, butt_r, ctr_rdy, lov_eof, address, new_ctr_rdy_memory)
 	begin
 		-- This is though component, it does a bunch of shit toegether
 
@@ -34,7 +43,7 @@ begin
 		if (reset = '1') then
 			lov_rdy <= '0';
 			ctr_eof <= '0';
-			ctr_rdy_memory <= '0';
+			new_ctr_rdy_memory <= '0';
 
 		else
 
@@ -59,10 +68,10 @@ begin
 					-- this checks if the cleaning is done and 
 					-- sets the flag in the memory
 					if (ctr_rdy = '1') then
-						ctr_rdy_memory <= '1';
+						new_ctr_rdy_memory <= '1';
 
 					else
-						ctr_rdy_memory <= '0';
+						new_ctr_rdy_memory <= '0';
 
 					end if;
 
@@ -70,6 +79,8 @@ begin
 				-- button press before we start push the lov further;
 				-- there's no point in computing the same frame again
 				elsif (lov_eof = '1' and ctr_rdy_memory = '1') then
+
+					new_ctr_rdy_memory <= ctr_rdy_memory;
 
 					-- this gotta be a zero so the controller is in
 					-- the correct branch of the fsm; it will keep
@@ -90,7 +101,7 @@ begin
 				else
 					ctr_eof <= '0';
 					lov_rdy <= '1';
-					ctr_rdy_memory <= '0';
+					new_ctr_rdy_memory <= '0';
 
 				end if;
 
@@ -98,7 +109,7 @@ begin
 				-- if there's no flag then we just do nothing
 				ctr_eof <= '0';
 				lov_rdy <= '0';
-				ctr_rdy_memory <= '0';
+				new_ctr_rdy_memory <= '0';
 
 			end if;
 		end if;
