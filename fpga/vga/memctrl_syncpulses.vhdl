@@ -150,6 +150,8 @@ begin
         if vcount > v_screen then
           screen_address_1 <= (others => '0');
           screen_address_2 <= (others => '0');
+          screen_address_3 <= (others => '0');
+          screen_address_4 <= (others => '0');
         elsif count_enable = '1' then
           if counter_sel = "00" then
             screen_address_1 <= screen_address_1 + 1;
