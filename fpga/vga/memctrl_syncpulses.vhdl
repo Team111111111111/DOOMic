@@ -26,22 +26,51 @@ end entity;
 
 architecture behavioral of syncpulses is  
   signal hcount, vcount : unsigned (15 downto 0) := (others => '0');
-  signal screen_address_new : unsigned(16 downto 0);
-  signal count_enable : std_logic;
+  signal screen_address_1, screen_address_2 : unsigned(16 downto 0);
+  signal count_enable, counter_sel : std_logic;
   signal h_end : std_logic;
 
-     -- horizontal
-  constant h_screen : integer         := 320;
-  constant h_front_porch : integer    := 8;
-  constant h_pulse : integer          := 32;
-  constant h_back_porch : integer     := 40;
+  -- Horizontal for LCD (25 Mhz)
+
+       -- horizontal For LCD (6MHZ)
+  constant h_screen : integer         := 640;
+  constant h_front_porch : integer    := 16;
+  constant h_pulse : integer          := 96;
+  constant h_back_porch : integer     := 48;
    -- vertical
-  constant v_screen : integer         := 200;
-  constant v_front_porch : integer    := 1;
-  constant v_pulse : integer     	  := 8;
-  constant v_back_porch : integer     := 6;
-    --clk
+  constant v_screen : integer         := 480;
+  constant v_front_porch : integer    := 10;
+  constant v_pulse : integer     	  := 2;
+  constant v_back_porch : integer     := 33;
+  --   --clk
   constant clock_demultiplier : integer := 1; -- for 6MHZ clock;
+
+
+  --    -- horizontal For LCD (6MHZ)
+  -- constant h_screen : integer         := 160;
+  -- constant h_front_porch : integer    := 4;
+  -- constant h_pulse : integer          := 16;
+  -- constant h_back_porch : integer     := 20;
+  --  -- vertical
+  -- constant v_screen : integer         := 400;
+  -- constant v_front_porch : integer    := 2;
+  -- constant v_pulse : integer     	  := 16;
+  -- constant v_back_porch : integer     := 12;
+  -- --   --clk
+  -- constant clock_demultiplier : integer := 1; -- for 6MHZ clock;
+
+  --  -- horizontal For CRT (6 Mhz)
+
+  --  constant h_screen : integer         := 320;
+  --  constant h_front_porch : integer    := 8;
+  --  constant h_pulse : integer          := 32;
+  --  constant h_back_porch : integer     := 40;
+  --   -- vertical
+  --  constant v_screen : integer         := 240;
+  --  constant v_front_porch : integer    := 3;
+  --  constant v_pulse : integer     	  := 4;
+  --  constant v_back_porch : integer     := 6;
+  --    --clk
 
 
 begin
@@ -60,13 +89,16 @@ begin
       --hsync counter
     if (res = '1') then 
       hcount <= (others => '0');
+      counter_sel <= counter_sel;
     else
 
         if (rising_edge(clk_6)) then
           if (hcount >= (h_screen + h_front_porch + h_pulse + h_back_porch) * clock_demultiplier) then
             hcount <= (others => '0');
+            counter_sel <= not counter_sel;
           else
             hcount <= hcount + 1;
+            counter_sel <= counter_sel;
           end if;
         end if;  
 
@@ -104,24 +136,33 @@ begin
   -- this signal asynchronously desides whether the color can be shown or not
   count_enable <= '0' when hcount > h_screen * clock_demultiplier or vcount > v_screen else '1'; 
 
-  process(clk_6, res)
+  process(clk_6, res, counter_sel)
   begin
     if(res = '1') then
-      screen_address_new <= (others => '0');
+      screen_address_1 <= (others => '0');
+      screen_address_2 <= (others => '0');
     else
       if(rising_edge(clk_6)) then
         if vcount > v_screen then
-          screen_address_new <= (others => '0');
+          screen_address_1 <= (others => '0');
+          screen_address_2 <= (others => '0');
         elsif count_enable = '1' then
-          screen_address_new <= screen_address_new + 1;
+          if counter_sel = '0' then
+            screen_address_1 <= screen_address_1 + 1;
+            screen_address_2 <= screen_address_2;
+          else
+            screen_address_1 <= screen_address_1;
+            screen_address_2 <= screen_address_2 + 1;
+          end if;
         else
-        screen_address_new <= screen_address_new;
+        screen_address_1 <= screen_address_1;
+        screen_address_2 <= screen_address_2;
         end if;
       end if;
     end if;
   end process;
 
   -- this sets 0xFF as a do not send bit in color memory, a memory location that isnt used anyway in the buffer (but is used in the rest of the system memory)
-  screen_address <= (others => '1') when count_enable = '0' else std_logic_vector(screen_address_new); -- !added typecast to vector
+  screen_address <= (others => '1') when count_enable = '0' else std_logic_vector(screen_address_2) when counter_sel = '1' else std_logic_vector(screen_address_1); -- !added typecast to vector
 
   end architecture;
