@@ -54,17 +54,17 @@ signal e_count, new_e_count: signed(15 downto 0);
 
 
 -- 'signals' to (temporary) store values (memory elements)
-signal address_temp: std_logic_vector(15 downto 0);
-signal draw_x_sig: unsigned(8 downto 0);
-signal draw_y_sig: unsigned(7 downto 0);
-signal mirror_y: unsigned(7 downto 0);
-signal mulp_y, mulp_mirror_y: std_logic_vector(16 downto 0);
-signal dxy1, dxy2, right_cond: std_logic_vector(8 downto 0);
+signal address_temp: std_logic_vector(15 downto 0):= (others => '0');
+signal draw_x_sig: unsigned(8 downto 0):= (others => '0');
+signal draw_y_sig: unsigned(7 downto 0):= (others => '0');
+signal mirror_y: unsigned(7 downto 0):= (others => '0');
+signal mulp_y, mulp_mirror_y: std_logic_vector(16 downto 0):= (others => '0');
+signal dxy1, dxy2, right_cond: std_logic_vector(8 downto 0):= (others => '0');
 
 
 -- signals used to connect to components.
-signal shift_in_sign, shift_out_sign, shift_out_temp: std_logic_vector(15 downto 0);
-signal add_1_sig, add_2_sig, sub_sig, result_adder_sig: std_logic_vector(15 downto 0);
+signal shift_in_sign, shift_out_sign, shift_out_temp: std_logic_vector(15 downto 0):= (others => '0');
+signal add_1_sig, add_2_sig, sub_sig, result_adder_sig: std_logic_vector(15 downto 0):= (others => '0');
 
 component bitshift_left is
 	port(

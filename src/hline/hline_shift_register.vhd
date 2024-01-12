@@ -8,25 +8,25 @@ entity reg is
         reset : in std_logic;
 	shift : in std_logic;
 
-        x_in : in std_logic_vector(8 downto 0);
-        y_top : in std_logic_vector(7 downto 0);
-        y_bot : in std_logic_vector(7 downto 0);
+        x_in : in std_logic_vector(8 downto 0):= (others => '0');
+        y_top : in std_logic_vector(7 downto 0):= (others => '0');
+        y_bot : in std_logic_vector(7 downto 0):= (others => '0');
 
-        x1_out : out std_logic_vector(8 downto 0);
-        y1_top : out std_logic_vector(7 downto 0);
-        y2_bot : out std_logic_vector(7 downto 0);
+        x1_out : out std_logic_vector(8 downto 0):= (others => '0');
+        y1_top : out std_logic_vector(7 downto 0):= (others => '0');
+        y2_bot : out std_logic_vector(7 downto 0):= (others => '0');
 
-        x2_out : out std_logic_vector(8 downto 0);
-        y3_top : out std_logic_vector(7 downto 0);
-        y4_bot : out std_logic_vector(7 downto 0)
+        x2_out : out std_logic_vector(8 downto 0):= (others => '0');
+        y3_top : out std_logic_vector(7 downto 0):= (others => '0');
+        y4_bot : out std_logic_vector(7 downto 0):= (others => '0')
     );
 end entity reg;
 
 
 architecture behavioural of reg is
 
-signal x_buf1, x_buf2: std_logic_vector(8 downto 0);
-signal y_top_buf1, y_bot_buf1, y_top_buf2, y_bot_buf2: std_logic_vector(7 downto 0);
+signal x_buf1, x_buf2: std_logic_vector(8 downto 0):= (others => '0');
+signal y_top_buf1, y_bot_buf1, y_top_buf2, y_bot_buf2: std_logic_vector(7 downto 0):= (others => '0');
 
 
 begin

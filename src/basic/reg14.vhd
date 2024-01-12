@@ -12,10 +12,10 @@ use IEEE.std_logic_1164.ALL;
 
 architecture behaviour of reg14 is
 begin
-	reg: process(clk, reset)
+	reg: process(clk)
 	begin 
 		if (rising_edge(clk)) then
-			if (reset = '0') then
+			if reset = '0' then
 				REG_OUT <= REG_IN;
 			else
 				REG_OUT <= "00000000000000";	

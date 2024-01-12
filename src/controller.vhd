@@ -11,7 +11,8 @@ entity pipeline_controler is
 	    v_rdy      : in  std_logic;
         h_enable   : out std_logic;
         v_enable   : out std_logic;
-        transmit   : out std_logic);
+        transmit_v   : out std_logic;
+	transmit_h	:out std_logic );
 end pipeline_controler;
 
 architecture behavioural of pipeline_controler is
@@ -41,14 +42,16 @@ begin
 			when reset =>
 				h_enable <= '0';
 				v_enable <= '0';
-				transmit <= '0';
+				transmit_v <= '0';
+				transmit_h <= '0';
 
 				new_state <= v_line0;
 
 			when v_line0 =>
 				h_enable <= '0';
 				v_enable <= '1';
-				transmit <= '0';
+				transmit_v <= '0';
+				transmit_h <= '0';
 
 				if (v_rdy = '1') then
 					new_state <= txv0;
@@ -61,7 +64,8 @@ begin
 			when txv0 =>
 				h_enable <= '0';
 				v_enable <= '1';
-				transmit <= '1';
+				transmit_v <= '1';
+				transmit_h <= '0';
 
 				if (v_rdy = '0') then
 					new_state <= v_line;
@@ -75,7 +79,8 @@ begin
 			when v_line =>
 				h_enable <= '0';
 				v_enable <= '1';
-				transmit <= '0';
+				transmit_v <= '0';
+				transmit_h <= '0';
 
 				if (v_rdy = '1') then
 					new_state <= txv;
@@ -88,7 +93,8 @@ begin
 			when txv =>
 				h_enable <= '0';
 				v_enable <= '1';
-				transmit <= '1';
+				transmit_v <= '1';
+				transmit_h <= '0';
 
 				if (v_rdy = '0') then
 					new_state <= h_line;
@@ -101,7 +107,8 @@ begin
 			when h_line =>
 				h_enable <= '1';
 				v_enable <= '0';
-				transmit <= '0';
+				transmit_v <= '0';
+				transmit_h <= '0';
 
 				if (h_rdy = '1') then
 					new_state <= txh;
@@ -114,7 +121,8 @@ begin
 			when txh =>
 				h_enable <= '1';
 				v_enable <= '0';
-				transmit <= '1';
+				transmit_v <= '0';
+				transmit_h <= '1';
 
 				if (input_bus = "11111111111111") then
 					new_state <= reset;

@@ -5,13 +5,13 @@ use IEEE.numeric_std.all;
 entity comb is
     port (
 	clk		: in std_logic;
-        x1		: in std_logic_vector(8 downto 0);
-        y1		: in std_logic_vector(7 downto 0);
-        y2		: in std_logic_vector(7 downto 0);
+        x1		: in std_logic_vector(8 downto 0) := (others => '0');
+        y1		: in std_logic_vector(7 downto 0) := (others => '0');
+        y2		: in std_logic_vector(7 downto 0) := (others => '0');
 
-        x2		: in std_logic_vector(8 downto 0);
-        y3		: in std_logic_vector(7 downto 0);
-        y4		: in std_logic_vector(7 downto 0);
+        x2		: in std_logic_vector(8 downto 0) := (others => '0');
+        y3		: in std_logic_vector(7 downto 0) := (others => '0');
+        y4		: in std_logic_vector(7 downto 0) := (others => '0');
 
 	right_cond_out	: out std_logic_vector(8 downto 0);
 	start_pos_1_out	: out std_logic_vector(8 downto 0);
@@ -26,9 +26,9 @@ end entity comb;
 
 architecture behavioural of comb is
 
-signal yL_temp, yR_temp: std_logic_vector(7 downto 0);
-signal dy_temp: unsigned(7 downto 0);
-signal dx_temp: unsigned(8 downto 0);
+signal yL_temp, yR_temp: std_logic_vector(7 downto 0) := (others => '0');
+signal dy_temp: unsigned(7 downto 0) := (others => '0');
+signal dx_temp: unsigned(8 downto 0) := (others => '0');
 
 begin
 process(clk)
