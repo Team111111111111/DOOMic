@@ -1,4 +1,3 @@
-
 library ieee;
 use ieee.std_logic_1164.all;
 
@@ -6,6 +5,7 @@ entity toplevel is
 port
 (
 	clk : in std_logic;
+	clk_25 : in std_logic;
 	rst : in std_logic;
 	clk_out : out std_logic; -- clk for the epo chip
 
@@ -55,24 +55,18 @@ architecture arch of toplevel is
 	);
 	end component;
 
-	entity clk_divider_25 is
-        port (
-                clk : in std_logic;
-                res : in std_logic;
-                clk_25 : out std_logic
-        );
-	end entity;
+	-- component clk_divider_25 is
+    --     port (
+    --             clk : in std_logic;
+    --             res : in std_logic;
+    --             clk_25 : out std_logic
+    --     );
+	-- end component;
 
 	component debouncer is
 	generic
 	(
-	entity clk_divider_25 is
-        port (
-                clk : in std_logic;
-                res : in std_logic;
-                clk_25 : out std_logic
-        );
-end entity;	max_count  : integer := 32;
+		max_count  : integer := 32;
 		wait_count : integer := 64
 	);
 	port
@@ -170,7 +164,6 @@ end entity;	max_count  : integer := 32;
 	signal clk_6 : std_logic;
 	
 	-- This is clk divided by 2 so it's 25Mhz for VGA
-	signal clk_25 : std_logic;
 
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
@@ -209,7 +202,14 @@ begin
 	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
 
 	-- This is the clock divider for the vga, lov, chip, and other shizzle
-	divider_of_the_clock : clk_divider port map (clk, not rst, clk_6); 
+	divider_of_the_clock : clk_divider_6 port map (clk, not rst, clk_6); 
+
+	-- clk_divider_25_inst: clk_divider_25
+	-- port map (
+	--   clk    => clk,
+	--   res    => rst,
+	--   clk_25 => clk_25
+	-- );
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other

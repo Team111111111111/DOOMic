@@ -12,7 +12,7 @@ end entity;
 
 architecture behavioural of clk_divider_25 is
 	
-	signal counter, new_counter : std_logic_vector (1 downto 0);
+	signal counter, new_counter : unsigned (1 downto 0);
 
 begin
 	process (clk, res)
@@ -34,7 +34,7 @@ begin
 			new_counter <= "00";
 			clk_25 <= '1';
 
-		elsif (unsigned(counter) = 2) then
+		elsif (counter = 2) then
 			new_counter <= "00";
 			clk_25 <= '0';
 

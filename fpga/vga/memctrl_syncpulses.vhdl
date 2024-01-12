@@ -27,8 +27,9 @@ end entity;
 
 architecture behavioral of syncpulses is  
   signal hcount, vcount : unsigned (15 downto 0) := (others => '0');
-  signal screen_address_1, screen_address_2 : unsigned(16 downto 0);
-  signal count_enable, counter_sel : std_logic;
+  signal screen_address_1, screen_address_2, screen_address_3, screen_address_4 : unsigned(16 downto 0);
+  signal count_enable : std_logic;
+  signal counter_sel : std_logic_vector(1 downto 0);
   signal h_end : std_logic;
 
   -- Horizontal for LCD (25 Mhz)
@@ -142,28 +143,51 @@ begin
     if(res = '1') then
       screen_address_1 <= (others => '0');
       screen_address_2 <= (others => '0');
+      screen_address_3 <= (others => '0');
+      screen_address_4 <= (others => '0');
     else
       if(rising_edge(clk_6)) then
         if vcount > v_screen then
           screen_address_1 <= (others => '0');
           screen_address_2 <= (others => '0');
         elsif count_enable = '1' then
-          if counter_sel = '0' then
+          if counter_sel = "00" then
             screen_address_1 <= screen_address_1 + 1;
             screen_address_2 <= screen_address_2;
-          else
+            screen_address_3 <= screen_address_3;
+            screen_address_4 <= screen_address_4;
+          elsif counter_sel = "01" then
             screen_address_1 <= screen_address_1;
             screen_address_2 <= screen_address_2 + 1;
+            screen_address_3 <= screen_address_3;
+            screen_address_4 <= screen_address_4;
+          elsif counter_sel = "10" then
+            screen_address_1 <= screen_address_1;
+            screen_address_2 <= screen_address_2;
+            screen_address_3 <= screen_address_3 + 1;
+            screen_address_4 <= screen_address_4;
+          elsif counter_sel = "11" then
+            screen_address_1 <= screen_address_1;
+            screen_address_2 <= screen_address_2;
+            screen_address_3 <= screen_address_3;
+            screen_address_4 <= screen_address_4 + 1;
           end if;
         else
         screen_address_1 <= screen_address_1;
         screen_address_2 <= screen_address_2;
+        screen_address_3 <= screen_address_3;
+        screen_address_4 <= screen_address_4;
+
         end if;
       end if;
     end if;
   end process;
 
   -- this sets 0xFF as a do not send bit in color memory, a memory location that isnt used anyway in the buffer (but is used in the rest of the system memory)
-  screen_address <= (others => '1') when count_enable = '0' else std_logic_vector(screen_address_2) when counter_sel = '1' else std_logic_vector(screen_address_1); -- !added typecast to vector
+  screen_address <= (others => '1') when count_enable = '0' else 
+                    std_logic_vector(screen_address_1) when counter_sel = "00" else 
+                    std_logic_vector(screen_address_2) when counter_sel = "01" else
+                    std_logic_vector(screen_address_3) when counter_sel = "10" else
+                    std_logic_vector(screen_address_4) when counter_sel = "11" else (others => '1'); 
 
   end architecture;
