@@ -34,13 +34,13 @@ begin
 			new_counter <= "000";
 			clk_6 <= '1';
 
-		elsif (std_logic_vector(counter) >= "100" and
-			std_logic_vector(counter) < "111") then
+		elsif (unsigned(counter) >= 2 and
+			unsigned(counter) < 3) then
 
 			new_counter <= counter + 1;
 			clk_6 <= '0';
 
-		elsif (std_logic_vector(counter) = "111") then
+		elsif (unsigned(counter) = 3) then
 			new_counter <= "000";
 			clk_6 <= '0';
 

@@ -78,7 +78,7 @@ begin
     end process;    
 
 	  --color <= (others => '0') when screen_address_sig = ("11111111111111111") else std_logic_vector(color_sig);
-    color <= (others => '1') when screen_address_sig /= ("11111111111111111") and screen_address_sig = std_logic_vector(color_sig) else (others => '0') ;
+    color <= (others => '0') when screen_address_sig = ("11111111111111111")  else (others => '1') ;
     screen_address <= screen_address_sig;
     vsync <= vsync_sig;
     hsync <= hsync_sig;

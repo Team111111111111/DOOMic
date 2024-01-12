@@ -31,15 +31,15 @@ architecture behavioral of syncpulses is
   signal h_end : std_logic;
 
      -- horizontal
-  constant h_screen : integer         := 160; 
-  constant h_front_porch : integer    := 4;
-  constant h_pulse : integer          := 25;
-  constant h_back_porch : integer     := 12;
+  constant h_screen : integer         := 320;
+  constant h_front_porch : integer    := 6;
+  constant h_pulse : integer          := 48;
+  constant h_back_porch : integer     := 18;
    -- vertical
-  constant v_screen : integer         := 240;
-  constant v_front_porch : integer    := 5;
-  constant v_pulse : integer     	  := 1;
-  constant v_back_porch : integer     := 17;
+  constant v_screen : integer         := 450;
+  constant v_front_porch : integer    := 3;
+  constant v_pulse : integer     	  := 2;
+  constant v_back_porch : integer     := 58;
     --clk
   constant clock_demultiplier : integer := 1; -- for 6MHZ clock;
 
