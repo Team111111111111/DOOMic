@@ -12,7 +12,7 @@ end entity;
 
 architecture behavioural of clk_divider is
 	
-	signal counter, new_counter : unsigned (2 downto 0);
+	signal counter, new_counter : std_logic_vector (2 downto 0);
 
 begin
 	process (clk, res)
