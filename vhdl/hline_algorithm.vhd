@@ -227,7 +227,7 @@ port map(
 				address_temp	<= (others => '0');
 
 				if (((unsigned(position)+1) mod 320) = 0) then 
-					address 	<= (others => '1'); 
+					address 	<= "1111111111111110"; 
 					ready 		<= '1';
 				else 
 					address		<= (others => '0');
