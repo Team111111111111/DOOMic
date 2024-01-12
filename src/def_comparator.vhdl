@@ -4,16 +4,18 @@ use IEEE.numeric_std.ALL;
 
 entity fixed_comp_entity is
    port(a : in  std_logic_vector(21 downto 0);
+	b : in	std_logic_vector(21 downto 0);
         o : out std_logic);
 end fixed_comp_entity;
 
 architecture behaviour of fixed_comp_entity is
 	function f_comparators
-		(signal a : std_logic_vector(21 downto 0))
+		(signal a : std_logic_vector(21 downto 0);
+		 signal b : std_logic_vector(21 downto 0))
 		return std_logic is
 			variable o : std_logic := '0';
 	begin
-		if unsigned(a) > 16*256 then
+		if unsigned(a) > unsigned(b) then
 			o := '1';
 		end if;
 		return (o);
