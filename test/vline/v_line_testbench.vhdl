@@ -55,7 +55,7 @@ begin
                "00001010111100" after 140 ns, -- set player x to 700
                "00000001100100" after 180 ns, -- set player y yo 100
                "00000000110000" after 220 ns, -- set alpha to a test value
-               "00001100100000" after 260 ns, -- set first vertex x to 700
+               "00001010111100" after 260 ns, -- set first vertex x to 700
                "00000011001000" after 300 ns, -- set first vertex y to 40
                "00000000000001" after 340 ns;
 
