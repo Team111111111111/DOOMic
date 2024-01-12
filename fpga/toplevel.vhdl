@@ -235,7 +235,7 @@ begin
 
 	vsync <= vsync_signal;
 
-	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else vga_rgb_color;
+	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else screen_address(16 downto 9);
 
 	clk_out <= clk_6; -- TAKE THIS OUT (to test 6mhz clock on led)
 
