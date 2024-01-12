@@ -50,6 +50,8 @@ begin
 
     res <= '1' after 0 ns, 
             '0' after 100 ns;
+      
+    bus_empty_in <= '1';
 
     data_in <= "00000000000000" after 0 ns, --start at 0
                "00001010111100" after 140 ns, -- set player x to 700
