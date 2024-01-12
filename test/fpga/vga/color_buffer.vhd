@@ -26,10 +26,12 @@ begin
 		port map ( reset, input, output, hold);
 
 		reset <= '1' after 0 ns,
-			 '1' after 100 ns;
+			 '0' after 100 ns;
 
 		input <= "00000000" after 0 ns,
 			 "11010101" after 500 ns,
 			 "01010101" after 1 us,
 			 "00000000" after 2 us;
+		hold <= '0' after 0 ns,
+			'1' after 1500 ns;
 end architecture;
