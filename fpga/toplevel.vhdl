@@ -46,7 +46,7 @@ end entity; -- toplevel
 
 architecture arch of toplevel is
 
-	component clk_divider is
+	component clk_divider_6 is
 	port
 	(
 		clk : in std_logic;
@@ -55,10 +55,24 @@ architecture arch of toplevel is
 	);
 	end component;
 
+	entity clk_divider_25 is
+        port (
+                clk : in std_logic;
+                res : in std_logic;
+                clk_25 : out std_logic
+        );
+	end entity;
+
 	component debouncer is
 	generic
 	(
-		max_count  : integer := 32;
+	entity clk_divider_25 is
+        port (
+                clk : in std_logic;
+                res : in std_logic;
+                clk_25 : out std_logic
+        );
+end entity;	max_count  : integer := 32;
 		wait_count : integer := 64
 	);
 	port
@@ -114,6 +128,7 @@ architecture arch of toplevel is
 	port 
 	(
 		clk_6 : in std_logic;
+		clk_25 : in std_logic;
 		res : in std_logic;
 
 		-- These are wired directly to the VGA display
@@ -153,6 +168,9 @@ architecture arch of toplevel is
 
 	-- This is clk divided by 8 so it's like 6Mhz for VGA, lov, and the chip
 	signal clk_6 : std_logic;
+	
+	-- This is clk divided by 2 so it's 25Mhz for VGA
+	signal clk_25 : std_logic;
 
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
@@ -200,7 +218,7 @@ begin
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
-	vga_sp : syncpulses port map(clk_6, not rst, hsync, vsync_signal, screen_address);
+	vga_sp : syncpulses port map(clk_6, clk_25, not rst, hsync, vsync_signal, screen_address);
 
 	-- The VGA rop top entity entity
 	vga_rop : rop port map(clk, not rst, eof_flag, lov_rdy, debounced_l, debounced_r,

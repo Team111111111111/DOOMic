@@ -10,7 +10,7 @@ entity clk_divider_25 is
 	);
 end entity;
 
-architecture behavioural of clk_divider is
+architecture behavioural of clk_divider_25 is
 	
 	signal counter, new_counter : std_logic_vector (1 downto 0);
 

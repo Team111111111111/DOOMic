@@ -2,7 +2,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity clk_divider is
+entity clk_divider_6 is
 	port (
 		clk : in std_logic;
 		res : in std_logic;
@@ -10,7 +10,7 @@ entity clk_divider is
 	);
 end entity;
 
-architecture behavioural of clk_divider is
+architecture behavioural of clk_divider_6 is
 	
 	signal counter, new_counter : std_logic_vector (2 downto 0);
 
