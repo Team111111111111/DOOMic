@@ -219,4 +219,6 @@ begin
 
 	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else vga_rgb_color;
 
+	clk_out <= clk_6; -- TAKE THIS OUT (to test 6mhz clock on led)
+
 end architecture; -- arch
