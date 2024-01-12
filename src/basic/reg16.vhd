@@ -21,7 +21,8 @@ begin
 			REG_OUT <= REG_IN_VLINE;
 			elsif (enable_h = '1') then
 			REG_OUT <= REG_IN_HLINE;
-			
+			else 
+			REG_OUT <= "0000000000000000";
 			end if;
 		    else 
 			REG_OUT <= "0000000000000000" ;
