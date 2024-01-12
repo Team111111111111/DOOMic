@@ -1,6 +1,6 @@
 -- component for further implementation is emulated_mem_ctrl
 -- usage
--- plug in clk_6 and reset
+-- plug in clk_25 and reset
 
 
 --/* 
@@ -15,6 +15,7 @@ library ieee;
 entity syncpulses is
   port (
     clk_6   : in std_logic;
+    clk_25 : in std_logic;
     res : in std_logic;
 
     hsync : out std_logic;
@@ -84,7 +85,7 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6, res)
+  process (clk_25, res)
   begin
       --hsync counter
     if (res = '1') then 
@@ -92,7 +93,7 @@ begin
       counter_sel <= counter_sel;
     else
 
-        if (rising_edge(clk_6)) then
+        if (rising_edge(clk_25)) then
           if (hcount >= (h_screen + h_front_porch + h_pulse + h_back_porch) * clock_demultiplier) then
             hcount <= (others => '0');
             counter_sel <= not counter_sel;
@@ -113,12 +114,12 @@ begin
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
-  process (clk_6, res)
+  process (clk_25, res)
   begin
     if(res = '1') then
       vcount <= (others => '0');
     else
-      if(rising_edge(clk_6)) then
+      if(rising_edge(clk_25)) then
         if (h_end = '1') then
           if (vcount >= (v_screen + v_front_porch + v_pulse + v_back_porch)) then
             vcount <= (others => '0');
