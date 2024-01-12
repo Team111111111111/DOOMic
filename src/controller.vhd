@@ -7,6 +7,7 @@ entity pipeline_controler is
    port(clk        : in  std_logic;
         res        : in  std_logic;
         input_bus  : in  std_logic_vector(13 downto 0);
+   	output_bus  : in  std_logic_vector(15 downto 0);
         h_rdy      : in  std_logic;
 	    v_rdy      : in  std_logic;
         h_enable   : out std_logic;
@@ -124,7 +125,8 @@ begin
 				transmit_v <= '0';
 				transmit_h <= '1';
 
-				if (input_bus = "11111111111111") then
+				if (input_bus = "11111111111111" and 
+					output_bus = "1111111111111110") then
 					new_state <= reset;
 
 				elsif (h_rdy = '0') then

@@ -72,6 +72,7 @@ component pipeline_controler is
    port(clk        : in  std_logic;
         res        : in  std_logic;
         input_bus  : in  std_logic_vector(13 downto 0);
+   	output_bus : in std_logic_vector(15 downto 0);
         h_rdy      : in  std_logic;
 	    v_rdy      : in  std_logic;
         h_enable   : out std_logic;
@@ -116,6 +117,7 @@ begin
 	contr: pipeline_controler port map(clk	=> clk,
 				res		=> reset,
 				input_bus	=> buffer_bsp,
+				output_bus	=> h_to_bus_ready,
 				h_rdy		=> h_to_bus_ready,
 				v_rdy		=> v_to_bus_ready,
 				h_enable	=> bus_to_h_enable,
