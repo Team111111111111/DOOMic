@@ -2,13 +2,13 @@ library IEEE;
 use IEEE.std_logic_1164.ALL;
 use IEEE.numeric_std.ALL;
 
-entity fixed_comp_entity is
+entity comparator is
    port(a : in  std_logic_vector(21 downto 0);
 		b : in	std_logic_vector(21 downto 0);
         o : out std_logic);
-end fixed_comp_entity;
+end comparator;
 
-architecture behaviour of fixed_comp_entity is
+architecture behaviour of comparator is
 	function f_comparators
 		(signal a : std_logic_vector(21 downto 0);
 		 signal b : std_logic_vector(21 downto 0))

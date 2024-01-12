@@ -56,9 +56,10 @@ begin
     data_in <= "00000000000000" after 0 ns, --start at 0
                "00001010111100" after 140 ns, -- set player x to 700
                "00000001100100" after 180 ns, -- set player y yo 100
-               "00000000110000" after 220 ns, -- set alpha to a test value
+               "00000000010000" after 220 ns, -- set alpha to a test value
                "00001010111100" after 260 ns, -- set first vertex x to 700
-               "00000011001000" after 300 ns, -- set first vertex y to 40
-               "00000000000001" after 340 ns;
+               "00000011001000" after 300 ns, -- set first vertex y to 200
+               "00001010000000" after 1880 ns,-- set second vertex x to 640
+               "00000011001000" after 1920 ns;-- set second vertex y to 200
 
 end architecture;

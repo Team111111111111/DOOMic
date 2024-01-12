@@ -132,12 +132,11 @@ architecture structural of v_line is
         );
     end component;
 
-    component m_comparator is
-        generic(n_bits	:	integer := 24);
-           port(a   : in  std_logic_vector(n_bits - 1 downto 0);
-                b   : in  std_logic_vector(n_bits - 1 downto 0);
-                ala : out std_logic
-            );
+    component comparator is
+        port(   a   : in  std_logic_vector(21 downto 0);
+                b   : in  std_logic_vector(21 downto 0);
+                o   : out std_logic
+        );
     end component;
     
     component v_line_lookup is
@@ -220,34 +219,25 @@ begin
       output => buffers_out(6)
     );
 
-    comp16_inst: m_comparator -- used by cos
-    generic map (
-      n_bits => 22
-    )
+    comp16_inst: comparator -- used by cos
     port map (
       a   => buffers_out(0),
       b   => "0000000001000000000000",
-      ala => comp16_out
+      o     => comp16_out
     );
     
-    comp32_inst: m_comparator --used by sin
-    generic map (
-      n_bits => 22
-    )
+    comp32_inst: comparator --used by sin
     port map (
       a   => buffers_out(6),
       b   => "0000000010000000000000",
-      ala => comp32_out
+      o   => comp32_out
     );
 
-    comp48_inst: m_comparator -- used by cos
-    generic map (
-      n_bits => 22
-    )
+    comp48_inst: comparator -- used by cos
     port map (
       a   => buffers_out(0),
       b   => "0000000011000000000000",
-      ala => comp48_out
+      o   => comp48_out
     );
 
     lookup_inst: v_line_lookup
