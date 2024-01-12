@@ -904,7 +904,7 @@ ready_out_bus <='0';
                 ready_out_bus <= '1';
                 ready_out_h <= '0';
 
-                if (buffers_out(4) = buffers_out(6)) then
+                if (buffers_out(4) <= buffers_out(6)) then
                     new_state <= done;
                 elsif (bus_empty_in = '1') then
                     new_state <= addres_calc;
