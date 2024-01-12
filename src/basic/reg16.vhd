@@ -18,11 +18,11 @@ begin
 		if (rising_edge(clk)) then
 		    if(reset = '0') then
 			if (enable_v = '1') then
-			REG_OUT <= REG_IN_VLINE;
+				REG_OUT <= REG_IN_VLINE;
 			elsif (enable_h = '1') then
-			REG_OUT <= REG_IN_HLINE;
+				REG_OUT <= REG_IN_HLINE;
 			else 
-			REG_OUT <= "0000000000000000";
+				REG_OUT <= "0000000000000000";
 			end if;
 		    else 
 			REG_OUT <= "0000000000000000" ;
