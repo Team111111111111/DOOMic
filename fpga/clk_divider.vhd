@@ -34,13 +34,13 @@ begin
 			new_counter <= "000";
 			clk_6 <= '1';
 
-		elsif (unsigned(counter) >= 2 and
-			unsigned(counter) < 3) then
+		elsif (unsigned(counter) >= 4 and
+			unsigned(counter) < 7) then
 
 			new_counter <= counter + 1;
 			clk_6 <= '0';
 
-		elsif (unsigned(counter) = 3) then
+		elsif (unsigned(counter) = 7) then
 			new_counter <= "000";
 			clk_6 <= '0';
 
