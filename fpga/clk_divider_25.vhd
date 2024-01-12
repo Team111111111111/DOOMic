@@ -34,7 +34,7 @@ begin
 			new_counter <= "00";
 			clk_25 <= '1';
 
-		elsif (counter = 2) then
+		elsif (counter = 1) then
 			new_counter <= "00";
 			clk_25 <= '0';
 
