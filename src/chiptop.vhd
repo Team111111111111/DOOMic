@@ -117,7 +117,7 @@ begin
 	contr: pipeline_controler port map(clk	=> clk,
 				res		=> reset,
 				input_bus	=> buffer_bsp,
-				output_bus	=> h_to_bus_ready,
+				output_bus	=> address_to_outbuffer_h,
 				h_rdy		=> h_to_bus_ready,
 				v_rdy		=> v_to_bus_ready,
 				h_enable	=> bus_to_h_enable,
