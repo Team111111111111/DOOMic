@@ -132,12 +132,11 @@ architecture structural of v_line is
         );
     end component;
 
-    component m_comparator is
-        generic(n_bits	:	integer := 24);
-           port(a   : in  std_logic_vector(n_bits - 1 downto 0);
-                b   : in  std_logic_vector(n_bits - 1 downto 0);
-                ala : out std_logic
-            );
+    component comparator is
+        port(   a   : in  std_logic_vector(21 downto 0);
+                b   : in  std_logic_vector(21 downto 0);
+                o   : out std_logic
+        );
     end component;
     
     component v_line_lookup is
@@ -220,34 +219,25 @@ begin
       output => buffers_out(6)
     );
 
-    comp16_inst: m_comparator -- used by cos
-    generic map (
-      n_bits => 22
-    )
+    comp16_inst: comparator -- used by cos
     port map (
       a   => buffers_out(0),
       b   => "0000000001000000000000",
-      ala => comp16_out
+      o     => comp16_out
     );
     
-    comp32_inst: m_comparator --used by sin
-    generic map (
-      n_bits => 22
-    )
+    comp32_inst: comparator --used by sin
     port map (
       a   => buffers_out(6),
       b   => "0000000010000000000000",
-      ala => comp32_out
+      o   => comp32_out
     );
 
-    comp48_inst: m_comparator -- used by cos
-    generic map (
-      n_bits => 22
-    )
+    comp48_inst: comparator -- used by cos
     port map (
       a   => buffers_out(0),
       b   => "0000000011000000000000",
-      ala => comp48_out
+      o   => comp48_out
     );
 
     lookup_inst: v_line_lookup
@@ -426,7 +416,7 @@ ready_out_bus <='0';
             -- C6
             -- APPROXIMATOR
             when aprox_cos_comp =>
-                if (buffers_out(1) /= "0000000000000000000000") then -- approx already done
+                if (buffers_out(0) /= "0000000000000000000000") then -- approx already done
                     new_state <= calc_dx;
                     buffers_in(6 downto 0)   <= (others => (others => '0'));  
                     en(6 downto 0)           <= (others => '0');
@@ -764,7 +754,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000011000100000000000";     -- Multiply by Constant (tbd now set to 1)
+                mult_2_sig <= "0000011001100110011000";     -- Multiply by Constant (tbd now set to 409.59375)
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
@@ -961,3 +951,4 @@ ready_out_bus <='0';
     adress_out <= buffers_out(6)(21 downto 6);
     
 end architecture;
+
