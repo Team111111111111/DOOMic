@@ -57,7 +57,7 @@ bus_empty_in <= '1' after 0 ns;
                "00001001011000" after 180 ns, -- set player y yo 600
                "00000000100011" after 220 ns, -- set alpha to a test value 35
               "00000000000001" after  260 ns,-- set second vertex x to 1
-               "00001011000110" after  300ns,-- set second vertex y to 710
+               "00001011000110" after  300 ns,-- set second vertex y to 710
                "00000000000000" after 340 ns, -- set to zero
                "00000000000001" after 2000 ns,-- set second vertex x to 1
                "00000011001001" after 2040 ns,-- set second vertex y to 201

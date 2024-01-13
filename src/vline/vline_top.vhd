@@ -416,7 +416,7 @@ ready_out_bus <='0';
             -- C6
             -- APPROXIMATOR
             when aprox_cos_comp =>
-                if (buffers_out(0) /= "0000000000000000000000") then -- approx already done
+                if (buffers_out(1) /= "0000000000000000000000") then -- approx already done
                     new_state <= calc_dx;
                     buffers_in(6 downto 0)   <= (others => (others => '0'));  
                     en(6 downto 0)           <= (others => '0');
