@@ -754,7 +754,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000011001100110011000";     -- Multiply by Constant (tbd now set to 409.59375)
+                mult_2_sig <= "1111111111110100010010";     -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
@@ -945,7 +945,7 @@ ready_out_bus <='0';
         end case;
     end process;
 
-    a_out <= buffers_out(6)(16 downto 8);
+    a_out <= buffers_out(6)(17 downto 9);
     b_bot_out <= buffers_out(4)(13 downto 6);
     b_top_out <= buffers_out(5)(13 downto 6);
     adress_out <= buffers_out(6)(21 downto 6);
