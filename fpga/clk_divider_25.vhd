@@ -30,17 +30,13 @@ begin
 
 	process (counter, res)
 	begin
-		if (res = '1') then
-			new_counter <= "00";
-			clk_25 <= '1';
-
-		elsif (counter = 1) then
-			new_counter <= "00";
-			clk_25 <= '0';
-
-		else
+		if (counter < 1) then
 			new_counter <= counter + 1;
 			clk_25 <= '1';
+
+		elsif (counter >= 1) then
+			new_counter <= "00";
+			clk_25 <= '0';
 
 		end if;
 	end process;
