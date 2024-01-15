@@ -2,10 +2,10 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.numeric_std.all;
 
-entity cbuf_test is
+entity color_test is
 end entity;
 
-architecture cbuf_test of cbuf_test is
+architecture cbuf_test of color_test is
 	component color_buffer is
 		port (
 			reset   : in std_logic;
@@ -26,13 +26,10 @@ begin
 		port map ( reset, input, output, hold);
 
 		reset <= '1' after 0 ns,
-			 '0' after 100 ns;
+			 '1' after 100 ns;
 
 		input <= "00000000" after 0 ns,
 			 "11010101" after 500 ns,
 			 "01010101" after 1 us,
 			 "00000000" after 2 us;
-
-		hold <= '0' after 0 ns,
-			'1' after 1500 ns;
 end architecture;
