@@ -31,5 +31,5 @@ begin
 	end process;
 
 	REG_OUT <= memory;
-end behaviour;
+end architecture;
 
