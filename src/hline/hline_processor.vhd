@@ -33,6 +33,7 @@ signal dx_temp: unsigned(8 downto 0) := (others => '0');
 begin
 process(clk)
 begin
+if (rising_edge(clk)) then
 	if (unsigned(y1) < unsigned(y3)) then
 		yL_temp <= y1;
 		yR_temp <= y3;
@@ -59,7 +60,7 @@ begin
 		dxy1_out <= std_logic_vector(dx_temp);
 		dxy2_out <= ('0'& std_logic_vector(dy_temp));
 	end if;
-
+end if;
 end process;
 end architecture behavioural;
 					
