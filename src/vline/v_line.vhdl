@@ -98,7 +98,7 @@ architecture structural of v_line is
     signal mult_1_sig, mult_2_sig, adder_sig, block_out_sig : std_logic_vector(21 downto 0);
     signal comp16_out, comp32_out, comp48_out : std_logic;
     signal lookup_in :  std_logic_vector(5 downto 0);
-    signal lookup_out:  std_logic_vector(7 downto 0);
+    signal lookup_out:  std_logic_vector(5 downto 0);
 
 
     component v_line_multadder is
@@ -771,7 +771,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "1111111011011010110111";     -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
+                mult_2_sig <= "0000000000000100000000";  -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
