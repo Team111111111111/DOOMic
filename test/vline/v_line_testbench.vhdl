@@ -53,14 +53,21 @@ begin
       
     bus_empty_in <= '1';
 
-    data_in <= "00000000000000" after 0 ns, --start at 0
-               "00001010111100" after 140 ns, -- set player x to 700
-               "00000001100100" after 180 ns, -- set player y yo 100
-               "00000000001110" after 220 ns, -- set alpha to a test value
-               "00001010111100" after 260 ns, -- set first vertex x to 700
-               "00000011001000" after 300 ns, -- set first vertex y to 200
-               "00000000000000" after 340 ns, -- set to zero
-               "00001010000000" after 2000 ns,-- set second vertex x to 640
-               "00000011001000" after 2040 ns;-- set second vertex y to 200
+    data_in <=	"00000000000000" after 0 ns, --start at 0
+                -- "11111111111111" after 100 ns, --all one's
+                "00000100101100" after 140 ns, -- set player x to 300-
+                "00001001011000" after 180 ns, -- set player y yo 600
+                "00000000100011" after 220 ns, -- set alpha to a test value 35
+             	"00000001110010" after 260 ns, -- set first vertex x to 114
+             	"00000001010111" after 300 ns, -- set first vertex y to 87
+             	"00000000000000" after 340 ns, -- set to zero
+             	"00000000000001" after 2000 ns,-- set second vertex x to 1
+             	"00000011001001" after 2040 ns,-- set second vertex y to 201
+				"00000000000000" after 2080 ns,-- set to zero
+             	"00000000000001" after 4000 ns,-- set second vertex x to 1
+             	"00001011000110" after 4040 ns,-- set second vertex y to 710
+  				"00000000000000" after 4080 ns, --set to zero
+  				"11111111111111" after 6000 ns, --set all one's
+  				"00000000000000" after 6040 ns;--set to zero
 
 end architecture;
