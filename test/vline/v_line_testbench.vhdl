@@ -61,16 +61,16 @@ bus_empty_in <= '1' after 0 ns;
             "00000001010111" after 300 ns, -- set first vertex y to 87
             "00000000000000" after 340 ns, --set to zero
 
-            "00000000000001" after  2000 ns,-- set second vertex x to 1
-            "00000011001001"after  2040 ns,-- set second vertex y to 201
-            "00000000000000" after 2080 ns, -- set to zero
+            "00000000000001" after  20000 ns,-- set second vertex x to 1
+            "00000011001001"after  20040 ns,-- set second vertex y to 201
+            "00000000000000" after 20080 ns, -- set to zero
 
-            "00000000000001" after 8000 ns,-- set third vertex x to 1
-            "00001011000110" after 8040 ns,-- set third vertex y to 710 
-		    "00000000000000" after 8080 ns, -- set to zero
+            "00000000000001" after 40000 ns,-- set third vertex x to 1
+            "00001011000110" after 40040 ns,-- set third vertex y to 710 
+		    "00000000000000" after 40080 ns, -- set to zero
               
 
-		    "11111111111111" after 10000 ns, --set all one's
-		    "00000000000000" after 10040 ns; --set to zero
+		    "11111111111111" after 80000 ns, --set all one's
+		    "00000000000000" after 80040 ns; --set to zero
  
 end architecture;
