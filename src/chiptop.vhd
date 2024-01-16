@@ -62,12 +62,6 @@ component reg16 is
 end component;
 
 
-component reg14 is
-   port(REG_IN : in  std_logic_vector(13 downto 0);
-	REG_OUT: out std_logic_vector(13 downto 0);
-	clk, reset: in std_logic);
-end component;
-
 component pipeline_controler is
    port(clk        : in  std_logic;
         res        : in  std_logic;
@@ -103,11 +97,7 @@ begin
 
 
 
-	reg_in: reg14 port map(clk		=> clk,
-				reset		=> reset,
-				REG_IN		=> serial_bus,		
-				REG_OUT		=> buffer_bsp
-				);
+	buffer_bsp <= serial_bus;
 
 
 
