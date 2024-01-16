@@ -75,7 +75,7 @@ component algorithm is
         	dxy1_in		: in std_logic_vector(8 downto 0);
         	dxy2_in		: in std_logic_vector(8 downto 0);
 
-		address		: out std_logic_vector(15 downto 0);
+		address_out		: out std_logic_vector(15 downto 0);
 		ready		: out std_logic   
 	);
 end component;
@@ -124,7 +124,7 @@ begin
 				right_cond_in	=> right_cond_sig,
 				dxy1_in		=> dxy1_sig,
 				dxy2_in		=> dxy2_sig,
-				address		=> address_out,
+				address_out		=> address_out,
 				ready		=> ready
 				);
 end architecture behavioural;
