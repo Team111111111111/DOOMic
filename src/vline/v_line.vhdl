@@ -771,7 +771,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000000000000100000000";  -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
+                mult_2_sig <= "0000000000000011001111";  -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
@@ -787,7 +787,7 @@ ready_out_bus <='0';
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);             -- K stored in buffer 4
-                mult_2_sig <= "0000001100010000000000";   -- Multiply by Constant (tbd now set to 196)
+                mult_2_sig <= "0000000110000000000000";   -- Multiply by Constant (tbd now set to 96)
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(5) <= block_out_sig;                -- store result in buffer 5
                 en(5) <= '1';
@@ -911,7 +911,7 @@ ready_out_bus <='0';
                 ready_out_bus <= '1';
                 ready_out_h <= '0';
 
-                if (buffers_out(4) <= buffers_out(6)) then
+                if (unsigned(buffers_out(4)) <= unsigned(buffers_out(6))) then
                     new_state <= done;
                 elsif (bus_empty_in = '1') then
                     new_state <= addres_calc;

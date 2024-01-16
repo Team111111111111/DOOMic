@@ -65,12 +65,12 @@ bus_empty_in <= '1' after 0 ns;
             "00000011001001"after  2040 ns,-- set second vertex y to 201
             "00000000000000" after 2080 ns, -- set to zero
 
-            "00000000000001" after 4000 ns,-- set third vertex x to 1
-            "00001011000110" after 4040 ns,-- set third vertex y to 710 
-		    "00000000000000" after 4080 ns, -- set to zero
+            "00000000000001" after 8000 ns,-- set third vertex x to 1
+            "00001011000110" after 8040 ns,-- set third vertex y to 710 
+		    "00000000000000" after 8080 ns, -- set to zero
               
 
-		    "11111111111111" after 6000 ns, --set all one's
-		    "00000000000000" after 6040 ns; --set to zero
+		    "11111111111111" after 10000 ns, --set all one's
+		    "00000000000000" after 10040 ns; --set to zero
  
 end architecture;
