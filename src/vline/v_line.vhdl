@@ -853,10 +853,10 @@ ready_out_bus <='0';
 
 
             when calc_bot_addr =>       -- 320 * b_bot + a
-                mult_1_sig <= buffers_out(4);               -- b_bot stored in B4 (16.6 format)
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
-                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 2));      -- add a stored in B6  changed to 16.6
-                buffers_in(4) <= block_out_sig;                -- store result in buffer 4
+                mult_1_sig <= "0" & buffers_out(4)(21 downto 1);               -- b_bot stored in B4 (16.6 format)
+                mult_2_sig <= "0000000000101000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 8));      -- add a stored in B6  changed to 16.6
+                buffers_in(4) <= block_out_sig(15 downto 0) & "000000";                -- store result in buffer 4
                 en(4) <= '1';
                 new_state <= calc_top_addr;
 
@@ -870,10 +870,10 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
 
             when calc_top_addr => -- 320 * b_top + a
-                mult_1_sig <= buffers_out(5);                -- b_top stored in buffer B5 (16.6)
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
-                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 2));      -- add a stored in B6  changed to 16.6
-                buffers_in(6) <= block_out_sig;                -- store result in buffer 6
+                mult_1_sig <= "0" & buffers_out(5)(21 downto 1);                -- b_top stored in buffer B5 (16.6)
+                mult_2_sig <= "0000000000101000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 8));      -- add a stored in B6  changed to 16.6
+                buffers_in(6) <= block_out_sig(15 downto 0) & "000000";                -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= addres_calc;
 
@@ -962,7 +962,7 @@ ready_out_bus <='0';
         end case;
     end process;
 
-    a_out <= buffers_out(6)(17 downto 9);
+    a_out <= buffers_out(6)(16 downto 8);
     b_bot_out <= buffers_out(4)(13 downto 6);
     b_top_out <= buffers_out(5)(13 downto 6);
     adress_out <= buffers_out(6)(21 downto 6);
