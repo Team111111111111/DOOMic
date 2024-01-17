@@ -222,7 +222,7 @@ port map(
 				if (unsigned(position) <= unsigned(right_cond)) then
 					next_state	 <= prepare_draw;
 				else
-					next_state <= done;
+					next_state 	<= done;
 				end if;
 
 			when done =>		-- The done state is when the end of a wall is reached NOT end of frame.
