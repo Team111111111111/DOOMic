@@ -66,7 +66,8 @@ architecture structural of v_line is
                     inv_dysina,
                     calc_Z, -- dxcosa - dysina --> Somehow to LUT ( component?? )
 
-                    calc_dx_sin_a, -- -dx*sina
+                    calc_dy_cos_a, -- dy*cos a
+                    inv_dycosa, --
                     calc_da, -- -dy*cosa + dx sina
                     
                     calc_da_k, -- da * k
@@ -97,7 +98,7 @@ architecture structural of v_line is
     signal mult_1_sig, mult_2_sig, adder_sig, block_out_sig : std_logic_vector(21 downto 0);
     signal comp16_out, comp32_out, comp48_out : std_logic;
     signal lookup_in :  std_logic_vector(5 downto 0);
-    signal lookup_out:  std_logic_vector(7 downto 0);
+    signal lookup_out:  std_logic_vector(11 downto 0);
 
 
     component v_line_multadder is
@@ -142,7 +143,7 @@ architecture structural of v_line is
     component v_line_lookup is
         port (
             input_vector :  in std_logic_vector(5 downto 0);
-            output_vector : out std_logic_vector(7 downto 0)
+            output_vector : out std_logic_vector(11 downto 0)
         );
     end component;
   
@@ -416,7 +417,7 @@ ready_out_bus <='0';
             -- C6
             -- APPROXIMATOR
             when aprox_cos_comp =>
-                if (buffers_out(1) /= (others => '0')) then -- approx already done
+                if (buffers_out(1) /= "0000000000000000000000") then -- approx already done
                     new_state <= calc_dx;
                     buffers_in(6 downto 0)   <= (others => (others => '0'));  
                     en(6 downto 0)           <= (others => '0');
@@ -676,7 +677,7 @@ ready_out_bus <='0';
             
             when inv_dysina =>
                 mult_1_sig <= buffers_out(4);                   -- dysina stored in buffer 4
-                mult_2_sig <= "1111111111111100000000";         -- mult -1
+                mult_2_sig <= "0000000000000100000000";         -- mult -1
                 adder_sig <= "0000000000000000000000";         -- add 0
                 buffers_in(4) <= block_out_sig;                 -- store result in buffer 4
                 en(4) <= '1';
@@ -691,15 +692,15 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
                     
 
-            when calc_Z =>              -- dxcosa - dysina
+            when calc_Z =>              -- dxcosa +x dysina
                 mult_1_sig <= buffers_out(6);                   -- dX stored in buffer  6
                 mult_2_sig <= buffers_out(1);                   -- cos a stored in buffer 1
-                adder_sig <= buffers_out(4);                    -- add -dysina
-                lookup_in <= block_out_sig(14 downto 9);        -- LUT the result
-                buffers_in(4)(7 downto 0) <= lookup_out;        -- store result in buffer 4
-                buffers_in(4)(21 downto 8) <= (others => '0');
+                adder_sig <= buffers_out(4);                    -- add dysina
+                lookup_in <= block_out_sig(16 downto 11);        -- LUT the result
+                buffers_in(4)(11 downto 0) <= lookup_out;        -- store the result*2^4 in buffer 4
+                buffers_in(4)(21 downto 12) <= (others => '0');    -- shifting done for more accurate multiplication later
                 en(4) <= '1';
-                new_state <= calc_dx_sin_a;
+                new_state <= calc_dy_cos_a;
 
                 buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 5) <= (others => '0');
@@ -708,24 +709,43 @@ ready_out_bus <='0';
                 ready_out_h <= '0';
                 ready_out_bus <='0';
 
-            when calc_dx_sin_a =>       -- dx*sina
-                mult_1_sig <= buffers_out(6);                   -- dX stored in buffer  6
-                mult_2_sig <= buffers_out(0);                   -- sin a stored in buffer 0
+            when calc_dy_cos_a =>       -- dy*cosa
+                mult_1_sig <= buffers_out(5);                   -- dy stored in buffer  5
+                mult_2_sig <= buffers_out(1);                   -- cos a stored in buffer 1
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(6) <= block_out_sig;                -- store result in buffer 6
-                en(6) <= '1'; 
-                new_state <= calc_da;
+                buffers_in(5) <= block_out_sig;                -- store result in buffer 6
+                en(5) <= '1'; 
+                new_state <= inv_dycosa; 
                 
-                buffers_in(5 downto 0) <= (others => (others => '0'));          -- Prevent Latches
-                en(5 downto 0) <= (others => '0');
+                buffers_in(6) <= (others => '0');
+                en(6)   <= '0';
+                buffers_in(4 downto 0) <= (others => (others => '0'));          -- Prevent Latches
+                en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
                 ready_out_bus <='0';
+            
+            when inv_dycosa =>
+                mult_1_sig <= buffers_out(5);                   -- dycosa stored in buffer  6
+                mult_2_sig <= "1111111111111100000000";          -- -1
+                adder_sig <= (others => '0');               -- add 0
+                buffers_in(5) <= block_out_sig;                -- store result in buffer 6
+                en(5) <= '1'; 
+                new_state <= calc_da;
+                
+                buffers_in(6) <= (others => '0');
+                en(6)   <= '0';
+                buffers_in(4 downto 0) <= (others => (others => '0'));          -- Prevent Latches
+                en(4 downto 0) <= (others => '0');
+                lookup_in <= (others => '0');
+                ready_out_h <= '0';
+                ready_out_bus <='0';
+            
 
             when calc_da =>             -- -dy*cosa + dx sina
-                mult_1_sig <= buffers_out(5);                   -- dY stored in buffer  5
-                mult_2_sig <= buffers_out(1);                   -- cos a stored in buffer 1
-                adder_sig <= buffers_out(6);               -- add dx sin a stored in buffer 6
+                mult_1_sig <= buffers_out(6);                   -- dx stored in buffer  6!
+                mult_2_sig <= buffers_out(0);                   -- sin a stored in buffer 0
+                adder_sig <= buffers_out(5);               -- add -dycosa a stored in buffer 6
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= calc_da_k;
@@ -740,7 +760,13 @@ ready_out_bus <='0';
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(6) <= block_out_sig;                -- store result in buffer 6
+                if (shift_right(signed(block_out_sig), 4) > 256) then
+                    buffers_in(6) <= "0000000000000100000000";
+                elsif (shift_right(signed(block_out_sig), 4) < -256) then
+                    buffers_in(6) <= "1111111111111100000000";
+                else
+                    buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
+                end if;
                 en(6) <= '1';
                 new_state <= calc_a;              
                 
@@ -754,7 +780,7 @@ ready_out_bus <='0';
 
             when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000011001100110011000";     -- Multiply by Constant (tbd now set to 409.59375)
+                mult_2_sig <= "0000001010000000000000";  -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
                 adder_sig <= "0000001010000000000000";      -- add 160
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
@@ -770,9 +796,9 @@ ready_out_bus <='0';
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);             -- K stored in buffer 4
-                mult_2_sig <= "0000001100010000000000";   -- Multiply by Constant (tbd now set to 196)
+                mult_2_sig <= "0000110001110000000000";   -- Multiply by Constant (tbd now set to 796)
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(5) <= block_out_sig;                -- store result in buffer 5
+                buffers_in(5) <= std_logic_vector(shift_right(unsigned(block_out_sig), 4));                -- store result in buffer 5
                 en(5) <= '1';
                 new_state <= calc_b_bot;
 
@@ -836,10 +862,10 @@ ready_out_bus <='0';
 
 
             when calc_bot_addr =>       -- 320 * b_bot + a
-                mult_1_sig <= buffers_out(4);               -- b_bot stored in B4 (16.6 format)
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
-                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 2));      -- add a stored in B6  changed to 16.6
-                buffers_in(4) <= block_out_sig;                -- store result in buffer 4
+                mult_1_sig <= "0" & buffers_out(4)(21 downto 1);               -- b_bot stored in B4 (16.6 format)
+                mult_2_sig <= "0000000000101000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 8));      -- add a stored in B6  changed to 16.6
+                buffers_in(4) <= block_out_sig(15 downto 0) & "000000";                -- store result in buffer 4
                 en(4) <= '1';
                 new_state <= calc_top_addr;
 
@@ -853,10 +879,10 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
 
             when calc_top_addr => -- 320 * b_top + a
-                mult_1_sig <= buffers_out(5);                -- b_top stored in buffer B5 (16.6)
-                mult_2_sig <= "0000010100000000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
-                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 2));      -- add a stored in B6  changed to 16.6
-                buffers_in(6) <= block_out_sig;                -- store result in buffer 6
+                mult_1_sig <= "0" & buffers_out(5)(21 downto 1);                -- b_top stored in buffer B5 (16.6)
+                mult_2_sig <= "0000000000101000000000";    -- Multiply by 320 (14.8) == 320*4 (16.6)
+                adder_sig <= std_logic_vector(shift_right(unsigned(buffers_out(6)), 8));      -- add a stored in B6  changed to 16.6
+                buffers_in(6) <= block_out_sig(15 downto 0) & "000000";                -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= addres_calc;
 
@@ -894,7 +920,7 @@ ready_out_bus <='0';
                 ready_out_bus <= '1';
                 ready_out_h <= '0';
 
-                if (buffers_out(4) <= buffers_out(6)) then
+                if (unsigned(buffers_out(4)) <= unsigned(buffers_out(6))) then
                     new_state <= done;
                 elsif (bus_empty_in = '1') then
                     new_state <= addres_calc;
