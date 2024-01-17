@@ -246,12 +246,8 @@ begin
 				new_pointer	<= pointer;
 				eof_flag <= '0';
 
-				if (rdy = '1') then
-					new_state <= BOF;
+				new_state <= plr_x;
 
-				else 
-					new_state <= reset;
-				end if;
 
 			when EOF =>
 				serial_bus	<= "11111111111111";
@@ -264,13 +260,6 @@ begin
 				else
 					new_state <= EOF;
 				end if;
-
-			when BOF =>
-				serial_bus	<= "11111111111111";
-				new_pointer	<= pointer;
-				eof_flag <= '0';
-
-				new_state <= plr_x;
 
 			when plr_x =>
 				serial_bus	<= "00000100101101";
