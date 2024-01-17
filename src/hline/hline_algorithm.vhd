@@ -6,7 +6,7 @@ entity algorithm is
     port (
 	clk		: in std_logic;
 	reset		: in std_logic;
-	sel   		: in std_logic;
+	sel_in   	: in std_logic;
 	enable		: in std_logic;
 
 	start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -62,7 +62,7 @@ signal mulp_y, new_mulp_y: std_logic_vector(16 downto 0):= (others => '0');
 
 signal dxy1, dxy2, right_cond: std_logic_vector(8 downto 0):= (others => '0');
 signal set_dxy1, set_dxy2, set_right_cond: std_logic_vector(8 downto 0):= (others => '0');
-
+signal sel, set_sel: std_logic:= '0';
 
 -- signals used to connect to components.
 signal shift_in_sign, shift_out_sign, shift_out_temp, new_shift_out_temp: std_logic_vector(15 downto 0):= (others => '0');
@@ -118,6 +118,7 @@ port map(
 				mulp_y			<= (others => '0');
 				shift_out_temp		<= (others => '0');
 				address			<= (others=> '0');
+				sel			<= '0';
 
 			else 
 				state 			<= next_state;
@@ -133,6 +134,7 @@ port map(
 				mulp_y			<= new_mulp_y;
 				shift_out_temp		<= new_shift_out_temp;
 				address			<= new_address;
+				sel			<= set_sel;
 
 			end if;
 		end if;
@@ -155,6 +157,7 @@ port map(
 				set_dxy1		<= (others => '0');
 				set_dxy2		<= (others => '0');
 				set_right_cond		<= (others => '0');
+				set_sel			<= '0';
 				new_shift_out_temp 	<= (others => '0');
 
 				new_position 		<= (others => '0');
@@ -184,7 +187,8 @@ port map(
 
 				set_dxy1		<= dxy1_in;
 				set_dxy2		<= dxy2_in;
-				set_right_cond		<= right_cond_in;	
+				set_sel			<= sel_in;
+				set_right_cond		<= right_cond_in;
 
 				new_position 		<= unsigned(start_pos_1);
 				new_sec_position	<= unsigned(start_pos_2);
@@ -210,7 +214,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;	
+				set_right_cond		<= right_cond;
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -240,15 +245,17 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				if (((unsigned(position)+1) mod 320) = 0) then 
-					new_address 	<= "1111111111111110"; 
+				if (((((position) mod 320) = 0) and sel = '1') or 
+					((((sec_position) mod 320) = 0) and sel = '0')) then 
+					new_address 	<= "1111111111111110";
 					ready 		<= '1';
-				else 
+				else
 					new_address	<= (others => '0');
 					ready		<= '0';
 				end if;
@@ -275,7 +282,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -301,6 +309,7 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -327,6 +336,7 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -352,7 +362,8 @@ port map(
 
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;	
+				set_right_cond		<= right_cond;
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -380,6 +391,7 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -404,7 +416,8 @@ port map(
 
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;		
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -431,6 +444,7 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -456,7 +470,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -483,6 +498,7 @@ port map(
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
 				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -512,7 +528,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
@@ -538,7 +555,8 @@ port map(
 
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position+1;
@@ -564,7 +582,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position + 1;
 				new_sec_position	<= sec_position;
@@ -589,7 +608,8 @@ port map(
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond		<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
