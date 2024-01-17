@@ -6,7 +6,7 @@ entity algorithm is
     port (
 	clk		: in std_logic;
 	reset		: in std_logic;
-	sel   		: in std_logic;
+	sel_in   	: in std_logic;
 	enable		: in std_logic;
 
 	start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -55,17 +55,14 @@ signal e_count, new_e_count: signed(15 downto 0);
 
 -- 'signals' to (temporary) store values (memory elements)
 signal new_address, address: std_logic_vector(15 downto 0):= (others => '0');
-
 signal draw_x_sig, new_draw_x_sig: unsigned(8 downto 0):= (others => '0');
 signal draw_y_sig, new_draw_y_sig: unsigned(7 downto 0):= (others => '0');
 signal mirror_y, new_mirror_y: unsigned(7 downto 0):= (others => '0');
-
 signal mulp_y, new_mulp_y: std_logic_vector(16 downto 0):= (others => '0');
-
 
 signal dxy1, dxy2, right_cond: std_logic_vector(8 downto 0):= (others => '0');
 signal set_dxy1, set_dxy2, set_right_cond: std_logic_vector(8 downto 0):= (others => '0');
-
+signal sel, set_sel: std_logic:= '0';
 
 -- signals used to connect to components.
 signal shift_in_sign, shift_out_sign, shift_out_temp, new_shift_out_temp: std_logic_vector(15 downto 0):= (others => '0');
@@ -108,34 +105,36 @@ port map(
 	begin	
 		if (rising_edge (clk)) then
 			if (reset = '1') then
-				state 		<= reset_state;
-				position 	<= (others => '0');
-				sec_position 	<= (others => '0');
-				e_count 	<= (others => '0');
-				dxy1				<= (others => '0');
-				dxy2				<= (others => '0');
+				state 			<= reset_state;
+				position 		<= (others => '0');
+				sec_position 		<= (others => '0');
+				e_count 		<= (others => '0');
+				dxy1			<= (others => '0');
+				dxy2			<= (others => '0');
 				right_cond		<= (others => '0');
-				draw_x_sig		<=(others => '0');
-				draw_y_sig		<=(others => '0');
-				mirror_y			<=(others => '0');
-				mulp_y			<=(others => '0');
-				shift_out_temp	<=(others => '0');
+				draw_x_sig		<= (others => '0');
+				draw_y_sig		<= (others => '0');
+				mirror_y		<= (others => '0');
+				mulp_y			<= (others => '0');
+				shift_out_temp		<= (others => '0');
 				address			<= (others=> '0');
+				sel			<= '0';
 
 			else 
 				state 			<= next_state;
 				position 		<= new_position;
-				sec_position 	<= new_sec_position;
-				e_count 			<= new_e_count;
-				dxy1				<= set_dxy1;
-				dxy2				<= set_dxy2;
+				sec_position 		<= new_sec_position;
+				e_count 		<= new_e_count;
+				dxy1			<= set_dxy1;
+				dxy2			<= set_dxy2;
 				right_cond		<= set_right_cond;
 				draw_x_sig		<= new_draw_x_sig;
 				draw_y_sig		<= new_draw_y_sig;
-				mirror_y			<= new_mirror_y;
+				mirror_y		<= new_mirror_y;
 				mulp_y			<= new_mulp_y;
-				shift_out_temp	<= new_shift_out_temp;
+				shift_out_temp		<= new_shift_out_temp;
 				address			<= new_address;
+				sel			<= set_sel;
 
 			end if;
 		end if;
@@ -145,139 +144,133 @@ port map(
 	begin
 		case state is
 			when reset_state => 
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-
+				new_mirror_y		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
 
 				set_dxy1		<= (others => '0');
 				set_dxy2		<= (others => '0');
-				set_right_cond	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				set_right_cond		<= (others => '0');
+				set_sel			<= '0';
+				new_shift_out_temp 	<= (others => '0');
 
+				new_position 		<= (others => '0');
+				new_sec_position	<= (others => '0');
+				new_e_count 		<= (others => '0');
 
-				new_address 	<= (others => '0');
-				ready 		<= '0';
-
-				new_position 	<= (others => '0');
-				new_sec_position<= (others => '0');
-				new_e_count 	<= (others => '0');
+				new_address 		<= (others => '0');
+				ready 			<= '0';
 
 				if (enable = '1') then
-					next_state <= populate;
+					next_state 	<= populate;
 				else
-					next_state <= reset_state;
+					next_state 	<= reset_state;
 				end if;
 
 			when populate => 		-- initializes start values for the 'loop'
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 
 				set_dxy1		<= dxy1_in;
 				set_dxy2		<= dxy2_in;
-				set_right_cond	<= right_cond_in;	
-				
-				new_address 	<= (others => '0');
-				ready 		<= '0';
+				set_sel			<= sel_in;
+				set_right_cond		<= right_cond_in;
 
-				new_position 	<= unsigned(start_pos_1);
-				new_sec_position<= unsigned(start_pos_2);
-				new_e_count 	<= (others => '0');
+				new_position 		<= unsigned(start_pos_1);
+				new_sec_position	<= unsigned(start_pos_2);
+				new_e_count 		<= (others => '0');
 
-				next_state 	<= for_loop;
+				new_address 		<= (others => '0');
+				ready 			<= '0';
+
+				next_state 		<= for_loop;
 			
 		
 			when for_loop =>		-- checks if 'loop' is done or should continue
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;	
+				set_right_cond		<= right_cond;
+				set_sel			<= sel;		
 
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
-				new_address 	<= (others => '0');
-				ready 		<= '1';
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
 
 				if (unsigned(position) <= unsigned(right_cond)) then
-					next_state <= prepare_draw;
-
+					next_state	 <= prepare_draw;
 				else
-					next_state <= done;
+					next_state 	<= done;
 				end if;
-
 
 			when done =>		-- The done state is when the end of a wall is reached NOT end of frame.
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_shift_out_temp	<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
 
-				if (((unsigned(position)+1) mod 320) = 0) then 
-					new_address 	<= "1111111111111110"; 
-					ready 		<= '1';
-				else 
-					new_address		<= (others => '0');
-					ready		<= '0';
-				end if;
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				next_state 	<= reset_state;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
+
+				if (((((position) mod 320) = 0) and sel = '1') or 
+					((((sec_position) mod 320) = 0) and sel = '0')) then 
+					new_address 	<= "1111111111111110";
+					ready 		<= '1';
+				else
+					new_address	<= (others => '0');
+					ready		<= '0';
+				end if;
+
+				next_state 		<= reset_state;
 
 			when prepare_draw =>		-- sets with 'sel' if 'start_pos_1' is x or y and 'start_pos_2' is x or y
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
-
-				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mulp_y		<= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_shift_out_temp	<= (others => '0');
 
 				if (sel = '1') then
 					new_draw_x_sig <= position;
@@ -286,362 +279,346 @@ port map(
 					new_draw_x_sig <= sec_position;
 					new_draw_y_sig <= position(7 downto 0);
 				end if;
-
-				new_address 	<= (others => '0');
-				ready 		<= '1';
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
-				next_state 	<= draw_1_mulp;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= draw_1_mulp;
 
 			when draw_1_mulp =>		-- for address = 320*y+x, first 320*y
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= std_logic_vector((draw_y_sig & "00000") * "1010"); --320*y;
-				new_mirror_y	<= (others => '0');
-				new_draw_x_sig	<= draw_x_sig;
-				new_draw_y_sig	<= draw_y_sig;
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_draw_x_sig		<= draw_x_sig;
+				new_draw_y_sig		<= draw_y_sig;
+				new_shift_out_temp 	<= (others => '0');
 
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-
-				new_address 	<= (others => '0');
-				ready 		<= '1';
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
+
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
+
+				new_address 		<= (others => '0');
+				ready 			<= '1';
 				
 				next_state 	<= draw_1_add;
 
 
 			when draw_1_add => 		-- + x
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= mulp_y(15 downto 0);
-				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= mulp_y(15 downto 0);
+				add_2_sig 		<= std_logic_vector("0000000"& draw_x_sig);
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
+				new_draw_x_sig		<= draw_x_sig;
+				new_draw_y_sig		<= draw_y_sig;
 
-				new_draw_x_sig	<= draw_x_sig;
-				new_draw_y_sig	<= draw_y_sig;
-					
-
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address	<= result_adder_sig; 		
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				next_state 	<= mirror;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;				
+				
+				new_address		<= result_adder_sig; 		
+				ready 			<= '1';
+
+				next_state 		<= mirror;
 
 
 			when mirror =>			-- y gets mirrored, this to draw the second line
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= "0000000011000111";
-				add_2_sig 	<= (others=> '0');
-				sub_sig 	<= ("00000000" & std_logic_vector(draw_y_sig));
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= "0000000011000111";
+				add_2_sig 		<= (others=> '0');
+				sub_sig 		<= ("00000000" & std_logic_vector(draw_y_sig));
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= unsigned(result_adder_sig(7 downto 0));
-				new_draw_x_sig	<= draw_x_sig;
-				new_draw_y_sig <= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y 		<= unsigned(result_adder_sig(7 downto 0));
+				new_draw_x_sig		<= draw_x_sig;
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;
+				set_sel			<= sel;		
 
-				next_state 	<= draw_2_mulp;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;				
+				
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= draw_2_mulp;
 
 
 			when draw_2_mulp =>		-- 320*mirror_y (address = 320*y_mirror+x)
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= mirror_y;
-				new_mulp_y 	<= std_logic_vector((mirror_y & "00000") * "1010");
-				new_draw_x_sig	<= draw_x_sig;
-				new_draw_y_sig	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y 		<= mirror_y;
+				new_mulp_y 		<= std_logic_vector((mirror_y & "00000") * "1010");
+				new_draw_x_sig		<= draw_x_sig;
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp	<= (others => '0');
 
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				next_state 	<= draw_2_add;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;				
+				
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= draw_2_add;
 
 			when draw_2_add =>		-- + x
-				shift_in_sign 	<= (others => '0');
-				add_1_sig	<= mulp_y(15 downto 0);
-				add_2_sig 	<= std_logic_vector("0000000"& draw_x_sig);
-				sub_sig 	<= (others=> '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig		<= mulp_y(15 downto 0);
+				add_2_sig 		<= std_logic_vector("0000000"& draw_x_sig);
+				sub_sig 		<= (others=> '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				new_draw_x_sig	<= draw_x_sig;
-				new_draw_y_sig	<= (others => '0');
+				new_mirror_y		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
+				new_draw_x_sig		<= draw_x_sig;
+				new_draw_y_sig		<= (others => '0');
 
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
-
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
+
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;			
 				
 				new_address		<= result_adder_sig; -- 320mirror_y+x_position;
-				ready 		<= '1';
+				ready 			<= '1';
 
-				next_state 	<= e_calc;
+				next_state 		<= e_calc;
 
 
 			when e_calc =>			-- e + dy or e + dy depending on 'sel' signal
-				shift_in_sign 	<= (others => '0');
-				add_1_sig 	<= std_logic_vector(e_count);
-				add_2_sig 	<= std_logic_vector("0000000"& dxy1);
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= std_logic_vector(e_count);
+				add_2_sig 		<= std_logic_vector("0000000"& dxy1);
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 
-
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= signed(result_adder_sig);	
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				next_state 	<= e_shift_compare_temp;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= signed(result_adder_sig);					
+				
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= e_shift_compare_temp;
 
 
 			when e_shift_compare_temp =>		-- e**2
-				shift_in_sign 	<= std_logic_vector(e_count);
-				new_shift_out_temp 	<= shift_out_sign;
-
-				add_1_sig	<= (others => '0');
-				add_2_sig	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= std_logic_vector(e_count);
+				add_1_sig		<= (others => '0');
+				add_2_sig		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');			
-				
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= shift_out_sign;
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
-				
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
-				next_state 	<= e_compare;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= e_compare;
 
 
 			when e_compare =>		-- (e**2) > dxy2 
-				shift_in_sign 	<= (others => '0');
-				new_shift_out_temp <= shift_out_temp;
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 				
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-				
-
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= shift_out_temp;
 			
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;	
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
+				new_address 		<= (others => '0');
+				ready 			<= '1';
 				
 				if (signed(shift_out_temp) > signed("0000000" & dxy2)) then
-					next_state <= e_calc1;
+					next_state	<= e_calc1;
 				else
-					next_state <= count_increase;
+					next_state 	<= count_increase;
 				end if;
 
 
 			when e_calc1 =>			-- e - dx (sel = '1') or e - dy
-				shift_in_sign 	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				
-				add_1_sig 	<= std_logic_vector(e_count);
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (std_logic_vector("0000000"& dxy2));
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= std_logic_vector(e_count);
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (std_logic_vector("0000000"& dxy2));
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-
-
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 				
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= signed(result_adder_sig);
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= signed(result_adder_sig);
 
-				next_state 	<= sec_count_increase;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= sec_count_increase;
 
 
 			when sec_count_increase => 	-- x + 1 or y + 1 
-				shift_in_sign 	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 
-				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				new_position 	<= position;
-				new_sec_position<= sec_position+1;
-				new_e_count 	<= e_count;
+				new_position 		<= position;
+				new_sec_position	<= sec_position+1;
+				new_e_count 		<= e_count;
 
-				next_state 	<= count_increase;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= count_increase;
 
 
 			when count_increase =>		-- x + 1 or y + 1, depending on which axis the algorithm iterates
-				shift_in_sign 	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
-
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '1';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				new_position 	<= position + 1;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_position 		<= position + 1;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
-				next_state 	<= for_loop;
+				new_address 		<= (others => '0');
+				ready 			<= '1';
+
+				next_state 		<= for_loop;
 
 			when others =>
-				shift_in_sign 	<= (others => '0');
-				new_shift_out_temp <= (others => '0');
-				add_1_sig 	<= (others => '0');
-				add_2_sig 	<= (others => '0');
-				sub_sig 	<= (others => '0');
-
+				shift_in_sign 		<= (others => '0');
+				add_1_sig 		<= (others => '0');
+				add_2_sig 		<= (others => '0');
+				sub_sig 		<= (others => '0');
 
 				new_mulp_y 		<= (others => '0');
-				new_mirror_y 	<= (others => '0');
-				new_draw_x_sig	<= (others => '0');
-				new_draw_y_sig	<= (others => '0');
+				new_mirror_y 		<= (others => '0');
+				new_draw_x_sig		<= (others => '0');
+				new_draw_y_sig		<= (others => '0');
+				new_shift_out_temp 	<= (others => '0');
 				
 				set_dxy1		<= dxy1;
 				set_dxy2		<= dxy2;
-				set_right_cond	<= right_cond;					
-				
-				new_address 	<= (others => '0');
-				ready 		<= '0';
+				set_right_cond		<= right_cond;	
+				set_sel			<= sel;		
 
-				new_position 	<= position;
-				new_sec_position<= sec_position;
-				new_e_count 	<= e_count;
+				new_position 		<= position;
+				new_sec_position	<= sec_position;
+				new_e_count 		<= e_count;
 
-				next_state 	<= reset_state;
+				new_address 		<= (others => '0');
+				ready 			<= '0';
+
+				next_state 		<= reset_state;
 				
 		end case;
 	end process;	
