@@ -65,7 +65,7 @@ component algorithm is
 	port(
 		clk		: in std_logic;
 		reset		: in std_logic;
-		sel   		: in std_logic;
+		sel_in   	: in std_logic;
 		enable		: in std_logic;
 
 		start_pos_1 	: in std_logic_vector(8 downto 0);
@@ -117,7 +117,7 @@ begin
 
 	alg: algorithm port map(clk		=> clk,
 				reset		=> reset,
-				sel		=> mux_sel_sig,
+				sel_in		=> mux_sel_sig,
 				enable		=> enable,
 				start_pos_1	=> start_pos_1_sig,
 				start_pos_2	=> start_pos_2_sig,
