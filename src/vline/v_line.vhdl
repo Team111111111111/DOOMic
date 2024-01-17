@@ -760,9 +760,9 @@ ready_out_bus <='0';
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
                 adder_sig <= (others => '0');               -- add 0
-                if (signed(block_out_sig) > 256) then
+                if (shift_right(signed(block_out_sig), 4) > 256) then
                     buffers_in(6) <= "0000000000000100000000";
-                elsif (signed(block_out_sig) < -256) then
+                elsif (shift_right(signed(block_out_sig), 4) < -256) then
                     buffers_in(6) <= "1111111111111100000000";
                 else
                     buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
@@ -796,7 +796,7 @@ ready_out_bus <='0';
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);             -- K stored in buffer 4
-                mult_2_sig <= "0000000110000000000000";   -- Multiply by Constant (tbd now set to 96)
+                mult_2_sig <= "0000110001110000000000";   -- Multiply by Constant (tbd now set to 796)
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(5) <= std_logic_vector(shift_right(unsigned(block_out_sig), 4));                -- store result in buffer 5
                 en(5) <= '1';
