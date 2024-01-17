@@ -760,7 +760,13 @@ ready_out_bus <='0';
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
+                if (signed(block_out_sig) > 256) then
+                    buffers_in(6) <= "0000000000000100000000";
+                elsif (signed(block_out_sig) < -256) then
+                    buffers_in(6) <= "1111111111111100000000";
+                else
+                    buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
+                end if;
                 en(6) <= '1';
                 new_state <= calc_a;              
                 
