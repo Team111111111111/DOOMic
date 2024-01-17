@@ -28,7 +28,7 @@ component complement is
 	);
 end component;
 
-signal add_r_sig, inverse_r_sig: std_logic_vector(15 downto 0);
+signal add_r_sig, inverse_r_sig, two_complement_sig: std_logic_vector(15 downto 0);
 
 begin
 	addition: adder port map(
@@ -40,8 +40,13 @@ begin
 		a => sub,
 		r => inverse_r_sig);
 
-	subtraction: adder port map(
+	two_compl: adder port map(
 		a => inverse_r_sig,
+		b => "0000000000000001",
+		r => two_complement_sig);
+
+	subtraction: adder port map(
+		a => two_complement_sig,
 		b => add_r_sig,
 		r => result);
 
