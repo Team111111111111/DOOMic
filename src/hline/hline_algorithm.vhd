@@ -227,7 +227,7 @@ port map(
 					next_state 	<= done;
 				end if;
 
-			when done =>		-- The done state is when the end of a wall is reached NOT end of frame.
+			when done =>		-- algorithm done, last step to determine if end of wall or end of frame, then adress_out "1111111111111110".
 				shift_in_sign 		<= (others => '0');
 				add_1_sig 		<= (others => '0');
 				add_2_sig 		<= (others => '0');
