@@ -44,7 +44,7 @@ architecture structural of v_line_multadder is
     );
   end component ; -- multiplier
 
-  component adder is
+  component v_line_adder is
     generic
     (
         n_bits : integer := 22
@@ -55,7 +55,7 @@ architecture structural of v_line_multadder is
       b : in  std_logic_vector(n_bits - 1 downto 0);
       r : out std_logic_vector(n_bits - 1 downto 0)
     );
-  end component adder;
+  end component v_line_adder;
     
     signal mult_out   : std_logic_vector(21 downto 0);
     -- signal mux_out                  : std_logic_vector(21 downto 0);
@@ -82,7 +82,7 @@ begin
     --   output  => mux_out
     -- );
 
-    adder_inst: adder
+    adder_inst: v_line_adder
     generic map (
       n_bits => 22
     )

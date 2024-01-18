@@ -4640,6 +4640,12 @@ begin
 				else
 					new_state <= vert35_7_y;
 				end if;
+				
+			when others => 
+				serial_bus <= "00000000000000";
+				new_pointer <= pointer;
+				eof_flag <= '0';
+				new_state <= reset;
 		end case;
 	end process;
 end architecture;

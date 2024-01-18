@@ -4,8 +4,7 @@ use ieee.std_logic_1164.all;
 entity toplevel is
 port
 (
-	clk : in std_logic;
-	clk_25 : in std_logic;
+	clk_50 : in std_logic;
 	rst : in std_logic;
 	clk_out : out std_logic; -- clk for the epo chip
 
@@ -46,22 +45,14 @@ end entity; -- toplevel
 
 architecture arch of toplevel is
 
-	component clk_divider_6 is
-	port
-	(
-		clk : in std_logic;
-		res : in std_logic;
-		clk_6 : out std_logic
-	);
+	component clock_dividers is
+	  port (
+		inclk0 : in std_logic;
+		c0 : out std_logic;
+		c1 : out std_logic;
+		c2 : out std_logic
+	  );
 	end component;
-
-	-- component clk_divider_25 is
-    --     port (
-    --             clk : in std_logic;
-    --             res : in std_logic;
-    --             clk_25 : out std_logic
-    --     );
-	-- end component;
 
 	component debouncer is
 	generic
@@ -159,12 +150,10 @@ architecture arch of toplevel is
 	);
 	end component; -- sram
 
-
-	-- This is clk divided by 8 so it's like 6Mhz for VGA, lov, and the chip
-	signal clk_6 : std_logic;
-	
-	-- This is clk divided by 2 so it's 25Mhz for VGA
-
+	signal clk :	std_logic; -- legacy suppport
+	signal clk_100 : std_logic;
+	signal clk_25 : std_logic;
+	signal clk_12 : std_logic;
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
 	signal debounced_l, debounced_r : std_logic;
@@ -198,31 +187,29 @@ architecture arch of toplevel is
 begin
 
 	-- Both button debouncers
-	l_deb : debouncer port map (clk_6, button_l, debounced_l); 
-	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
-
-	-- This is the clock divider for the vga, lov, chip, and other shizzle
-	divider_of_the_clock : clk_divider_6 port map (clk, not rst, clk_6); 
-
-	-- clk_divider_25_inst: clk_divider_25
-	-- port map (
-	--   clk    => clk,
-	--   res    => rst,
-	--   clk_25 => clk_25
-	-- );
+	l_deb : debouncer port map (clk_12, button_l, debounced_l); 
+	r_deb : debouncer port map (clk_12, button_r, debounced_r); 
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk_6, not rst, serial_bus, eof_flag, 
+	vertices : lov port map (clk_12, not rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
-	vga_sp : syncpulses port map(clk_6, clk_25, not rst, hsync, vsync_signal, screen_address);
+	syncpulses_inst: syncpulses
+	port map (
+	  clk_6          => clk_12,
+	  clk_25         => clk_25,
+	  res            => rst,
+	  hsync          => hsync,
+	  vsync          => vsync_signal,
+	  screen_address => screen_address
+	);
 
 	-- The VGA rop top entity entity
 	vga_rop : rop port map(clk, not rst, eof_flag, lov_rdy, debounced_l, debounced_r,
-				chip_data_bus, screen_address,
+							chip_data_bus, screen_address,
 	                        vga_rgb_color, vsync_signal, ram_address, ram_color_in,
 	                        ram_color_out, ram_readwrite, ram_enable);
 
@@ -231,12 +218,25 @@ begin
 	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
+						
+	pll_inst: clock_dividers
+	port map (
+	  inclk0 => clk_50,
+	  c0     => clk_100,
+	  c1     => clk_12,
+	  c2 	=> clk_25
+	);
 
+	clk <= clk_100;
 
 	vsync <= vsync_signal;
 
-	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else screen_address(16 downto 9);
+	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else vga_rgb_color;
 
-	clk_out <= clk_6; -- TAKE THIS OUT (to test 6mhz clock on led)
+	clk_out <= clk_12; 
+
+	clk_25 <= clk_25;
+	clk_100 <= clk_100;
+	clk_12 <= clk_12;
 
 end architecture; -- arch
