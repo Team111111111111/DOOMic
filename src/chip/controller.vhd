@@ -126,12 +126,10 @@ begin
 				transmit_h <= '1';
 
 				if (input_bus = "11111111111111" and 
-					output_bus = "1111111111111110") then
+					h_rdy = '0') then
 					new_state <= reset;
 
-				-- This was elseif h_rdy = '0', but it never 
-				-- goes to 0 and gets cleaned, so now it's this
-				elsif (output_bus = "1111111111111110") then
+				elsif (h_rdy = '0') then
 					new_state <= v_line;
 
 				else
