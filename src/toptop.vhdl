@@ -8,6 +8,11 @@ port(
 	-- These are the inputs for both of the buttons that the player has 
 	--  access to. They are wired directly to their respective button
 	--  debouncer component.
+
+    clk_25:out std_logic;
+	clk_12:out std_logic;
+	clk_100:out std_logic;
+
 	button_l : in std_logic;
 	button_r : in std_logic;
 
@@ -36,6 +41,10 @@ architecture arch of toptop is
             clk_50 : in std_logic;
             rst : in std_logic;
             clk_out : out std_logic; -- clk for the epo chip
+
+            clk_25:out std_logic;
+	        clk_12:out std_logic;
+	        clk_100:out std_logic;
         
             -- These are the inputs for both of the buttons that the player has 
             --  access to. They are wired directly to their respective button
@@ -91,7 +100,7 @@ begin
     toplevel_inst: toplevel
     port map (
       clk_50           => clk,
-      rst           => rst,
+      rst           => not rst,
       clk_out       => chip_clock_signal,
       button_l      => button_l,
       button_r      => button_r,
@@ -106,13 +115,16 @@ begin
       sram_oe_n     => sram_oe_n,
       sram_we_n     => sram_we_n,
       sram_ub_n     => sram_ub_n,
-      sram_lb_n     => sram_lb_n
+      sram_lb_n     => sram_lb_n,
+      clk_25 => clk_25,
+	  clk_12 => clk_12,
+	  clk_100 => clk_100
     );
 
     chip_top_inst: chip_top
     port map (
       clk        => chip_clock_signal,
-      reset      => rst,
+      reset      => not rst,
       serial_bus => chip_serial_bus_signal,
       address    => chip_data_bus_signal
     );

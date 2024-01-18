@@ -280,7 +280,7 @@ begin
                 buffers_in(1) <= (others => '0');
                 en(1) <= '1';
 
-                if(data_in = "00000000000000") then -- Check if data is on the bus (please make the bus to honour this)
+                if(data_in = "00000000000000" or data_in = "11111111111111") then -- Check if data is on the bus (please make the bus to honour this)
                     new_state <= populate_x_p;
                     buffers_in(2) <= (others => '0');
                     en(2) <= '0';
@@ -302,7 +302,7 @@ begin
 
             -- C2
             when populate_y_p => -- UPDATED 22/12/23
-                if(data_in = "00000000000000") then
+                if(data_in = "00000000000000" or data_in = "11111111111111") then
                     new_state <= populate_y_p;
                     buffers_in(3)(21 downto 8) <= (others => '0');          -- store y_p in buffer 8
                     buffers_in(3)(7 downto 0) <= (others => '0');
@@ -330,7 +330,7 @@ ready_out_bus <='0';
 
             -- C3
             when populate_a_p =>
-                if(data_in = "00000000000000") then
+                if(data_in = "00000000000000" or data_in = "11111111111111") then
                     new_state <= populate_a_p;     
                     buffers_in(0) <= (others => '0');          -- Prevent Latches
                     en(0) <= '0'; 
@@ -354,7 +354,7 @@ ready_out_bus <='0';
 
             -- C4
             when populate_x_v =>
-                if(data_in = "00000000000000") then
+                if(data_in = "00000000000000" or data_in = "11111111111111") then
                     new_state <= populate_x_v;    
                     buffers_in(4) <= (others => '0');          -- Prevent Latches
                     en(4) <= '0';  
@@ -385,7 +385,7 @@ ready_out_bus <='0';
 
             -- C5
             when populate_y_v =>  
-                if(data_in = "00000000000000") then
+                if(data_in = "00000000000000" or data_in = "11111111111111") then
                     new_state <= populate_y_v;    
                     buffers_in(5) <= (others => '0');
                     en(5) <= '0';  
@@ -958,8 +958,12 @@ ready_out_bus <='0';
 
                 buffers_in(6) <= (others => '1');
                 en(6) <= '1';
-
-                new_state <= populate_x_v;
+                
+                if (bus_empty_in = '1' ) then
+                    new_state <= populate_x_v;
+                else
+                    new_state <= done;
+                end if;
 
                 buffers_in(5 downto 0) <= (others => (others => '0'));
                 en(5 downto 0) <= (others => '0');
