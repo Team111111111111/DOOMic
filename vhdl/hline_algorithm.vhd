@@ -54,7 +54,6 @@ signal e_count, new_e_count: signed(15 downto 0);
 
 
 -- 'signals' to (temporary) store values (memory elements)
-signal new_address, address: std_logic_vector(15 downto 0):= (others => '0');
 signal draw_x_sig, new_draw_x_sig: unsigned(8 downto 0):= (others => '0');
 signal draw_y_sig, new_draw_y_sig: unsigned(7 downto 0):= (others => '0');
 signal mirror_y, new_mirror_y: unsigned(7 downto 0):= (others => '0');
@@ -117,7 +116,6 @@ port map(
 				mirror_y		<= (others => '0');
 				mulp_y			<= (others => '0');
 				shift_out_temp		<= (others => '0');
-				address			<= (others=> '0');
 				sel			<= '0';
 
 			else 
@@ -133,14 +131,13 @@ port map(
 				mirror_y		<= new_mirror_y;
 				mulp_y			<= new_mulp_y;
 				shift_out_temp		<= new_shift_out_temp;
-				address			<= new_address;
 				sel			<= set_sel;
 
 			end if;
 		end if;
 	end process;
 
-	process ( state, enable, e_count, position, sec_position, mulp_y, result_adder_sig, draw_x_sig, dxy1_in, dxy2_in, right_cond_in, start_pos_1, start_pos_2, right_cond, sel, draw_y_sig, address, mirror_y, dxy1, shift_out_sign, dxy2, shift_out_temp)
+	process ( state, enable, e_count, position, sec_position, mulp_y, result_adder_sig, draw_x_sig, dxy1_in, dxy2_in, right_cond_in, start_pos_1, start_pos_2, right_cond, sel, draw_y_sig, mirror_y, dxy1, shift_out_sign, dxy2, shift_out_temp)
 	begin
 		case state is
 			when reset_state => 
@@ -164,7 +161,7 @@ port map(
 				new_sec_position	<= (others => '0');
 				new_e_count 		<= (others => '0');
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '0';
 
 				if (enable = '1') then
@@ -194,7 +191,7 @@ port map(
 				new_sec_position	<= unsigned(start_pos_2);
 				new_e_count 		<= (others => '0');
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '0';
 
 				next_state 		<= for_loop;
@@ -221,7 +218,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				if (unsigned(position) <= unsigned(right_cond)) then
@@ -253,14 +250,18 @@ port map(
 
 				if (((((position) mod 320) = 0) and sel = '1') or 
 					((((sec_position) mod 320) = 0) and sel = '0')) then 
-					new_address 	<= "1111111111111110";
+					address_out 	<= "1111111111111110";
 					ready 		<= '1';
 				else
-					new_address	<= (others => '0');
+					address_out	<= (others => '0');
 					ready		<= '0';
 				end if;
 
-				next_state 		<= reset_state;
+				if (enable = '1') then
+					next_state	<= done;
+				else -- wait for enable to be 0.
+					next_state 	<= reset_state;
+				end if;
 
 			when prepare_draw =>		-- sets with 'sel' if 'start_pos_1' is x or y and 'start_pos_2' is x or y
 				shift_in_sign 		<= (others => '0');
@@ -289,7 +290,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= draw_1_mulp;
@@ -315,7 +316,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 				
 				next_state 	<= draw_1_add;
@@ -342,7 +343,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;				
 				
-				new_address		<= result_adder_sig; 		
+				address_out		<= result_adder_sig; 		
 				ready 			<= '1';
 
 				next_state 		<= mirror;
@@ -369,7 +370,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;				
 				
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= draw_2_mulp;
@@ -397,7 +398,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;				
 				
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= draw_2_add;
@@ -423,7 +424,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;			
 				
-				new_address		<= result_adder_sig; -- 320mirror_y+x_position;
+				address_out		<= result_adder_sig; -- 320mirror_y+x_position;
 				ready 			<= '1';
 
 				next_state 		<= e_calc;
@@ -450,7 +451,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= signed(result_adder_sig);					
 				
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= e_shift_compare_temp;
@@ -477,7 +478,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= e_compare;
@@ -504,7 +505,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 				
 				if (signed(shift_out_temp) > signed("0000000" & dxy2)) then
@@ -535,7 +536,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= signed(result_adder_sig);
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= sec_count_increase;
@@ -562,7 +563,7 @@ port map(
 				new_sec_position	<= sec_position+1;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= count_increase;
@@ -589,7 +590,7 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '1';
 
 				next_state 		<= for_loop;
@@ -615,12 +616,11 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				new_address 		<= (others => '0');
+				address_out 		<= (others => '0');
 				ready 			<= '0';
 
 				next_state 		<= reset_state;
 				
 		end case;
 	end process;	
-	address_out <= address;
 end architecture behavioural;
