@@ -129,7 +129,9 @@ begin
 					output_bus = "1111111111111110") then
 					new_state <= reset;
 
-				elsif (h_rdy = '0') then
+				-- This was elseif h_rdy = '0', but it never 
+				-- goes to 0 and gets cleaned, so now it's this
+				elsif (output_bus = "1111111111111110") then
 					new_state <= v_line;
 
 				else
