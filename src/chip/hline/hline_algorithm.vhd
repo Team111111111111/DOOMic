@@ -227,7 +227,7 @@ port map(
 					next_state 	<= done;
 				end if;
 
-			when done =>		-- algorithm done, last step to determine if end of wall or end of frame, then adress_out "1111111111111110".
+			when done =>		-- algorithm done
 				shift_in_sign 		<= (others => '0');
 				add_1_sig 		<= (others => '0');
 				add_2_sig 		<= (others => '0');
@@ -248,14 +248,8 @@ port map(
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
 
-				if (((((position) mod 320) = 0) and sel = '1') or 
-					((((sec_position) mod 320) = 0) and sel = '0')) then 
-					address_out 	<= "1111111111111110";
-					ready 		<= '1';
-				else
-					address_out	<= (others => '0');
-					ready		<= '0';
-				end if;
+				address_out		<= (others => '0');
+				ready			<= '0';
 
 				if (enable = '1') then
 					next_state	<= done;
