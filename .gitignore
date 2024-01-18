@@ -1,1 +1,9 @@
+
 Docs/v_line/~$v_line_memory_map.xlsx
+
+.DS_Store
+*.sqp
+*.cf
+*.vcd
+
+
