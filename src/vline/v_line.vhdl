@@ -761,7 +761,7 @@ ready_out_bus <='0';
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
                 adder_sig <= (others => '0');               -- add 0
                 if (shift_right(signed(block_out_sig), 4) > 256) then
-                    buffers_in(6) <= "0000000000000100000000";
+                    buffers_in(6) <= "0000000000000011111111";
                 elsif (shift_right(signed(block_out_sig), 4) < -256) then
                     buffers_in(6) <= "1111111111111100000000";
                 else
@@ -796,7 +796,7 @@ ready_out_bus <='0';
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);             -- K stored in buffer 4
-                mult_2_sig <= "0000110001110000000000";   -- Multiply by Constant (tbd now set to 796)
+                mult_2_sig <= "0001100011100000000000";   -- Multiply by Constant (tbd now set to 796) --
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(5) <= std_logic_vector(shift_right(unsigned(block_out_sig), 4));                -- store result in buffer 5
                 en(5) <= '1';
@@ -816,7 +816,9 @@ ready_out_bus <='0';
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(5)), 2));                   -- h/2 stored in buffer 5
                 mult_2_sig <= "0000000000000100000000";    -- Multiply by 4 (16.6 format) == 1 (14.8 format)
                 adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
-                buffers_in(4) <= block_out_sig; -- store result in buffer 4 (16.6)
+                buffers_in(4)(12 downto 6) <= block_out_sig(12 downto 6); -- store result in buffer 4 (16.6)
+                buffers_in(4)(5 downto 0) <= (others => '0');
+                buffers_in(4)(21 downto 13) <= (others => '0');
                 en(4) <= '1';
                 new_state <= calc_b_top;
 
@@ -834,7 +836,9 @@ ready_out_bus <='0';
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(5)), 2));  -- h/2 stored in buffer 5, change to 16.6
                 mult_2_sig <= "1111111111111100000000";    -- Multiply by -4 (16.6 format) == -1 (14.8)
                 adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
-                buffers_in(5) <= block_out_sig;  -- store result in buffer 5 (16.6 format)
+                buffers_in(5)(12 downto 6) <= block_out_sig(12 downto 6); -- store result in buffer 5 (16.6)
+                buffers_in(5)(5 downto 0) <= (others => '0');
+                buffers_in(5)(21 downto 13) <= (others => '0');
                 en(5) <= '1';
                 new_state <= Hold_for_H;
 
@@ -922,14 +926,20 @@ ready_out_bus <='0';
 
                 if (unsigned(buffers_out(4)) <= unsigned(buffers_out(6))) then
                     new_state <= done;
+                    buffers_in(6) <= (others => '1');
+                    en(6) <= '1';
                 elsif (bus_empty_in = '1') then
                     new_state <= addres_calc;
+                    buffers_in(6) <= (others => '0');
+                    en(6) <= '0';
                 else
                     new_state <= addres_wait;
+                    buffers_in(6) <= (others => '0');
+                    en(6) <= '0';
                 end if;
 
-                buffers_in(6 downto 0) <= (others => (others => '0'));
-                en(6 downto 0) <= (others => '0');
+                buffers_in(5 downto 0) <= (others => (others => '0'));
+                en(5 downto 0) <= (others => '0');
                 mult_1_sig <= (others => '0');
                 mult_2_sig <= (others => '0');
                 adder_sig <= (others => '0');
