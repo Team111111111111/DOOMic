@@ -251,7 +251,7 @@ port map(
 				if (((((position) mod 320) = 0) and sel = '1') or 
 					((((sec_position) mod 320) = 0) and sel = '0')) then 
 					address_out 	<= "1111111111111110";
-					ready 		<= '1';
+					ready 		<= '0';
 				else
 					address_out	<= (others => '0');
 					ready		<= '0';
