@@ -59,7 +59,7 @@ begin
 				-- if we are supposed to change the set then we start
 				-- the clearing process and check the memory if we
 				-- maybe didn't already do so
-				if (lov_eof = '1' and ctr_rdy_memory = '0') then
+				if (ctr_rdy_memory = '0') then
 
 					-- this starts the cleaning
 					ctr_eof <= '1';
@@ -78,7 +78,7 @@ begin
 				-- if we already did the cleaning then we wait for a
 				-- button press before we start push the lov further;
 				-- there's no point in computing the same frame again
-				elsif (lov_eof = '1' and ctr_rdy_memory = '1') then
+				elsif (ctr_rdy_memory = '1') then
 
 					new_ctr_rdy_memory <= ctr_rdy_memory;
 
@@ -107,7 +107,7 @@ begin
 
 			-- if we are asked to feed new data then we just pass the flag
 			-- and feed the new data
-			elsif ((address = "1111111111111111" or address = "1111111111111110") and lov_eof = '0') then
+			elsif (address = "1111111111111111") then
 				ctr_eof <= '0';
 				lov_rdy <= '1';
 				new_ctr_rdy_memory <= '0';
