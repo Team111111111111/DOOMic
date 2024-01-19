@@ -5,14 +5,12 @@ entity toptop is
 port(
    clk : in std_logic;
 	rst : in std_logic;
+    clk_6 : in std_logic;
+    clk_out : out std_logic;
 	-- These are the inputs for both of the buttons that the player has 
 	--  access to. They are wired directly to their respective button
 	--  debouncer component.
-
-    clk_25:out std_logic;
-	clk_12:out std_logic;
-	clk_100:out std_logic;
-
+    
 	button_l : in std_logic;
 	button_r : in std_logic;
 
@@ -39,12 +37,8 @@ architecture arch of toptop is
         port
         (
             clk_50 : in std_logic;
+            clk_6 : in std_logic;
             rst : in std_logic;
-            clk_out : out std_logic; -- clk for the epo chip
-
-            clk_25:out std_logic;
-	        clk_12:out std_logic;
-	        clk_100:out std_logic;
         
             -- These are the inputs for both of the buttons that the player has 
             --  access to. They are wired directly to their respective button
@@ -91,7 +85,6 @@ architecture arch of toptop is
         );
     end component;
 
-    signal chip_clock_signal : std_logic;
     signal chip_data_bus_signal : std_logic_vector(15 downto 0);
     signal chip_serial_bus_signal : std_logic_vector(13 downto 0);
 
@@ -101,9 +94,9 @@ begin
     port map (
       clk_50           => clk,
       rst           => not rst,
-      clk_out       => chip_clock_signal,
-      button_l      => button_l,
-      button_r      => button_r,
+      clk_6 => clk_6,
+      button_l      => not button_l,
+      button_r      => not button_r,
       chip_data_bus => chip_data_bus_signal,
       serial_bus    => chip_serial_bus_signal,
       vga_rgb       => vga_rgb,
@@ -115,19 +108,18 @@ begin
       sram_oe_n     => sram_oe_n,
       sram_we_n     => sram_we_n,
       sram_ub_n     => sram_ub_n,
-      sram_lb_n     => sram_lb_n,
-      clk_25 => clk_25,
-	  clk_12 => clk_12,
-	  clk_100 => clk_100
+      sram_lb_n     => sram_lb_n
     );
 
     chip_top_inst: chip_top
     port map (
-      clk        => chip_clock_signal,
+      clk        => clk_6,
       reset      => not rst,
       serial_bus => chip_serial_bus_signal,
       address    => chip_data_bus_signal
     );
+
+    clk_out <= clk;
 
 
 end architecture;
