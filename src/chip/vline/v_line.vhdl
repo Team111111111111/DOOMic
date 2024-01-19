@@ -353,7 +353,7 @@ begin
 
             -- C4
             when populate_x_v =>
-                if(data_in = "00000000000000" or data_in = "11111111111111") then
+                if(data_in = "00000000000000") then
                     new_state <= populate_x_v;    
                     buffers_in(4) <= (others => '0');          -- Prevent Latches
                     en(4) <= '0';  
@@ -384,7 +384,7 @@ begin
 
             -- C5
             when populate_y_v =>  
-                if(data_in = "00000000000000" or data_in = "11111111111111") then
+                if(data_in = "00000000000000") then
                     new_state <= populate_y_v;    
                     buffers_in(5) <= (others => '0');
                     en(5) <= '0';  
