@@ -62,20 +62,19 @@ architecture structural of v_line is
                     calc_dx,    -- x_v + (-x_p)
                     calc_dy,    -- y_v + (-y_p)
 
-                    calc_dy_sin_a, -- dy*sina
-                    inv_dysina,
-                    calc_Z, -- dxcosa - dysina --> Somehow to LUT ( component?? )
+                    calc_dy_sin_a,  -- dy*sina
+                    calc_Z,         -- dxcosa + dysina = z --> LUT --> 1/z := k
 
-                    calc_dy_cos_a, -- dy*cos a
-                    inv_dycosa, --
-                    calc_da, -- -dy*cosa + dx sina
+                    calc_dy_cos_a,  -- dy*cos a
+                    inv_dycosa,     --  *-1
+                    calc_da,        -- dx sina - dy*cosa = da
                     
-                    calc_da_k, -- da * k
-                    calc_a, -- (da * k * c1) + 99 -- OUT TO HLINE
+                    calc_da_k, -- da * k (effectively da/z)
+                    calc_a, -- (160 * c1 * K * da) + 99 -- OUT TO HLINE
 
                     calc_h, -- K * c2 = h/2
-                    calc_b_bot, -- h/2 + 99 -- OUT TO HLINE
-                    calc_b_top, -- h/2 - 99 -- OUT TO HLINE
+                    calc_b_bot, -- 99 + h/2 -- OUT TO HLINE
+                    calc_b_top, -- 99 - h/2 -- OUT TO HLINE
                     Hold_for_H,
 
                     calc_bot_addr, -- 320 * b_bot + a
@@ -304,13 +303,13 @@ begin
             when populate_y_p => -- UPDATED 22/12/23
                 if(data_in = "00000000000000" or data_in = "11111111111111") then
                     new_state <= populate_y_p;
-                    buffers_in(3)(21 downto 8) <= (others => '0');          -- store y_p in buffer 8
+                    buffers_in(3)(21 downto 8) <= (others => '0');          -- store y_p in buffer 3
                     buffers_in(3)(7 downto 0) <= (others => '0');
                     en(3) <= '0';      
 
                 else
                     new_state <= populate_a_p;
-                    buffers_in(3)(21 downto 8) <= data_in;          -- store y_p in buffer 8
+                    buffers_in(3)(21 downto 8) <= data_in;          -- store y_p in buffer 3
                     buffers_in(3)(7 downto 0) <= (others => '0');
                     en(3) <= '1';
                 end if;
@@ -326,7 +325,7 @@ begin
                 en(2 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
 
             -- C3
             when populate_a_p =>
@@ -335,7 +334,7 @@ ready_out_bus <='0';
                     buffers_in(0) <= (others => '0');          -- Prevent Latches
                     en(0) <= '0'; 
                 else
-                    new_state <= populate_x_v;                   -- next state to sin cos approx??
+                    new_state <= populate_x_v;                   
                     buffers_in(0)(21 downto 8) <= data_in;          -- store a_p in buffer 0
                     buffers_in(0)(7 downto 0) <= (others => '0');
                     en(0) <= '1';
@@ -350,7 +349,7 @@ ready_out_bus <='0';
                 en(6 downto 1) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
 
             -- C4
             when populate_x_v =>
@@ -381,7 +380,7 @@ ready_out_bus <='0';
                 en(3 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
 
             -- C5
             when populate_y_v =>  
@@ -412,7 +411,7 @@ ready_out_bus <='0';
                 en(4 downto 0) <= (others => '0');
                 lookup_in <= (others => '0');
                 ready_out_h <= '0';
-ready_out_bus <='0';
+                ready_out_bus <='0';
 
             -- C6
             -- APPROXIMATOR
@@ -437,7 +436,7 @@ ready_out_bus <='0';
 
                     elsif (comp48_out = '0') then      
                         -- comp48 outputs '0' if alpha <= 48, hence 16 < alpha <= 48 due to elsif
-                        -- subtract 48 so alpha is in 'approximator's domain 
+                        -- subtract 48 so alpha is in approximator's domain 
                         mult_1_sig      <= buffers_out(0);                   -- alpha stored in buffer 0
                         mult_2_sig      <= "0000000000000100000000";    
                         adder_sig       <= "1111111110000000000000";       -- add -32 (subtract)
@@ -476,7 +475,7 @@ ready_out_bus <='0';
                 mult_1_sig      <= buffers_out(1);
                 mult_2_sig      <= buffers_out(1);
                 adder_sig       <= "0000000000000000000000";
-                buffers_in(1)   <= block_out_sig;
+                buffers_in(1)   <= block_out_sig;       -- intermediate result stored to buffer 1
                 en(1) <= '1';
                 new_state       <= aprox_cos_pt2;
                 
@@ -491,7 +490,7 @@ ready_out_bus <='0';
 
 
             when aprox_cos_pt2 =>
-                -- divide by -256, add 1 (could shift but we have the mult anyway)
+                -- divide by -256, add 1
                 mult_1_sig      <= buffers_out(1);
                 mult_2_sig      <= "1111111111111111111111";
                 adder_sig       <= "0000000000000100000000";
@@ -585,7 +584,7 @@ ready_out_bus <='0';
                 ready_out_bus   <='0';
 
             when aprox_sin_pt2 =>
-                -- divide by -256, add 1 (could shift but we have the mult anyway)
+                -- divide by -256, add 1
                 mult_1_sig      <= buffers_out(0);
                 mult_2_sig      <= "1111111111111111111111";
                 adder_sig       <= "0000000000000100000000";
@@ -665,24 +664,8 @@ ready_out_bus <='0';
                 adder_sig <= "0000000000000000000000";         -- add 0
                 buffers_in(4) <= block_out_sig;                 -- store result in buffer 4
                 en(4) <= '1';
-                new_state <= inv_dysina;
-                    
-                buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
-                en(6 downto 5) <= (others => '0');
-                buffers_in(3 downto 0) <= (others => (others => '0'));
-                en(3 downto 0) <= (others => '0');
-                lookup_in <= (others => '0');
-                ready_out_h <= '0';
-                ready_out_bus <='0';
-            
-            when inv_dysina =>
-                mult_1_sig <= buffers_out(4);                   -- dysina stored in buffer 4
-                mult_2_sig <= "0000000000000100000000";         -- mult -1
-                adder_sig <= "0000000000000000000000";         -- add 0
-                buffers_in(4) <= block_out_sig;                 -- store result in buffer 4
-                en(4) <= '1';
                 new_state <= calc_Z;
-
+                    
                 buffers_in(6 downto 5) <= (others => (others => '0'));          -- Prevent Latches
                 en(6 downto 5) <= (others => '0');
                 buffers_in(3 downto 0) <= (others => (others => '0'));
@@ -692,7 +675,7 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
                     
 
-            when calc_Z =>              -- dxcosa +x dysina
+            when calc_Z =>              -- dxcosa + dysina
                 mult_1_sig <= buffers_out(6);                   -- dX stored in buffer  6
                 mult_2_sig <= buffers_out(1);                   -- cos a stored in buffer 1
                 adder_sig <= buffers_out(4);                    -- add dysina
@@ -713,7 +696,7 @@ ready_out_bus <='0';
                 mult_1_sig <= buffers_out(5);                   -- dy stored in buffer  5
                 mult_2_sig <= buffers_out(1);                   -- cos a stored in buffer 1
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(5) <= block_out_sig;                -- store result in buffer 6
+                buffers_in(5) <= block_out_sig;                -- store result in buffer 5
                 en(5) <= '1'; 
                 new_state <= inv_dycosa; 
                 
@@ -726,10 +709,10 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
             
             when inv_dycosa =>
-                mult_1_sig <= buffers_out(5);                   -- dycosa stored in buffer  6
+                mult_1_sig <= buffers_out(5);                   -- dycosa stored in buffer  5
                 mult_2_sig <= "1111111111111100000000";          -- -1
                 adder_sig <= (others => '0');               -- add 0
-                buffers_in(5) <= block_out_sig;                -- store result in buffer 6
+                buffers_in(5) <= block_out_sig;                -- store result in buffer 5
                 en(5) <= '1'; 
                 new_state <= calc_da;
                 
@@ -745,7 +728,7 @@ ready_out_bus <='0';
             when calc_da =>             -- -dy*cosa + dx sina
                 mult_1_sig <= buffers_out(6);                   -- dx stored in buffer  6!
                 mult_2_sig <= buffers_out(0);                   -- sin a stored in buffer 0
-                adder_sig <= buffers_out(5);               -- add -dycosa a stored in buffer 6
+                adder_sig <= buffers_out(5);               -- add -dycosa a stored in buffer 5
                 buffers_in(6) <= block_out_sig;                -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= calc_da_k;
@@ -760,10 +743,10 @@ ready_out_bus <='0';
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
                 adder_sig <= (others => '0');               -- add 0
-                if (shift_right(signed(block_out_sig), 4) > 256) then
-                    buffers_in(6) <= "0000000000000011111111";
-                elsif (shift_right(signed(block_out_sig), 4) < -256) then
-                    buffers_in(6) <= "1111111111111100000000";
+                if (shift_right(signed(block_out_sig), 4) > 256) then       -- clamping da/z between -1 and 1
+                    buffers_in(6) <= "0000000000000011111111";              -- result is factor 2^4 too big
+                elsif (shift_right(signed(block_out_sig), 4) < -256) then   -- due to LUT shift for accuracy
+                    buffers_in(6) <= "1111111111111100000000";              -- so shift back now
                 else
                     buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
                 end if;
@@ -778,11 +761,11 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
 
 
-            when calc_a =>              -- (da * k * c1) + 160 -- OUT TO HLINE
+            when calc_a =>              -- (160 * da * k * c1) + 160 -- OUT TO HLINE
                 mult_1_sig <= buffers_out(6);                   -- daK stored in buffer 6
-                mult_2_sig <= "0000001010000000000000";  -- Multiply by Constant (tbd now set to 409.59375 => 0000011001100110011000)  -- I came up with -2.9296875 => 1111111111110100010010 but idk if that is better
-                adder_sig <= "0000001010000000000000";      -- add 160
-                buffers_in(6) <= block_out_sig;                -- store result in buffer 6
+                mult_2_sig <= "0000001010000000000000";         -- Multiply by 160 (c1 set to 1)
+                adder_sig <= "0000001010000000000000";          -- add 160
+                buffers_in(6) <= block_out_sig;                 -- store result in buffer 6
                 en(6) <= '1';
                 new_state <= calc_h;    
 
@@ -812,7 +795,7 @@ ready_out_bus <='0';
                 ready_out_bus <='0';
 
 
-            when calc_b_bot =>          -- h/2 + 99 -- OUT TO HLINE --  (TODO? change 99 to 101)   THIS IS WEIRD 99+h/2 and 99-h/2???
+            when calc_b_bot =>          -- 99 + h/2 -- OUT TO HLINE --  (TODO? change 99 to 101)  
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(5)), 2));                   -- h/2 stored in buffer 5
                 mult_2_sig <= "0000000000000100000000";    -- Multiply by 4 (16.6 format) == 1 (14.8 format)
                 adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
