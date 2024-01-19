@@ -107,7 +107,7 @@ begin
 
 			-- if we are asked to feed new data then we just pass the flag
 			-- and feed the new data
-			elsif (address = "1111111111111111" and lov_eof = '0') then
+			elsif ((address = "1111111111111111" or address = "1111111111111110") and lov_eof = '0') then
 				ctr_eof <= '0';
 				lov_rdy <= '1';
 				new_ctr_rdy_memory <= '0';
