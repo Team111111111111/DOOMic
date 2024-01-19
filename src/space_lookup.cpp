@@ -201,7 +201,8 @@ int main () {
 			// 	without the last part since that is done at the beggining of this 
 			// 	section of code since it depends on the next state (if it's EOF)
 			lov << "when vert" << set << "_" << vertex << "_y_0 =>" << std::endl;
-			lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
+			lov << "\t-- bus output in decimal: " << iy << std::endl;
+			lov << "\tserial_bus <= \"" << biy << "\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
 			lov << "\teof_flag <= '0';" << std::endl;
 			lov << std::endl;
@@ -209,8 +210,7 @@ int main () {
 			lov << std::endl;
 
 			lov << "when vert" << set << "_" << vertex << "_y =>" << std::endl;
-			lov << "\t-- bus output in decimal: " << iy << std::endl;
-			lov << "\tserial_bus <= \"" << biy << "\";" << std::endl;
+			lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
 			lov << "\teof_flag <= '0';" << std::endl;
 			lov << std::endl;
