@@ -6,10 +6,9 @@ port
 (
 	clk_50 : in std_logic;
 	rst : in std_logic;
-	clk_out : out std_logic; -- clk for the epo chip
 
 	clk_25:out std_logic;
-	clk_12:out std_logic;
+	clk_6:in std_logic;
 	clk_100:out std_logic;
 
 	-- These are the inputs for both of the buttons that the player has 
@@ -154,10 +153,8 @@ architecture arch of toplevel is
 	);
 	end component; -- sram
 
-	signal clk :	std_logic; -- legacy suppport
 	signal clk_100_sig : std_logic;
 	signal clk_25_sig : std_logic;
-	signal clk_12_sig : std_logic;
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
 	signal debounced_l, debounced_r : std_logic;
@@ -191,19 +188,19 @@ architecture arch of toplevel is
 begin
 
 	-- Both button debouncers
-	l_deb : debouncer port map (clk_12_sig, button_l, debounced_l); 
-	r_deb : debouncer port map (clk_12_sig, button_r, debounced_r); 
+	l_deb : debouncer port map (clk_6, button_l, debounced_l); 
+	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk_12_sig,  rst, serial_bus, eof_flag, 
+	vertices : lov port map (clk_6,  rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
 	syncpulses_inst: syncpulses
 	port map (
-	  clk_6          => clk_12_sig,
+	  clk_6          => clk_6,
 	  clk_25         => clk_25_sig,
 	  res            =>  rst,
 	  hsync          => hsync,
@@ -212,13 +209,13 @@ begin
 	);
 
 	-- The VGA rop top entity entity
-	vga_rop : rop port map(clk,  rst, eof_flag, lov_rdy, debounced_l, debounced_r,
+	vga_rop : rop port map(clk_50,  rst, eof_flag, lov_rdy, debounced_l, debounced_r,
 							chip_data_bus, screen_address,
 	                        vga_rgb_color, vsync_signal, ram_address, ram_color_in,
 	                        ram_color_out, ram_readwrite, ram_enable);
 
 	-- The SRAM entity
-	memory_c : sram port map(clk,  rst, ram_color_in, ram_color_out, 
+	memory_c : sram port map(clk_50,  rst, ram_color_in, ram_color_out, 
 	                         ram_address, ram_readwrite,
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
@@ -227,20 +224,13 @@ begin
 	port map (
 	  inclk0 => clk_50,
 	  c0     => clk_100_sig,
-	  c1     => clk_12_sig,
 	  c2 	=> clk_25_sig
 	);
-
-	clk <= clk_100_sig;
 
 	vsync <= vsync_signal;
 
 	vga_rgb <= ("00000000") when screen_address = ("11111111111111111") else vga_rgb_color;
 
-	clk_out <= clk_12_sig; 
-
 	clk_25 <= clk_25_sig;
 	clk_100 <= clk_100_sig;
-	clk_12 <= clk_12_sig;
-
 end architecture; -- arch
