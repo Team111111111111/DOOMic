@@ -12,6 +12,7 @@ entity h_line is
         	y_top 		: in std_logic_vector(7 downto 0);	-- from v-line
         	y_bot 		: in std_logic_vector(7 downto 0);	-- from v-line
 
+		serial_bus_in	: in std_logic_vector(13 downto 0);
 		address_out 	: out std_logic_vector(15 downto 0);	-- to bus
 		ready		: out std_logic				-- to bus controller
     );
@@ -75,6 +76,7 @@ component algorithm is
         	dxy1_in		: in std_logic_vector(8 downto 0);
         	dxy2_in		: in std_logic_vector(8 downto 0);
 
+		serial_bus_in	: in std_logic_vector(13 downto 0);
 		address_out		: out std_logic_vector(15 downto 0);
 		ready		: out std_logic   
 	);
@@ -124,7 +126,8 @@ begin
 				right_cond_in	=> right_cond_sig,
 				dxy1_in		=> dxy1_sig,
 				dxy2_in		=> dxy2_sig,
-				address_out		=> address_out,
+				serial_bus_in	=> serial_bus_in,
+				address_out	=> address_out,
 				ready		=> ready
 				);
 end architecture behavioural;
