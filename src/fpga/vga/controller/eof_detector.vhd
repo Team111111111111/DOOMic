@@ -50,7 +50,7 @@ begin
 			-- Here we check for the flag from the chip
 
 			-- if there's a flag then we go deeper
-			if (address = "1111111111111110") then
+			if (address = "111111111111110" and lov_eof = '1') then
 
 				-- Here we check if we are just requested to send a
 				-- new vertex, or if we are at the end of the list
