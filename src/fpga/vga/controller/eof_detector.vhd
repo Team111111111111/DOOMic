@@ -50,7 +50,7 @@ begin
 			-- Here we check for the flag from the chip
 
 			-- if there's a flag then we go deeper
-			if (address = "1111111111111111") then
+			if (address = "111111111111110") then
 
 				-- Here we check if we are just requested to send a
 				-- new vertex, or if we are at the end of the list
@@ -95,15 +95,22 @@ begin
 						lov_rdy <= '0';
 
 					end if;
-
-				-- if we don't have to change the set then we just forward
-				-- the flag, so the lov can send a next vertex data
+					
 				else
+					-- if this is not an end of frame then we just
+					-- ignore it
 					ctr_eof <= '0';
-					lov_rdy <= '1';
+					lov_rdy <= '0';
 					new_ctr_rdy_memory <= '0';
 
 				end if;
+
+			-- if we are asked to feed new data then we just pass the flag
+			-- and feed the new data
+			elsif (address = "1111111111111111" and lov_eof = '0') then
+				ctr_eof <= '0';
+				lov_rdy <= '1';
+				new_ctr_rdy_memory <= '0';
 
 			else
 				-- if there's no flag then we just do nothing
