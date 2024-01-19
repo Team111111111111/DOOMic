@@ -25,12 +25,16 @@ int main () {
 			j = 0;
 
 			std::cout << "vert" << i << "_" << j << "_a, ";
+			std::cout << "vert" << i << "_" << j << "_a_0, "
+					<< std::endl;
 
 		} else { 
 			std::cout << "vert" << i << "_" << j << "_x, " 
-				  << "vert" << i << "_" << j << "_y, ";
-
-			std::cout << std::endl;
+				  << "vert" << i << "_" << j << "_x_0, "
+				  << std::endl
+				  << "vert" << i << "_" << j << "_y, "
+				  << "vert" << i << "_" << j << "_y_0, "
+				  << std::endl;
 
 			j++;
 		}
