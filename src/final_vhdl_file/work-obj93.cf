@@ -1,0 +1,4 @@
+v 4
+file . "list_of_verticies.vhdl" "ede470e8051f9617607633ecccd3c1378fc7c8bd" "20240119144938.188":
+  entity lov at 1( 0) + 0 on 11;
+  architecture beahvioural of lov at 19( 384) + 0 on 12;
