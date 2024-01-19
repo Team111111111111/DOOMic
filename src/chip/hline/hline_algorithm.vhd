@@ -16,7 +16,8 @@ entity algorithm is
         dxy1_in		: in std_logic_vector(8 downto 0);
         dxy2_in		: in std_logic_vector(8 downto 0);
 
-	address_out		: out std_logic_vector(15 downto 0);
+	serial_bus_in	: in std_logic_vector(13 downto 0);
+	address_out	: out std_logic_vector(15 downto 0);
 	ready		: out std_logic    );
 end entity algorithm;
 
@@ -247,10 +248,15 @@ port map(
 				new_position 		<= position;
 				new_sec_position	<= sec_position;
 				new_e_count 		<= e_count;
-
-				address_out		<= (others => '0');
-				ready			<= '0';
-
+				
+				if (serial_bus_in = "11111111111111") then
+					address_out		<= "1111111111111110";
+					ready			<= '0';
+				else
+					address_out		<= (others => '0');
+					ready			<= '0';
+				end if;
+	
 				if (enable = '1') then
 					next_state	<= done;
 				else -- wait for enable to be 0.
