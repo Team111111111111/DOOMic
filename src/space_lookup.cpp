@@ -72,18 +72,13 @@ int main () {
 
 			/* Checking if the a state is there for the first time, then it's state 0_0 otherwise x_0 */
 			if ((set == 0) && (vertex == 0)) {
-				lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
-				lov << "\t-- bus output in decimal: " << iA << std::endl;
-				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
+				lov << "when vert" << set << "_" << vertex << "_a_0 =>" << std::endl;
+				lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
 				lov << "\tnew_pointer <= pointer;" << std::endl;
 				lov << "\teof_flag <= '0';" << std::endl;
 				lov << std::endl;
-				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_a;" << std::endl;
 				lov << std::endl;
-				
-			} else {
-				set++;
-				vertex = 0;
 
 				lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
 				lov << "\t-- bus output in decimal: " << iA << std::endl;
@@ -91,7 +86,28 @@ int main () {
 				lov << "\tnew_pointer <= pointer;" << std::endl;
 				lov << "\teof_flag <= '0';" << std::endl;
 				lov << std::endl;
-				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x_0;" << std::endl;
+				lov << std::endl;
+				
+			} else {
+				set++;
+				vertex = 0;
+
+				lov << "when vert" << set << "_" << vertex << "_a_0 =>" << std::endl;
+				lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
+				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << "\teof_flag <= '0';" << std::endl;
+				lov << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_a;" << std::endl;
+				lov << std::endl;
+
+				lov << "when vert" << set << "_" << vertex << "_a =>" << std::endl;
+				lov << "\t-- bus output in decimal: " << iA << std::endl;
+				lov << "\tserial_bus <= \"" << biA << "\";" << std::endl;
+				lov << "\tnew_pointer <= pointer;" << std::endl;
+				lov << "\teof_flag <= '0';" << std::endl;
+				lov << std::endl;
+				lov << "\tnew_state <= vert" << set << "_" << vertex << "_x_0;" << std::endl;
 				lov << std::endl;
 
 			}
@@ -101,7 +117,7 @@ int main () {
 			 * within the set then output this */
 			if (vertex != 0) {
 				lov << "\tif (rdy = '1') then" << std::endl;
-				lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+				lov << "\t\tnew_state <= vert" << set << "_" << vertex << "_x_0;" << std::endl;
 				lov << "\telse" << std::endl;
 				lov << "\t\tnew_state <= vert" << set << "_" << vertex - 1 << "_y;" << std::endl;
 				lov << "\tend if;" << std::endl << std::endl;
@@ -164,18 +180,34 @@ int main () {
 			*/
 
 			// This is the section for outputing the x state
+			lov << "when vert" << set << "_" << vertex << "_x_0 =>" << std::endl;
+			lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
+			lov << "\tnew_pointer <= pointer;" << std::endl;
+			lov << "\teof_flag <= '0';" << std::endl;
+			lov << std::endl;
+			lov << "\tnew_state <= vert" << set << "_" << vertex << "_x;" << std::endl;
+			lov << std::endl;
+
 			lov << "when vert" << set << "_" << vertex << "_x =>" << std::endl;
 			lov << "\t-- bus output in decimal: " << ix << std::endl;
 			lov << "\tserial_bus <= \"" << bix <<  "\";" << std::endl;
 			lov << "\tnew_pointer <= pointer;" << std::endl;
 			lov << "\teof_flag <= '0';" << std::endl;
 			lov << std::endl;
-			lov << "\tnew_state <= vert" << set << "_" << vertex << "_y;" << std::endl;
+			lov << "\tnew_state <= vert" << set << "_" << vertex << "_y_0;" << std::endl;
 			lov << std::endl;
 
 			// This is the section for outputing the y state
 			// 	without the last part since that is done at the beggining of this 
 			// 	section of code since it depends on the next state (if it's EOF)
+			lov << "when vert" << set << "_" << vertex << "_y_0 =>" << std::endl;
+			lov << "\tserial_bus <= \"00000000000000\";" << std::endl;
+			lov << "\tnew_pointer <= pointer;" << std::endl;
+			lov << "\teof_flag <= '0';" << std::endl;
+			lov << std::endl;
+			lov << "\tnew_state <= vert" << set << "_" << vertex << "_y;" << std::endl;
+			lov << std::endl;
+
 			lov << "when vert" << set << "_" << vertex << "_y =>" << std::endl;
 			lov << "\t-- bus output in decimal: " << iy << std::endl;
 			lov << "\tserial_bus <= \"" << biy << "\";" << std::endl;

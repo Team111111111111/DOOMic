@@ -5,7 +5,7 @@ int main () {
 	for (int i = 0; i <= 35; i++) {
 
 		std::cout << "elsif (pointer = " << i << ") then" << std::endl;
-		std::cout << "\tnew_state <= vert" << i << "_0_a;" << std::endl;
+		std::cout << "\tnew_state <= vert" << i << "_0_a_0;" << std::endl;
 		std::cout << std::endl;
 	}
 
