@@ -779,7 +779,7 @@ begin
 
             when calc_h =>              -- K * c2 = h/2
                 mult_1_sig <= buffers_out(4);             -- K stored in buffer 4
-                mult_2_sig <= "0000110010000000000000";   -- Multiply by Constant (tbd now set to 800) --
+                mult_2_sig <= "0011001000000000000000";   -- Multiply by Constant (tbd now set to 800) --
                 adder_sig <= (others => '0');               -- add 0
                 buffers_in(5) <= std_logic_vector(shift_right(unsigned(block_out_sig), 4));                -- store result in buffer 5
                 en(5) <= '1';

@@ -37,7 +37,7 @@ begin
 	end process;
 
 
-	process (clk, state, new_state)
+	process (clk, state, new_state, v_rdy, h_rdy, input_bus)
 	begin
 		case state is
 			when reset =>

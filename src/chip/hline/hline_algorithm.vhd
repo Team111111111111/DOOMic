@@ -101,7 +101,7 @@ port map(
 	result 	=> result_adder_sig);
 
 
-	process (clk)
+	process (clk, sel_in, serial_bus_in)
 	begin	
 		if (rising_edge (clk)) then
 			if (reset = '1') then

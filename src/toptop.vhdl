@@ -5,7 +5,7 @@ entity toptop is
 port(
    clk : in std_logic;
 	rst : in std_logic;
-    clk_6 : in std_logic;
+    --clk_6 : in std_logic;
     clk_out : out std_logic;
 	-- These are the inputs for both of the buttons that the player has 
 	--  access to. They are wired directly to their respective button
@@ -37,7 +37,8 @@ architecture arch of toptop is
         port
         (
             clk_50 : in std_logic;
-            clk_6 : in std_logic;
+            --clk_6 : in std_logic;
+            clk_12 : out std_logic;
             rst : in std_logic;
         
             -- These are the inputs for both of the buttons that the player has 
@@ -87,6 +88,7 @@ architecture arch of toptop is
 
     signal chip_data_bus_signal : std_logic_vector(15 downto 0);
     signal chip_serial_bus_signal : std_logic_vector(13 downto 0);
+    signal clk_12_sig : std_logic;
 
 begin
 
@@ -94,7 +96,7 @@ begin
     port map (
       clk_50           => clk,
       rst           => not rst,
-      clk_6 => clk_6,
+      clk_12 => clk_12_sig,
       button_l      => not button_l,
       button_r      => not button_r,
       chip_data_bus => chip_data_bus_signal,
@@ -113,7 +115,7 @@ begin
 
     chip_top_inst: chip_top
     port map (
-      clk        => clk_6,
+      clk        => clk_12_sig,
       reset      => not rst,
       serial_bus => chip_serial_bus_signal,
       address    => chip_data_bus_signal
