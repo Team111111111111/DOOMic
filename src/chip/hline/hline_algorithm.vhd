@@ -138,7 +138,7 @@ port map(
 		end if;
 	end process;
 
-	process ( state, enable, e_count, position, sec_position, mulp_y, result_adder_sig, draw_x_sig, dxy1_in, dxy2_in, right_cond_in, start_pos_1, start_pos_2, right_cond, sel, draw_y_sig, mirror_y, dxy1, shift_out_sign, dxy2, shift_out_temp)
+	process ( state, enable, e_count, position, sec_position, mulp_y, result_adder_sig, draw_x_sig, dxy1_in, dxy2_in, right_cond_in, start_pos_1, start_pos_2, right_cond, sel, draw_y_sig, mirror_y, dxy1, shift_out_sign, dxy2, shift_out_temp, sel_in, serial_bus_in)
 	begin
 		case state is
 			when reset_state => 

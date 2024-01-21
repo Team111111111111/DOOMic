@@ -471,7 +471,7 @@ begin
 		end if;
 	end process;
 
-	process (state, pointer, rdy)
+	process (state, pointer, rdy, left, right)
 	begin
 		case state is
 			when reset =>
