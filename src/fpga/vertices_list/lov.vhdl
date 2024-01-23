@@ -3859,8 +3859,8 @@ begin
 				new_state <= vert16_0_a;
 
 			when vert16_0_a =>
-				-- bus output in decimal: 20
-				serial_bus <= "00000000010100";
+				-- bus output in decimal: 35
+				serial_bus <= "00000000100011";
 				new_pointer <= pointer;
 				eof_flag <= '0';
 

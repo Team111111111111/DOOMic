@@ -798,7 +798,7 @@ begin
             when calc_b_bot =>          -- 99 + h/2 -- OUT TO HLINE --  (TODO? change 99 to 101)  
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(5)), 2));                   -- h/2 stored in buffer 5
                 mult_2_sig <= "0000000000000100000000";    -- Multiply by 4 (16.6 format) == 1 (14.8 format)
-                adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
+                adder_sig <= "0000000001100100000000";      -- add (99) (16.6 format)
                 if (unsigned(block_out_sig) > 51200) then
                     buffers_in(4)(21 downto 6) <= "0000000011001000"; -- max height of 200
                 else
@@ -821,7 +821,7 @@ ready_out_bus <='0';
             when calc_b_top =>          -- 99 - h/2 -- OUT TO HLINE
                 mult_1_sig <= std_logic_vector(shift_right(unsigned(buffers_out(5)), 2));  -- h/2 stored in buffer 5, change to 16.6
                 mult_2_sig <= "1111111111111100000000";    -- Multiply by -4 (16.6 format) == -1 (14.8)
-                adder_sig <= "0000000001100011000000";      -- add (99) (16.6 format)
+                adder_sig <= "0000000001100100000000";      -- add (99) (16.6 format)
                 if (unsigned(block_out_sig) > 25600) then
                     buffers_in(5)(21 downto 6) <= "0000000000000000"; -- max height of 200
                 else
