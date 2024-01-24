@@ -14,7 +14,7 @@ port(
 	button_l : in std_logic;
 	button_r : in std_logic;
 
-    vga_rgb : out std_logic_vector(7 downto 0);
+    vga_rgb : out std_logic_vector(11 downto 0);
 	hsync   : out std_logic;
 	vsync   : out std_logic;
 
@@ -100,7 +100,7 @@ begin
       button_r      => not button_r,
       chip_data_bus => chip_data_bus_signal,
       serial_bus    => chip_serial_bus_signal,
-      vga_rgb       => vga_rgb,
+      vga_rgb       => vga_rgb(7 downto 0),
       hsync         => hsync,
       vsync         => vsync,
       sram_addr     => sram_addr,
@@ -121,7 +121,7 @@ begin
     );
 
     clk_out <= clk;
-
+    vga_rgb(11 downto 8) <= (others => '0');
 
 end architecture;
 
