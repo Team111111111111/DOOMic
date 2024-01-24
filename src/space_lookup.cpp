@@ -36,7 +36,6 @@ int main () {
 	}
 
 
-
 	while (getline(verticies, line)) {
 		if (line.length() <= 4) {
 
@@ -55,7 +54,11 @@ int main () {
 			std::size_t lengthA = line.copy(A, line.length(), 0);
 			A[lengthA] = '\0';
 
-			iA = atoi(A) - 45;
+			std::cout << iA << std::endl;
+
+			iA = atoi(A) + 45;
+
+			std::cout << iA << std::endl;
 
 			if (iA >= 360) {
 				iA = iA - 360;
@@ -65,10 +68,13 @@ int main () {
 
 			}
 
+			std::cout << iA << std::endl;
 
 			iA = iA * 63 / 360;
 			std::bitset<14> biA(iA); 
 		
+			std::cout << iA << std::endl;
+			std::cout << "--------" << std::endl;
 
 			/* Checking if the a state is there for the first time, then it's state 0_0 otherwise x_0 */
 			if ((set == 0) && (vertex == 0)) {
@@ -155,6 +161,11 @@ int main () {
 			ix = atoi(x) + 1;
 			iy = atoi(y) + 1;
 			ia = atoi(a) + 45;
+
+			std::cout << x << std::endl;
+			std::cout << y << std::endl;
+			std::cout << a << std::endl;
+			std::cout << std::endl;
 
 			std::bitset<14> bix(ix);
 			std::bitset<14> biy(iy);
