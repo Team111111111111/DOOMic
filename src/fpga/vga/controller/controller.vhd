@@ -197,13 +197,8 @@ begin
 				new_clk_counter <= "00";
 				new_offset_bit	<= offset_bit;
 
-				if (enable = '1') then
-					new_state <= read_chip;
+				new_state <= read_chip;
 
-				else
-					new_state <= wait_vga_chip;
-
-				end if;
 
 			when read_zeros =>
 				in_hold		<= '0'; 
@@ -312,13 +307,8 @@ begin
 				new_clk_counter <= "00";
 				new_offset_bit	<= offset_bit;
 
-				if (enable = '1') then
-					new_state <= read_zeros;
+				new_state <= read_zeros;
 
-				else
-					new_state <= wait_vga_zeros;
-
-				end if;
 		end case;
 	end process;
 
