@@ -47,10 +47,21 @@ begin
 
 		else
 
-			-- Here we check for the flag from the chip
+			-- this checks if the cleaning is done and 
+			-- sets the flag in the memory
+			if (ctr_rdy = '1') then
+				new_ctr_rdy_memory <= '1';
 
+			else
+				new_ctr_rdy_memory <= '0';
+
+			end if;
+
+
+			-- Here we check for the flag from the chip
 			-- if there's a flag then we go deeper
-			if (address = "1111111111111110" and lov_eof = '1') then
+			if (address = "1111111111111110" and lov_eof = '1' and 
+								ctr_rdy_memory = '0') then
 
 				-- Here we check if we are just requested to send a
 				-- new vertex, or if we are at the end of the list
@@ -59,64 +70,43 @@ begin
 				-- if we are supposed to change the set then we start
 				-- the clearing process and check the memory if we
 				-- maybe didn't already do so
-				if (ctr_rdy_memory = '0') then
 
-					-- this starts the cleaning
-					ctr_eof <= '1';
-					lov_rdy <= '0';
+				-- this starts the cleaning
+				ctr_eof <= '1';
+				lov_rdy <= '0';
 
-					-- this checks if the cleaning is done and 
-					-- sets the flag in the memory
-					if (ctr_rdy = '1') then
-						new_ctr_rdy_memory <= '1';
+			-- if we already did the cleaning then we wait for a
+			-- button press before we start push the lov further;
+			-- there's no point in computing the same frame again
+			elsif (ctr_rdy_memory = '1') then
 
-					else
-						new_ctr_rdy_memory <= '0';
 
-					end if;
+				-- this gotta be a zero so the controller is in
+				-- the correct branch of the fsm; it will keep
+				-- throwing data into address with all 1s, but
+				-- that's outside of the screen, so whatever;
+				ctr_eof <= '0';
 
-				-- if we already did the cleaning then we wait for a
-				-- button press before we start push the lov further;
-				-- there's no point in computing the same frame again
-				elsif (ctr_rdy_memory = '1') then
+				if (butt_l = '1' or butt_r = '1') then
+					lov_rdy <= '1';
 
-					new_ctr_rdy_memory <= ctr_rdy_memory;
-
-					-- this gotta be a zero so the controller is in
-					-- the correct branch of the fsm; it will keep
-					-- throwing data into address with all 1s, but
-					-- that's outside of the screen, so whatever;
-					ctr_eof <= '0';
-
-					if (butt_l = '1' or butt_r = '1') then
-						lov_rdy <= '1';
-
-					else
-						lov_rdy <= '0';
-
-					end if;
-					
 				else
-					-- if this is not an end of frame then we just
-					-- ignore it
-					ctr_eof <= '0';
 					lov_rdy <= '0';
-					new_ctr_rdy_memory <= '0';
 
 				end if;
+					
 
 			-- if we are asked to feed new data then we just pass the flag
 			-- and feed the new data
-			elsif (address = "1111111111111111" and lov_eof = '0') then
+			elsif (address = "1111111111111111" and lov_eof = '0' and 
+								ctr_rdy_memory = '0') then
 				ctr_eof <= '0';
 				lov_rdy <= '1';
-				new_ctr_rdy_memory <= '0';
 
 			else
 				-- if there's no flag then we just do nothing
 				ctr_eof <= '0';
 				lov_rdy <= '0';
-				new_ctr_rdy_memory <= '0';
 
 			end if;
 		end if;
