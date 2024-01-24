@@ -650,6 +650,7 @@ begin
 
 				elsif (pointer = 35) then
 					new_state <= vert35_0_a_0;
+				end if;
 
 			when vert0_0_a_0 =>
 				serial_bus <= "00000000000000";
