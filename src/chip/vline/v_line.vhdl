@@ -742,11 +742,11 @@ begin
             when calc_da_k =>           -- da * k
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
-                adder_sig <= (others => '0');               -- add 0
+                adder_sig <= "0000000000000001110000";               -- add 0,4375 to shift shit correctly
                 if (shift_right(signed(block_out_sig), 4) > 256) then       -- clamping da/z between -1 and 1
-                    buffers_in(6) <= "0000000000000011111111";              -- result is factor 2^4 too big
+                    buffers_in(6) <= "0000000000000011111101";              -- result is factor 2^4 too big
                 elsif (shift_right(signed(block_out_sig), 4) < -256) then   -- due to LUT shift for accuracy
-                    buffers_in(6) <= "1111111111111100000000";              -- so shift back now
+                    buffers_in(6) <= "1111111111111100000011";              -- so shift back now
                 else
                     buffers_in(6) <= std_logic_vector(shift_right(signed(block_out_sig), 4));                -- store result in buffer 6
                 end if;

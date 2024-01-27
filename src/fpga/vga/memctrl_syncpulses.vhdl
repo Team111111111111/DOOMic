@@ -31,6 +31,7 @@ architecture behavioral of syncpulses is
   signal count_enable : std_logic;
   signal counter_sel : std_logic_vector(1 downto 0);
   signal h_end : std_logic;
+  signal count_6 : unsigned(2 downto 0);
 
   -- Horizontal for LCD (25 Mhz)
 
@@ -81,8 +82,8 @@ begin
     -- Hsync signal assignment
   ----------------------------------------------------------------
       
-    hsync <= '1' when hcount < ((h_screen + h_front_porch) * clock_demultiplier) + 1 else '0' when hcount < ((h_screen + h_front_porch + h_pulse)  * clock_demultiplier) + 1 else '1';
-    h_end <= '1' when hcount >= (h_screen + h_front_porch + h_pulse + h_back_porch) * clock_demultiplier else '0';
+    hsync <= '0' when res = '1' else '1' when hcount < ((h_screen + h_front_porch) * clock_demultiplier) + 1 else '0' when hcount < ((h_screen + h_front_porch + h_pulse)  * clock_demultiplier) + 1 else '1';
+    h_end <= '0' when res = '1' else '1' when hcount >= (h_screen + h_front_porch + h_pulse + h_back_porch) * clock_demultiplier else '0';
     -- 1 when outside of pulse, 0 when in
 
   -- Synchronous process for vsync counter
@@ -138,48 +139,57 @@ begin
   -- this signal asynchronously desides whether the color can be shown or not
   count_enable <= '0' when hcount > h_screen * clock_demultiplier or vcount > v_screen else '1'; 
 
-  process(clk_6, res, counter_sel)
+  process(clk_25, res, counter_sel)
   begin
     if(res = '1') then
+      count_6 <= (others => '0');
       screen_address_1 <= (others => '0');
       screen_address_2 <= (others => '0');
       screen_address_3 <= (others => '0');
       screen_address_4 <= (others => '0');
     else
-      if(rising_edge(clk_6)) then
-        if vcount > v_screen then
-          screen_address_1 <= (others => '0');
-          screen_address_2 <= (others => '0');
-          screen_address_3 <= (others => '0');
-          screen_address_4 <= (others => '0');
-        elsif count_enable = '1' then
-          if counter_sel = "00" then
-            screen_address_1 <= screen_address_1 + 1;
-            screen_address_2 <= screen_address_2;
-            screen_address_3 <= screen_address_3;
-            screen_address_4 <= screen_address_4;
-          elsif counter_sel = "01" then
-            screen_address_1 <= screen_address_1;
-            screen_address_2 <= screen_address_2 + 1;
-            screen_address_3 <= screen_address_3;
-            screen_address_4 <= screen_address_4;
-          elsif counter_sel = "10" then
-            screen_address_1 <= screen_address_1;
-            screen_address_2 <= screen_address_2;
-            screen_address_3 <= screen_address_3 + 1;
-            screen_address_4 <= screen_address_4;
-          elsif counter_sel = "11" then
-            screen_address_1 <= screen_address_1;
-            screen_address_2 <= screen_address_2;
-            screen_address_3 <= screen_address_3;
-            screen_address_4 <= screen_address_4 + 1;
+      if(rising_edge(clk_25)) then
+        if count_6 = 4 then
+          count_6 <= (others => '0');
+          if vcount > v_screen then
+            screen_address_1 <= (others => '0');
+            screen_address_2 <= (others => '0');
+            screen_address_3 <= (others => '0');
+            screen_address_4 <= (others => '0');
+          elsif count_enable = '1' then
+            if counter_sel = "00" then
+              screen_address_1 <= screen_address_1 + 1;
+              screen_address_2 <= screen_address_2;
+              screen_address_3 <= screen_address_3;
+              screen_address_4 <= screen_address_4;
+            elsif counter_sel = "01" then
+              screen_address_1 <= screen_address_1;
+              screen_address_2 <= screen_address_2 + 1;
+              screen_address_3 <= screen_address_3;
+              screen_address_4 <= screen_address_4;
+            elsif counter_sel = "10" then
+              screen_address_1 <= screen_address_1;
+              screen_address_2 <= screen_address_2;
+              screen_address_3 <= screen_address_3 + 1;
+              screen_address_4 <= screen_address_4;
+            elsif counter_sel = "11" then
+              screen_address_1 <= screen_address_1;
+              screen_address_2 <= screen_address_2;
+              screen_address_3 <= screen_address_3;
+              screen_address_4 <= screen_address_4 + 1;
+            end if;
+          else
+          screen_address_1 <= screen_address_1;
+          screen_address_2 <= screen_address_2;
+          screen_address_3 <= screen_address_3;
+          screen_address_4 <= screen_address_4;
           end if;
-        else
-        screen_address_1 <= screen_address_1;
-        screen_address_2 <= screen_address_2;
-        screen_address_3 <= screen_address_3;
-        screen_address_4 <= screen_address_4;
-
+        else 
+          count_6 <= count_6 + 1;
+          screen_address_1 <= screen_address_1;
+          screen_address_2 <= screen_address_2;
+          screen_address_3 <= screen_address_3;
+          screen_address_4 <= screen_address_4;
         end if;
       end if;
     end if;

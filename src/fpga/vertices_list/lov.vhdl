@@ -453,7 +453,7 @@ architecture beahvioural of lov is
 			);
 
 	signal state, new_state : lov_state;
-	signal pointer, new_pointer : unsigned(5 downto 0) := "001101";
+	signal pointer, new_pointer : unsigned(5 downto 0) := "000100";
 
 begin
 	process (clk)
@@ -461,7 +461,7 @@ begin
 		if (clk'event and clk = '1') then
 			if (res = '1') then
 				state 	<= reset;
-				pointer <= "001101";
+				pointer <= "000100";
 
 			else
 				state	<= new_state;
@@ -3757,7 +3757,7 @@ begin
 
 			when vert15_0_x =>
 				-- bus output in decimal: 44
-				serial_bus <= "00000000101100";
+				serial_bus <= "00000000101101";
 				new_pointer <= pointer;
 				eof_flag <= '0';
 

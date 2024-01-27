@@ -37,8 +37,8 @@ architecture arch of toptop is
         port
         (
             clk_50 : in std_logic;
-            clk_6 : in std_logic;
-            --clk_12 : out std_logic;
+            clk_chip : in std_logic;
+            clk_25 : in std_logic;
             rst : in std_logic;
         
             -- These are the inputs for both of the buttons that the player has 
@@ -86,16 +86,33 @@ architecture arch of toptop is
         );
     end component;
 
+    component clock_dividers is
+        port (
+          inclk0 : in std_logic;
+          c0 : out std_logic;
+          c1 : out std_logic;
+          c2 : out std_logic
+        );
+      end component;
+
     signal chip_data_bus_signal : std_logic_vector(15 downto 0);
     signal chip_serial_bus_signal : std_logic_vector(13 downto 0);
+
+    signal clk_chip_sig : std_logic;
+    signal clk_fpga_sig : std_logic;
+
+    signal clk_100_sig : std_logic;
+	signal clk_12_sig : std_logic;
+	signal clk_25_sig : std_logic;
 
 begin
 
     toplevel_inst: toplevel
     port map (
-      clk_50           => clk,
+      clk_50           => clk_fpga_sig,
       rst           => not rst,
-      clk_6 => clk_6,
+      clk_chip         => clk_chip_sig,
+      clk_25        => clk_25_sig,
       button_l      => not button_l,
       button_r      => not button_r,
       chip_data_bus => chip_data_bus_signal,
@@ -114,14 +131,26 @@ begin
 
     chip_top_inst: chip_top
     port map (
-      clk        => clk_6,
+      clk        => clk_chip_sig,
       reset      => not rst,
       serial_bus => chip_serial_bus_signal,
       address    => chip_data_bus_signal
     );
 
+    pll_inst: clock_dividers
+	port map (
+	  inclk0 => clk,
+	  c0     => clk_100_sig,
+	  c1    => clk_12_sig,
+	  c2 	=> clk_25_sig
+	);
+
     clk_out <= clk;
     vga_rgb(11 downto 8) <= (others => '0');
+
+    clk_chip_sig <= clk_12_sig;
+    clk_fpga_sig <= clk_100_sig;
+
 
 end architecture;
 

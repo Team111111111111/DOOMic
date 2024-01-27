@@ -34,6 +34,9 @@ data3 = vector(data2)
 y = data3//320
 x = data3%320
 
+print(x)
+print(y)
+
 xy = list(zip(x, y))
 for x,y in xy:
     matrix[y,x] = 1

@@ -7,8 +7,8 @@ port
 	clk_50 : in std_logic;
 	rst : in std_logic;
 
-	--clk_25:out std_logic;
-	clk_6:in std_logic;
+	clk_25 : in std_logic;
+	clk_chip : in std_logic;
 	--clk_12 : out std_logic;
 	--clk_100:out std_logic;
 
@@ -48,15 +48,6 @@ port
 end entity; -- toplevel
 
 architecture arch of toplevel is
-
-	component clock_dividers is
-	  port (
-		inclk0 : in std_logic;
-		c0 : out std_logic;
-		c1 : out std_logic;
-		c2 : out std_logic
-	  );
-	end component;
 
 	component debouncer is
 	generic
@@ -154,9 +145,7 @@ architecture arch of toplevel is
 	);
 	end component; -- sram
 
-	signal clk_100_sig : std_logic;
-	signal clk_12_sig : std_logic;
-	signal clk_25_sig : std_logic;
+	
 	-- These are the outputs of both button debouncers. They are fed
 	--  directly into the list of vertices.
 	signal debounced_l, debounced_r : std_logic;
@@ -190,20 +179,20 @@ architecture arch of toplevel is
 begin
 
 	-- Both button debouncers
-	l_deb : debouncer port map (clk_6, button_l, debounced_l); 
-	r_deb : debouncer port map (clk_6, button_r, debounced_r); 
+	l_deb : debouncer port map (clk_chip, button_l, debounced_l); 
+	r_deb : debouncer port map (clk_chip, button_r, debounced_r); 
 
 	-- The list of vertices
 	-- WARNING: The 'lov_rdy' signal is not mapped to any other
 	--  component nor is it given any value!
-	vertices : lov port map (clk_6,  rst, serial_bus, eof_flag, 
+	vertices : lov port map (clk_chip,  rst, serial_bus, eof_flag, 
 	                         debounced_l, debounced_r, lov_rdy);
 
 	-- The VGA output rendering unit (syncpulses)
 	syncpulses_inst: syncpulses
 	port map (
-	  clk_6          => clk_6,
-	  clk_25         => clk_25_sig,
+	  clk_6          => clk_chip,
+	  clk_25         => clk_25,
 	  res            =>  rst,
 	  hsync          => hsync,
 	  vsync          => vsync_signal,
@@ -222,13 +211,7 @@ begin
 	                         ram_enable, sram_addr, sram_dq, sram_ce_n,
 	                         sram_oe_n, sram_we_n, sram_ub_n, sram_lb_n);
 						
-	pll_inst: clock_dividers
-	port map (
-	  inclk0 => clk_50,
-	  c0     => clk_100_sig,
-	  c1 => clk_12_sig,
-	  c2 	=> clk_25_sig
-	);
+	
 
 	vsync <= vsync_signal;
 
