@@ -742,7 +742,7 @@ begin
             when calc_da_k =>           -- da * k
                 mult_1_sig <= buffers_out(6);                   -- da stored in buffer 6
                 mult_2_sig <= buffers_out(4);                   -- k stored in buffer 4
-                adder_sig <= "0000000000000001110000";               -- add 0,4375 to shift shit correctly
+                adder_sig <= "0000000000000000111000";               -- add 0,2182 to shift shit correctly
                 if (shift_right(signed(block_out_sig), 4) > 256) then       -- clamping da/z between -1 and 1
                     buffers_in(6) <= "0000000000000011111101";              -- result is factor 2^4 too big
                 elsif (shift_right(signed(block_out_sig), 4) < -256) then   -- due to LUT shift for accuracy

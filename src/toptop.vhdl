@@ -4,7 +4,7 @@ use ieee.std_logic_1164.all;
 entity toptop is
 port(
    clk : in std_logic;
-	rst : in std_logic;
+	  rst : in std_logic;
     clk_6 : in std_logic;
     clk_out : out std_logic;
 	-- These are the inputs for both of the buttons that the player has 
